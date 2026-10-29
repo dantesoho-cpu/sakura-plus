@@ -19,17 +19,17 @@ export class ScoutDrone extends Enemy {
     else if (this.mode === 'dive') { const d = this.tgt.clone().subtract(new Phaser.Math.Vector2(this.x, this.y)).normalize().scale(220); this.b.setVelocity(d.x, d.y); this.setAngle(Phaser.Math.Clamp(d.x * 0.12, -25, 25)); if (this.mT <= 0 || Phaser.Math.Distance.Between(this.x, this.y, this.tgt.x, this.tgt.y) < 8) { this.mode = 'recover'; this.mT = 0.6; this.rdir = Math.sign(this.x - px) || -this.faceDir; } return; }
     else { tx = this.x + this.rdir * 30; ty = py - 50; sp = 90; if (this.mT <= 0) { this.mode = near ? 'strafe' : 'patrol'; this.mT = 1.4 + Math.random(); } }
     this.b.setVelocity(Phaser.Math.Clamp((tx - this.x) * 3, -sp, sp), Phaser.Math.Clamp((ty - this.y) * 3, -sp, sp));
-    if (this.mode === 'recover') this.face(-this.rdir); /* backs away (locked dir) while still facing the player: no flip jitter */ else this.face(Math.sign(px - this.x) || this.faceDir); this.setAngle(Phaser.Math.Clamp(this.b.velocity.x * 0.15, -14, 14)); this.play(this.mode === 'strafe' ? 'drone_attack' : 'drone_idle', true);
+    if (this.mode === 'recover') this.face(-this.rdir); /* backs away (locked dir) while still facing the player: no flip jitter */ else this.face(Math.sign(px - this.x) || this.faceDir); this.setAngle(Phaser.Math.Clamp(this.b.velocity.x * 0.15, -14, 14) + this.wob * Math.cos(this.wobT * 28)); this.play(this.mode === 'strafe' ? 'drone_attack' : 'drone_idle', true);
   }
   knock(dir: number) { this.b.setVelocity(dir * 150, -60); if (this.mode === 'dive') { this.mode = 'recover'; this.mT = 0.5; this.rdir = dir || 1; } }
 }
 // Ground bot: patrols (with the odd hop); on sight it turns, crouches (telegraph) then lunges with a hop, recovers, and keeps pressing.
 export class GroundBot extends Enemy {
-  dir = -1; kind = 'bot'; engaged = false; mode: 'patrol' | 'tele' | 'lunge' | 'recover' | 'press' = 'patrol'; mT = 0; hopT = 2;
+  dir = -1; kind = 'bot'; engaged = false; mode: 'patrol' | 'tele' | 'lunge' | 'recover' | 'press' = 'patrol'; mT = 0; hopT = 2; wasG = true; lastVy = 0;
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx) { super(s, x, y, 'e_bot', 3, fx); this.setOrigin(0.5, 1); this.b.setSize(18, 29).setOffset(2, 0); this.play('bot_idle'); this.faceDir = -1; this.setFlipX(true); }
   tick(dt: number, px: number, py: number) {
     super.tick(dt, px, py); if (this.dead) return;
-    this.b.setVelocityY(this.b.velocity.y + 1100 * dt); const onG = this.b.blocked.down; this.mT -= dt;
+    this.b.setVelocityY(this.b.velocity.y + 1100 * dt); const onG = this.b.blocked.down; this.mT -= dt; if (onG && !this.wasG && this.lastVy > 80) this.punch(1.25, 0.75, 160); /* landing squash */ this.wasG = onG; if (!onG) this.lastVy = this.b.velocity.y;
     if (this.hitT > 0) return;
     const sees = Math.abs(py - this.y) < 28 && Math.abs(px - this.x) < 130, toP = Math.sign(px - this.x) || this.dir;
     if (this.mode === 'patrol') {
@@ -44,7 +44,8 @@ export class GroundBot extends Enemy {
     this.face(this.dir);
     // move only in the facing direction, and not mid-turn (no moonwalking)
     this.b.setVelocityX(this.turning ? 0 : this.faceDir * (this.mode === 'press' ? 80 : 35)); this.play(this.mode === 'press' ? 'bot_attack' : 'bot_idle', true);
-    this.anims.timeScale = this.turning ? 0 : 1;
+    this.anims.timeScale = this.turning ? 0 : Math.min(1.6, Math.abs(this.b.velocity.x) / 35); /* legs match ground speed: no idle sliding */
+    if (!this.turning && Math.abs(this.b.velocity.x) < 2) this.setFrame(this.mode === 'press' ? 8 : 0);
   }
   knock(dir: number) { this.b.setVelocity(dir * 150, -90); this.mode = 'recover'; this.mT = 0.35; }
 }

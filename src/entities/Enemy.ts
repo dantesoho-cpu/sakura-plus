@@ -19,9 +19,14 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
   get b() { return this.body as Phaser.Physics.Arcade.Body; }
   hit(dmg: number, dir: number) {
     if (this.dead) return; audio.sfx('ehit'); this.hp -= dmg; this.flashT = FEEL.ehit.flash; this.setTintFill(0xffffff);
-    this.fx.spark(this.x - dir * 4, this.y - this.height / 2); this.knock(dir); this.hitT = 0.18; this.punch(0.8, 1.18, 160);
+    this.fx.spark(this.x - dir * 4, this.y - this.height / 2); this.knock(dir); this.hitT = 0.18; this.punch(0.8, 1.18, 160); this.jolt(dir);
     if (this.hp <= 0) this.die(); else this.fx.hitStop(FEEL.ehit.stop);
   }
+  /** hurt animation: drones spin-wobble, turrets recoil-shake (others: no-op besides flash/punch) */
+  wob = 0; wobT = 0;
+  jolt(dir: number) { if (this.dead || this.hp <= 0) return; const s = this.scene;
+    if (this.kind === 'drone') { this.wob = dir * 45; this.wobT = 0; }
+    else if (this.kind === 'turret') { const x0 = this.x; s.tweens.add({ targets: this, x: { from: x0 + dir * 3, to: x0 }, duration: 220, ease: 'Bounce.out' }); } }
   knock(dir: number) { if (this.b.moves) this.b.setVelocityX(dir * FEEL.ehit.knock); }
   /** Facing (+1 = right; sheets face right). Turning plays a quick squash-flip and blocks movement while it runs. */
   faceDir = 1; hitT = 0; turning = false; baseSX = 1;
@@ -52,7 +57,7 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
       s.tweens.add({ targets: p, y: cy - 20 - Math.random() * 14, scale: 1.4, alpha: 0, duration: 700 + i * 120, delay: 80 + i * 40, onComplete: () => p.destroy() }); }
   }
   tick(dt: number, _px: number, _py: number) {
-    this.t += dt; if (this.hitT > 0) this.hitT -= dt; if (this.flashT > 0 && (this.flashT -= dt) <= 0) this.clearTint();
+    this.t += dt; if (this.wob) { this.wobT += dt; this.wob *= Math.pow(0.004, dt); if (Math.abs(this.wob) < 0.5) this.wob = 0; } if (this.hitT > 0) this.hitT -= dt; if (this.flashT > 0 && (this.flashT -= dt) <= 0) this.clearTint();
     const ex = this.x + (this.flipX ? -this.eyeX : this.eyeX), ey = this.y - this.height * this.eyeY;
     if (this.kind === 'boss') this.aura.setVisible(false);
     this.aura.setPosition(ex, ey).setScale(0.45 + 0.15 * Math.sin(this.t * 6)).setAlpha(0.3 + 0.2 * Math.sin(this.t * 6));

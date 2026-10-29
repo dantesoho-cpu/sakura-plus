@@ -27,12 +27,15 @@ export class Enforcer extends Enemy {
       if (this.stT <= 0) { // choose + telegraph
         const opts = ['spread', ...(this.phase >= 2 ? ['charge'] : []), ...(this.phase >= 3 ? ['ring', 'summon'] : [])];
         this.next = opts[Math.floor(Math.random() * opts.length)]; if (this.attacks.length < 3) this.next = opts[this.attacks.length % opts.length];
-        this.st = 'tele'; this.stT = this.next === 'charge' ? 0.8 : 0.6; this.b.setVelocity(0, 0);
+        this.st = 'tele'; this.stT = this.next === 'charge' ? 0.8 : 0.6; this.b.setVelocity(0, 0); this.windup(this.next, px, py, this.stT);
       }
     } else if (this.st === 'tele') {
       const on = Math.floor(this.stT * 14) % 2 === 0; if (on) this.setTint(this.next === 'charge' ? 0xff4040 : 0xffb040); else this.clearTint();
       this.x += Math.sin(this.t * 90) * 0.6;
-      if (this.stT <= 0) { this.clearTint(); this.fire(px, py); }
+      if (this.next === 'charge') this.x -= (px > this.x ? 1 : -1) * 22 * dt; /* rear back before the charge */
+      if (this.next === 'ring') this.setAngle(this.angle + 900 * dt * (1 - this.stT / 0.6)); /* spin-up */
+      if (this.next === 'spread') this.y -= 10 * dt;
+      if (this.stT <= 0) { this.clearTint(); if (this.next === 'ring') this.setAngle(0); this.fire(px, py); }
     } else if (this.st === 'charge') {
       this.b.setVelocity(this.chargeDir * 300, 0); this.setAngle(this.chargeDir * 8);
       if (this.stT <= 0 || Math.abs(this.x - this.cx) > 330) { this.setAngle(0); this.st = 'hover'; this.stT = 1.0; }
@@ -50,10 +53,30 @@ export class Enforcer extends Enemy {
       for (let i = 0; i < 8; i++) { const t = i / 8 * Math.PI * 2 + this.t; this.gun.fireVel(this.x, this.y, Math.cos(t) * 120, Math.sin(t) * 120); }
     } else if (this.next === 'summon') { this.summon(this.x - 30, this.y); this.summon(this.x + 30, this.y); }
   }
-  die() { // chained explosions, then the real destroy
+  /** per-attack telegraph visuals: spread = aim lines, charge = red streak + rear-back, ring = converging ring + spin, summon = portal glows */
+  windup(k: string, px: number, py: number, sec: number) {
+    const s = this.scene, ms = sec * 1000, ADD = Phaser.BlendModes.ADD;
+    if (k === 'spread') { const a = Math.atan2(py - this.y, px - this.x), n = this.phase === 1 ? 3 : 5;
+      for (let i = 0; i < n; i++) { const t = a + (i - (n - 1) / 2) * 0.28; const l = s.add.line(0, 0, this.x, this.y + 6, this.x + Math.cos(t) * 160, this.y + 6 + Math.sin(t) * 160, 0xffb040, 0.0).setOrigin(0).setLineWidth(1).setDepth(7).setBlendMode(ADD);
+        s.tweens.add({ targets: l, alpha: { from: 0.1, to: 0.8 }, duration: ms, onComplete: () => l.destroy() }); } }
+    else if (k === 'charge') { const d = px > this.x ? 1 : -1; const r = s.add.rectangle(this.x + d * 120, this.y, 240, 4, 0xff3040, 0.5).setDepth(7).setBlendMode(ADD);
+      s.tweens.add({ targets: r, scaleY: { from: 0.3, to: 2.2 }, alpha: { from: 0.15, to: 0.6 }, duration: ms, yoyo: false, onComplete: () => r.destroy() });
+      s.tweens.add({ targets: this, scaleX: 0.9, scaleY: 1.1, duration: ms * 0.8, yoyo: true }); }
+    else if (k === 'ring') { const c = s.add.circle(this.x, this.y, 46).setStrokeStyle(2, 0xff4fd8).setFillStyle().setDepth(9).setBlendMode(ADD);
+      s.tweens.add({ targets: c, radius: 6, alpha: { from: 0.3, to: 1 }, duration: ms, ease: 'Cubic.in', onUpdate: () => c.setPosition(this.x, this.y), onComplete: () => c.destroy() }); }
+    else if (k === 'summon') for (const dx of [-30, 30]) { const g = s.add.image(this.x + dx, this.y, 'glow').setTint(0x9a5cff).setBlendMode(ADD).setDepth(9).setScale(0.2);
+      s.tweens.add({ targets: g, scale: 1.4, alpha: { from: 1, to: 0.4 }, duration: ms, ease: 'Sine.inOut', onComplete: () => g.destroy() }); }
+  }
+  die() { // slow-mo, flashes, chained explosions, collapse, then the real destroy
     if (this.st === 'dying') return; this.st = 'dying'; this.dead = true; this.b.setVelocity(0, 0); this.b.enable = false; this.emit('dying', this);
-    const sc = this.scene; let n = 0;
+    const sc = this.scene; let n = 0; this.clearTint();
+    // slow-mo for the first ~1.2s (physics/tweens/anims), always restored
+    const w = (sc.physics as any).world; const slow = (on: boolean) => { if (!sc.sys.isActive()) return; w.timeScale = on ? 2.5 : 1; sc.tweens.timeScale = on ? 0.4 : 1; sc.anims.globalTimeScale = on ? 0.4 : 1; };
+    slow(true); sc.time.delayedCall(1200, () => slow(false)); sc.events.once('shutdown', () => { w.timeScale = 1; sc.tweens.timeScale = 1; sc.anims.globalTimeScale = 1; });
+    sc.cameras.main.flash(120, 255, 255, 255); this.fx.shake(300, 0.006);
+    // collapse: sags, tilts and sinks while it burns
+    sc.tweens.add({ targets: this, y: this.y + 26, angle: (this.flipX ? 1 : -1) * 28, scaleY: 0.85, duration: 1400, ease: 'Quad.in' });
     sc.time.addEvent({ delay: 140, repeat: 9, callback: () => { n++; audio.sfx('explode', { rate: n === 10 ? 0.6 : 1 }); this.fx.explode(this.x + Phaser.Math.Between(-24, 24), this.y + Phaser.Math.Between(-16, 16), n === 10 ? 2 : 0.8);
-      this.setTintFill(n % 2 ? 0xffffff : 0xff6040); if (n === 10) { this.emit('destroyed', this); this.destroy(); } } });
+      this.setTintFill(n % 2 ? 0xffffff : 0xff6040); if (n === 10) { sc.cameras.main.flash(260, 255, 240, 250); this.fx.shake(400, 0.012); this.emit('destroyed', this); this.destroy(); } } });
   }
 }

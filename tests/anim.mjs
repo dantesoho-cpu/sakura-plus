@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 640, height: 360 } }); const errs = [];
+p.on('pageerror', e => errs.push(String(e)));
+await p.goto(process.env.URL); await p.waitForTimeout(2500); await p.keyboard.press('Enter'); await p.waitForTimeout(1500);
+await p.evaluate(() => { const L = window.__lvl; L.player.hp = 99; window.__seen = []; L.events.on('postupdate', () => { const k = L.player.anims.currentAnim?.key; if (window.__seen.at(-1) !== k) window.__seen.push(k); }); });
+const shots = []; let n = 0; const snap = async () => { const f = `audit/v10/f/a${String(n++).padStart(3, '0')}.png`; await p.screenshot({ path: f }); };
+const hold = async (k, ms) => { await p.keyboard.down(k); const t = Date.now(); while (Date.now() - t < ms) await snap(); await p.keyboard.up(k); };
+await hold('ArrowRight', 1200);
+await p.keyboard.down('ArrowRight'); await p.keyboard.press('Space'); for (let i = 0; i < 14; i++) await snap(); await p.keyboard.up('ArrowRight');
+for (let i = 0; i < 8; i++) await snap();
+await p.keyboard.press('Shift'); for (let i = 0; i < 10; i++) await snap();
+await p.evaluate(() => { const pl = window.__lvl.player; pl.damage(pl.x + 10); }); for (let i = 0; i < 10; i++) await snap();
+const seen = await p.evaluate(() => window.__seen);
+console.log(JSON.stringify({ seen, frames: n, errs })); await b.close();

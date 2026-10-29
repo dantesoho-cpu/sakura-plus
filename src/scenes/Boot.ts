@@ -4,14 +4,14 @@ import { makeCombatTextures } from '../systems/Textures';
 import { DECO_SIZE } from '../decoList';
 // src: sheet key, frames. Core cycles from player2 (generated + processed, tools/gen_frames.py)
 export const ANIMS: Record<string, { src: string; frames: number[]; rate: number; repeat: number }> = {
-  idle: { src: 'idle', frames: [0, 1], rate: 2, repeat: -1 }, run: { src: 'run', frames: [0, 1, 2, 3, 4, 5], rate: 12, repeat: -1 },
-  jump: { src: 'jump', frames: [0], rate: 1, repeat: 0 }, doublejump: { src: 'jump', frames: [0], rate: 1, repeat: 0 },
-  fall: { src: 'fall', frames: [0], rate: 1, repeat: -1 }, apex: { src: 'apex', frames: [0], rate: 1, repeat: 0 },
-  land: { src: 'dash', frames: [2], rate: 1, repeat: 0 }, dash: { src: 'dash', frames: [0, 1], rate: 20, repeat: 0 },
-  shoot: { src: 'shoot', frames: [1, 0], rate: 12, repeat: 0 }, runshoot: { src: 'runshoot', frames: [0], rate: 1, repeat: 0 }, hurt: { src: 'hurt', frames: [0, 1], rate: 8, repeat: 0 },
+  idle: { src: 'idle', frames: [0, 1], rate: 2, repeat: -1 }, run: { src: 'run8', frames: [0, 1, 2, 3, 4, 5, 6, 7], rate: 15, repeat: -1 },
+  jump: { src: 'rise', frames: [0], rate: 1, repeat: 0 }, doublejump: { src: 'rise', frames: [0], rate: 1, repeat: 0 },
+  fall: { src: 'fall2', frames: [0], rate: 1, repeat: -1 }, apex: { src: 'apex2', frames: [0], rate: 1, repeat: 0 },
+  land: { src: 'land', frames: [0], rate: 1, repeat: 0 }, dash: { src: 'dash4', frames: [0, 1], rate: 16, repeat: 0 }, dashend: { src: 'dash4', frames: [2, 3], rate: 14, repeat: 0 },
+  shoot: { src: 'shoot', frames: [1, 0], rate: 12, repeat: 0 }, runshoot: { src: 'runshoot', frames: [0], rate: 1, repeat: 0 }, hurt: { src: 'hurt2', frames: [0, 1], rate: 6, repeat: 0 }, win: { src: 'win', frames: [0], rate: 1, repeat: 0 }, sit: { src: 'sit', frames: [0], rate: 1, repeat: 0 }, wall: { src: 'wall', frames: [0], rate: 1, repeat: 0 },
   charge: { src: 'charge', frames: [0, 1, 2, 3, 4, 5], rate: 14, repeat: -1 }, beamfire: { src: 'fire', frames: [0, 1, 0, 1, 2], rate: 18, repeat: -1 },
 };
-const SHEETS = ['idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt', 'charge', 'fire'];
+const SHEETS = ['idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt', 'charge', 'fire', 'run8', 'rise', 'apex2', 'fall2', 'land', 'dash4', 'hurt2', 'win', 'sit', 'wall'];
 export class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {
@@ -38,7 +38,7 @@ export class Boot extends Phaser.Scene {
     for (const k of Object.keys(DECO_SIZE)) this.load.image('dc_' + k, `assets/deco/${k}.png`);
     this.load.spritesheet('boss', 'assets/enemies/boss.png', { frameWidth: 60, frameHeight: 45 });
     this.load.spritesheet('slopes', 'assets/tiles/slopes.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.image('ui_logo', 'assets/ui_logo2.png'); this.load.image('intro_p1', 'assets/intro/pano1.png'); this.load.image('intro_p2', 'assets/intro/pano2.png'); this.load.image('water', 'assets/fx/water.png');
+    this.load.image('ui_logo', 'assets/ui_logo2.png'); this.load.image('intro_p1', 'assets/intro/pano1.png'); this.load.image('intro_p2', 'assets/intro/pano2.png'); for (const n of [1, 2]) for (let k = 0; k < 3; k++) this.load.image(`intro_p${n}_spk${k}`, `assets/intro/pano${n}_spk${k}.png`); this.load.image('water', 'assets/fx/water.png');
     this.load.image('strip2', 'assets/bg/strip2.png');
     for (const k of ['far_mtn', 'mid_hills', 'near_forest', 'fg', 'lake']) this.load.image('g2_' + k, `assets/gen2/L_${k}.png`);
     for (let i = 0; i < 17; i++) this.load.image('g2cloud' + i, `assets/gen2/cloud${i}.png`);

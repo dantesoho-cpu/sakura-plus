@@ -5,7 +5,7 @@ import { PlayerFx } from './PlayerFx';
 import { T, JET, FEEL } from '../tuning';
 export { T, JET };
 const CHARGE_WALK = 34; // charging slows Sakura to a walk (was: vx*=0.25 every frame -> effectively frozen while held)
-type State = 'idle' | 'run' | 'jump' | 'doublejump' | 'fall' | 'land' | 'dash' | 'hurt';
+type State = 'idle' | 'run' | 'jump' | 'doublejump' | 'fall' | 'land' | 'dash' | 'dashend' | 'hurt';
 export const HP_MAX = 5, IFRAMES = 1.0, HURT_TIME = 0.3;
 export class Player extends Phaser.Physics.Arcade.Sprite {
   state_: State = 'idle'; facing = 1; coyoteT = 0; bufferT = 0; airJumps = 1; dashT = 0; dashCd = 0; canAirDash = true; landT = 0; dbg = { dashes: [] as {x0:number,x1:number,dur:number}[], jumps: 0, djumps: 0, coyoteJumps: 0, cur: null as any, jetT: 0 };
@@ -67,7 +67,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.dbg.cur = { x0: this.x, t: 0 }; this.trail.start(); this.scene.cameras.main.shake(FEEL.dashShake[0], FEEL.dashShake[1]);
     }
     if (this.dashing && this.dashT <= 0) { // end dash one frame after the last dash-velocity frame was integrated
-      this.dashing = false; b.setVelocityX(this.facing * T.dashSpeed * T.dashEndCarry); if (this.dbg.cur) { this.dbg.dashes.push({ x0: this.dbg.cur.x0, x1: this.x, dur: this.dbg.cur.t }); this.dbg.cur = null; }
+      this.dashing = false; b.setVelocityX(this.facing * T.dashSpeed * T.dashEndCarry); if (onGround) { this.landT = 0.14; this.setAnimState('dashend'); } if (this.dbg.cur) { this.dbg.dashes.push({ x0: this.dbg.cur.x0, x1: this.x, dur: this.dbg.cur.t }); this.dbg.cur = null; }
       b.setVelocityX(this.facing * T.maxRun); this.trail.stop();
     }
     if (this.dashing) {
@@ -114,7 +114,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // animation state
     if (onGround) {
       if (this.state_ === 'fall' || this.state_ === 'doublejump' || this.state_ === 'jump') { if (b.velocity.y >= 0) { const hard = this.lastVy > FEEL.land.dustMinVy; this.landT = T.landTime; this.setAnimState('land'); const q = hard ? FEEL.land.squashHard : FEEL.land.squashSoft; this.squash(q[0], q[1]); if (hard) this.dust(); } }
-      if (this.landT > 0) { this.landT -= dt; if (dir) this.landT = 0; }
+      if (this.landT > 0) { this.landT -= dt; if (dir && this.state_ !== 'dashend') this.landT = 0; }
       if (this.landT <= 0) this.setAnimState(Math.abs(b.velocity.x) > 20 ? 'run' : 'idle');
       if (this.state_ === 'run') this.anims.timeScale = Phaser.Math.Clamp(Math.abs(b.velocity.x) / T.maxRun, 0.5, 1.2);
       else this.anims.timeScale = 1;
@@ -125,7 +125,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.anims.timeScale = 1;
       if (Math.abs(b.velocity.y) < 60 && (this.state_ === 'jump')) { this.play('apex', true); }
       if (b.velocity.y > 60 && this.state_ !== 'fall' && !(this.state_ === 'doublejump' && this.anims.isPlaying)) this.setAnimState('fall');
-      else if (this.state_ === 'run' || this.state_ === 'idle' || this.state_ === 'hurt' || this.state_ === 'land' || this.state_ === 'dash') this.setAnimState(b.velocity.y < 0 ? 'jump' : 'fall');
+      else if (this.state_ === 'run' || this.state_ === 'idle' || this.state_ === 'hurt' || this.state_ === 'land' || this.state_ === 'dash' || this.state_ === 'dashend') this.setAnimState(b.velocity.y < 0 ? 'jump' : 'fall');
     }
   }
   squash(sx: number, sy: number) { this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 140, ease: 'Quad.out' }); }
