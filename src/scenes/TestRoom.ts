@@ -93,6 +93,7 @@ export class TestRoom extends Phaser.Scene {
   update(_t: number, dms: number) {
     const dt = Math.min(dms, 50) / 1000; this.petals.update(dt); this.bg.update(dt);
     this.falls.forEach(w => (w.tilePositionY -= dt * 60));
+    this.fx.tick();
     if (this.fx.stopped) return;
     this.player.update(dt); this.gun.update(dt); this.egun.update(dt);
     this.enemies = this.enemies.filter(e => e.active); this.enemies.forEach(e => e.tick(dt, this.player.x, this.player.y - 14));

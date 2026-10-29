@@ -16,7 +16,8 @@ log('jet pickup', await L(() => window.__lvl.player.hasJet));
 const tp = (x, y) => L(([x, y]) => { const pl = window.__lvl.player; pl.setPosition(x, y); pl.body.reset(x, y); pl.iT = 1e9; }, [x, y]);
 if (!(await L(() => window.__lvl.player.hasJet))) { const j = await L(() => [window.__lvl.jetPick.x, window.__lvl.jetPick.y]); await tp(j[0], j[1]); await p.waitForTimeout(300); }
 const fl = await L(() => window.__lvl.flowers.getChildren().filter(f => f.active).map(f => [f.x, f.y]));
-for (const [x, y] of fl) { await tp(x, y - 6); await p.waitForTimeout(250); }
+for (let pass = 0; pass < 3; pass++) { const left = await L(() => window.__lvl.flowers.getChildren().filter(f => f.active).map(f => [f.x, f.y])); if (!left.length) break; if (pass) log('retry flowers', left.length);
+  for (const [x, y] of left) { await tp(x, y - 6); await p.waitForTimeout(250); } }
 await p.waitForTimeout(300); log('memories', await L(() => window.__lvl.got), 'toasts', await L(() => window.__lvl.toast.shown.length));
 const sx = await L(() => window.__lvl.shrineX); await tp(sx - 30, 86 * 16); await p.waitForTimeout(400); await p.keyboard.down('ArrowRight'); await p.waitForTimeout(500); await p.keyboard.up('ArrowRight');
 log('shrine lit', await L(() => window.__lvl.shrineLit));
@@ -25,14 +26,14 @@ log('arena', await L(() => window.__lvl.arena), 'boss awake', await L(() => wind
 let t0 = Date.now(), shot = false;
 while (Date.now() - t0 < 90000) {
   const s = await L(() => { const l = window.__lvl; return { hp: l.boss.hp, dead: l.boss.dead, bx: l.boss.x, by: l.boss.y, px: l.player.x, done: l.bossDead }; });
-  if (s.done) break; await inv();
+  if (s.done) break; await inv(); if (Date.now() - (globalThis.__lt || 0) > 3000) { globalThis.__lt = Date.now(); console.log('trace', JSON.stringify(await L(() => { const l = window.__lvl, b = l.player.body; return [l.player.x | 0, l.player.y | 0, b.velocity.x | 0, b.blocked.left, b.blocked.right, l.boss.x | 0, l.boss.y | 0, l.boss.hp, l.boss.state ?? l.boss.mode ?? '', l.player.state ?? l.player.anim ?? '']; }))); }
   const dir = s.bx > s.px ? 'ArrowRight' : 'ArrowLeft'; const far = Math.abs(s.bx - s.px) > 110;
   if (far) { await p.keyboard.down(dir); await p.waitForTimeout(90); await p.keyboard.up(dir); } else { await p.keyboard.down(dir); await p.waitForTimeout(16); await p.keyboard.up(dir); }
   await p.keyboard.press('x'); if (s.by < (await L(() => window.__lvl.player.y)) - 30 && Math.random() < 0.4) await p.keyboard.press('Space');
   await p.waitForTimeout(60); if (fi % 3 === 0 || !shot) await frame(); else fi++;
   if (!shot && s.hp < 20) { await p.screenshot({ path: 'audit/B_boss.png' }); shot = true; }
 }
-log('boss dead', await L(() => window.__lvl.bossDead), 'secs', ((Date.now() - t0) / 1000) | 0);
+log('boss dead', await L(() => window.__lvl.bossDead), 'hp', await L(() => [window.__lvl.boss.hp, window.__lvl.boss.x|0, window.__lvl.boss.y|0, window.__lvl.player.body.blocked.down, window.__lvl.unsticks, window.__lvl.player.poseLock]), 'got', await L(() => window.__lvl.got), 'px', await L(() => [window.__lvl.player.x|0, window.__lvl.player.y|0, window.__lvl.gate.x|0]), 'secs', ((Date.now() - t0) / 1000) | 0);
 await p.waitForTimeout(800); await p.keyboard.down('ArrowRight');
 let vic = false; for (let i = 0; i < 120 && !vic; i++) { await p.waitForTimeout(150); if (i % 10 === 5) await p.keyboard.press('Space'); if (i % 2) await frame();
   vic = await L(() => !!window.__victory || window.__game.scene.isActive('Victory')); }

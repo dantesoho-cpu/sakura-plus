@@ -1,3 +1,4 @@
+import { touch, showRespawnBtn } from '../systems/Touch';
 import Phaser from 'phaser';
 import { Beam } from '../weapons/Beam';
 import { Player, HP_MAX, JET } from '../player/Player';
@@ -32,7 +33,7 @@ export const SLOPES: Record<string, number> = { '/': 0, '\\': 1, u: 2, U: 3, n: 
 export const slopeH = (f: number, c: number) => [15 - c, c, 16 - (c + 1) / 2, 8 - (c + 1) / 2, c / 2, 8 + c / 2][f];
 const ARENA = { x0: 404, x1: 470 };
 export class Level1 extends Phaser.Scene {
-  player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; hud!: Hud; toast!: Toast; bg!: Parallax;
+  player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; giants: [number, number, string][] = []; treeTops: [number, number, number][] = []; hud!: Hud; toast!: Toast; bg!: Parallax;
   solid!: Phaser.Tilemaps.TilemapLayer; oneway!: Phaser.Tilemaps.TilemapLayer; enemyGroup!: Phaser.Physics.Arcade.Group;
   flowers!: Phaser.Physics.Arcade.StaticGroup; got = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 0, y: 0 }; safe = { x: 0, y: 0 };
   boss!: Enforcer; bossDead = false; arena = false; walls!: Phaser.Physics.Arcade.StaticGroup; gate!: Phaser.Physics.Arcade.Image; gateFx!: Phaser.GameObjects.TileSprite;
@@ -41,7 +42,7 @@ export class Level1 extends Phaser.Scene {
   constructor() { super('Level1'); }
   falls2: { t: Phaser.GameObjects.TileSprite; v: number }[] = [];
   /** Lush waterfall: two scrolling sheets at different speeds, lip foam, plunge foam, rising mist, splash droplets and glints. */
-  waterfall(x: number, y: number, w: number, h: number, big = false) {
+  waterfall(x: number, y: number, w: number, h: number, big = false, lipFoam = true) {
     const back = this.add.tileSprite(x - 2, y, w + 4, h, 'waterfall').setOrigin(0).setDepth(big ? -6 : 0.9).setAlpha(0.55).setTint(0x8fd8ff).setTileScale(big ? 1 : 1, 1);
     const front = this.add.tileSprite(x, y, w, h, 'waterfall').setOrigin(0).setDepth(big ? -5.9 : 1).setAlpha(0.92);
     const hi = this.add.tileSprite(x + w * 0.2, y, w * 0.6, h, 'waterfall').setOrigin(0).setDepth(big ? -5.8 : 1.1).setAlpha(0.35).setBlendMode(Phaser.BlendModes.ADD);
@@ -50,11 +51,22 @@ export class Level1 extends Phaser.Scene {
     if (big) for (let i = 0; i < 4; i++) { const st = this.add.tileSprite(x + 14 + i * 24, y, 6, h, 'waterfall').setOrigin(0).setDepth(front.depth + 0.06).setTint(i % 2 ? 0x5aa0e0 : 0xffffff).setAlpha(0.3).setBlendMode(i % 2 ? Phaser.BlendModes.NORMAL : Phaser.BlendModes.ADD); this.falls2.push({ t: st, v: 90 + i * 25 }); }
     this.falls.push(front); this.falls2.push({ t: back, v: 45 }, { t: hi, v: 120 });
     const bot = y + h - 6, cx = x + w / 2, d = big ? -5.7 : 4;
-    this.add.ellipse(cx, y + 2, w + 6, 6, 0xeaffff, 0.85).setDepth(d);   // lip foam
+    if (lipFoam) this.add.ellipse(cx, y + 2, w + 6, 6, 0xbfe8ff, 0.6).setDepth(d);   // lip foam (springs use their rock lip instead)
     const foam = this.add.ellipse(cx, bot + 2, w * 1.5, big ? 14 : 9, 0xffffff, 0.8).setDepth(d); this.tweens.add({ targets: foam, scaleX: 1.12, scaleY: 0.85, yoyo: true, repeat: -1, duration: 420, ease: 'Sine.inOut' });
     this.add.particles(0, 0, 'glow', { x: { min: x - 6, max: x + w + 6 }, y: bot, speedY: { min: -14, max: -30 }, speedX: { min: -12, max: 12 }, scale: { start: big ? 0.9 : 0.5, end: big ? 1.8 : 1.1 }, alpha: { start: 0.28, end: 0 }, tint: 0xe8f8ff, lifespan: 1600, frequency: big ? 60 : 160 }).setDepth(d + 0.1);
     this.add.particles(0, 0, 'pip', { x: { min: x, max: x + w }, y: bot, speedY: { min: -60, max: -120 }, speedX: { min: -50, max: 50 }, gravityY: 300, scale: { min: 0.3, max: 0.6 }, tint: [0xffffff, 0xbff0ff], lifespan: 700, frequency: big ? 40 : 110 }).setDepth(d + 0.2);
     this.add.particles(0, 0, 'spark', { x: { min: x, max: x + w }, y: { min: y, max: y + h }, scale: { start: 0.5, end: 0 }, alpha: { start: 0.9, end: 0 }, lifespan: 500, frequency: big ? 90 : 300, blendMode: 'ADD' }).setDepth(d + 0.3);
+  }
+  fallCount = 0; fallPos: number[][] = [];
+  /** A complete spring: mossy outcrop lip (source) -> falling sheet -> stone basin with animated ripples + splash rocks + foam. */
+  fallUnit(cx: number, yTop: number, ySurf: number, size: number, r: number) {
+    this.fallPos.push([cx, yTop, ySurf]); const w = size ? 32 : 22, lip = this.add.image(cx, yTop - 7, 'pr_wf_lip' + size).setOrigin(0.5, 0).setDepth(1.2);
+    this.waterfall(cx - w / 2, yTop - 7 + lip.height * 0.5, w, ySurf - yTop + 7 - lip.height * 0.5 + 4, false, false);
+    const bs = this.add.sprite(cx, ySurf + 9, 'wf_basin' + size, 0).setOrigin(0.5, 1).setDepth(4.5); bs.play('wf_basin' + size);
+    bs.anims.setProgress(r);
+    for (const sx of [-1, 1]) this.add.image(cx + sx * (bs.width / 2 - 4), ySurf + 2, 'pr_wf_rocks').setOrigin(0.5, 1).setDepth(4.6).setFlipX(sx > 0);
+    // a few drips falling from the lip edge beside the sheet
+    this.add.particles(0, 0, 'pip', { x: { min: cx - lip.width / 2 + 4, max: cx + lip.width / 2 - 4 }, y: yTop + lip.height - 4, speedY: { min: 20, max: 40 }, gravityY: 260, scale: 0.35, tint: 0xbff0ff, lifespan: 900, frequency: 520 }).setDepth(1.1);
   }
   /** Modular wooden bridge: varied planks (knots / mossy / broken), posts at uneven spacing, sagging double rope, stone end caps. */
   bridge(x0: number, x1: number, yt: number, seed: number) {
@@ -109,8 +121,43 @@ export class Level1 extends Phaser.Scene {
       for (let i = x; i < e; i++) deckL.putTileAt(2, i, y).setCollision(false, false, true, false);
       this.bridge(x * TS, e * TS, y * TS, x * 31 + y);
       x = e; } }
+    // SUPER GIANT setpieces (user art at 2x): run-across one-way tops via the invisible deck layer
+    const deckRun = (x0: number, x1: number, yPx: number) => { const r = Math.round(yPx / TS); for (let i = Math.floor(x0 / TS); i <= Math.floor(x1 / TS); i++) deckL.putTileAt(2, i, r).setCollision(false, false, true, false); };
+    const giant = (k: string, cx: number, floor: number, sc: number, w: number, h: number, decks: [number, number, number][], d = -3) => {
+      const L = cx - w * sc / 2, T = floor - h * sc; this.add.image(cx, floor + 2, k).setOrigin(0.5, 1).setScale(sc).setDepth(d);
+      for (const [y, a, b] of decks) deckRun(L + a * sc, L + b * sc, T + y * sc); this.giants.push([cx, T, k]); return { L, T }; };
+    const gLantern = (cx: number, floor: number) => { const { T } = giant('pr_lantern_stone', cx, floor, 2, 58, 122, [[12, 12, 46], [54, 12, 46], [78, 9, 49], [99, 2, 55]], -2.5);
+      const g = this.add.image(cx, T + 54, 'glow').setTint(0xffb347).setBlendMode(Phaser.BlendModes.ADD).setScale(2.6).setDepth(-2.4);
+      this.tweens.add({ targets: g, alpha: { from: 0.5, to: 1 }, scale: { from: 2.3, to: 3.0 }, duration: 110, yoyo: true, repeat: -1, repeatDelay: 180, ease: 'Stepped' });
+      this.add.particles(0, 0, 'spark', { x: { min: cx - 8, max: cx + 8 }, y: T + 60, speedY: { min: -20, max: -40 }, scale: { start: 0.5, end: 0 }, alpha: { start: 0.9, end: 0 }, tint: 0xffc070, lifespan: 900, frequency: 260 }).setDepth(-2.3); };
+    { // giant torii over the row-62 meadow, flanked by a giant stone lantern you climb to reach the tie-beam
+      const cx = 206 * TS + 8, fl = 62 * TS; const { L, T } = giant('pr_torii_big', cx, fl, 2, 165, 173, [[4, 12, 158], [36, 24, 146], [142, 27, 145], [153, 16, 164]]);
+      gLantern(cx - 236, fl);
+      for (const sx of [56, 84, 112]) { const st = this.add.rectangle(L + sx * 2, T + 40 * 2, 6, 26, 0xf4ecdc).setOrigin(0.5, 0).setDepth(-2.9).setStrokeStyle(1, 0x8a7a8a);
+        this.tweens.add({ targets: st, angle: { from: -9, to: 9 }, duration: 1300 + sx * 7, yoyo: true, repeat: -1, ease: 'Sine.inOut' }); }
+      this.add.particles(0, 0, 'petal', { x: { min: L, max: L + 330 }, y: T + 6, speedX: { min: -30, max: -8 }, speedY: { min: 8, max: 22 }, rotate: { min: 0, max: 360 }, scale: { min: 0.6, max: 1 }, lifespan: 6000, frequency: 450 }).setDepth(-2.8); }
+    { // colossal stone gate before the arena, a spring pouring from under its keystone
+      const cx = 378 * TS + 8, fl = 62 * TS; const { T } = giant('pr_stone_gate', cx, fl, 2, 169, 106, [[11, 18, 168]]);
+      gLantern(cx - 230, fl); this.fallUnit(cx, T + 40 * 2, fl, 1, 7);
+      const rune = this.add.image(cx, T + 24 * 2, 'glow').setTint(0x7ad9ff).setBlendMode(Phaser.BlendModes.ADD).setScale(1.4).setDepth(-2.9).setAlpha(0.3);
+      this.tweens.add({ targets: rune, alpha: 0.9, scale: 2, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut' }); }
     // setpiece: the great gorge falls pouring from under the T2 shelf, behind the long gorge bridge (row 62)
     this.waterfall(152 * TS - 56, 39 * TS, 112, 49 * TS + 10, true);
+    this.add.image(152 * TS, 37 * TS + 4, 'pr_wf_lip2').setOrigin(0.5, 0.2).setDepth(-5.5);
+    // ledge-edge springs: every waterfall pours from a mossy outcrop under a ledge lip and lands in an animated stone basin
+    { const cands: [number, number, number][] = []; const used: number[] = [];
+      for (let y = 4; y < MH - 6; y++) for (let x = 6; x < MW - 6; x++) {
+        if (!(at(x, y) === '#' && !S(x, y + 1))) continue; const edge = !S(x + 1, y) ? 1 : !S(x - 1, y) ? -1 : 0; if (!edge) continue;
+        let e = y + 1; while (e < MH && !S(x, e) && !S(x - 1, e) && !S(x + 1, e) && at(x, e) === '.') e++;
+        const drop = e - y - 1; if (drop < 5 || drop > 30 || e >= MH - 4 || !S(x, e) || !S(x - 1, e) || !S(x + 1, e)) continue;
+        if ((x >= 138 && x <= 174) || (x >= ARENA.x0 - 4 && x <= ARENA.x1 + 4)) continue;
+        cands.push([x, y, e]); }
+      let seedW = 99; const r2 = () => ((seedW = (seedW * 16807) % 2147483647) / 2147483647);
+      cands.sort((a, b) => (a[0] * 7 + a[1] * 13) % 17 - (b[0] * 7 + b[1] * 13) % 17);
+      for (const [x, y, e] of cands) { if (used.some(u => Math.abs(u - x) < 22) || used.length >= 12) continue;
+        if ([...Array(5)].some((_, i) => /[bdfJPRrLBAF]/.test(at(x - 2 + i, e - 1)))) continue;
+        used.push(x); this.fallUnit(x * TS + 8, (y + 1) * TS, e * TS, (e - y) > 14 ? 1 : 0, r2()); }
+      this.fallCount = used.length; }
     // --- systems ---
     this.flowers = this.physics.add.staticGroup(); this.walls = this.physics.add.staticGroup();
     this.fx = new Fx(this); this.gun = new Blaster(this, 'p', 'shot'); this.egun = new Blaster(this, 'e', 'ebolt', { cooldown: 0, speed: 150, life: 3 });
@@ -119,9 +166,7 @@ export class Level1 extends Phaser.Scene {
     let bushN = 0, mem = 0;
     M.forEach((row, y) => [...row].forEach((c, x) => {
       const px = x * TS, cx = px + 8, gy = (y + 1) * TS;
-      if (c === 'w') { let e = y; while (e < MH && !S(x, e) && at(x, e) !== '=') e++;
-        this.waterfall(px - 8, y * TS, 32, (e - y) * TS + 8); }
-      else if (c === 'f') { const fl = this.flowers.create(cx, gy - 8, 'pr_flower').setDepth(6) as any; fl.mem = mem++;
+      if (c === 'f') { const fl = this.flowers.create(cx, gy - 8, 'pr_flower').setDepth(6) as any; fl.mem = mem++;
         this.tweens.add({ targets: fl, y: gy - 11, yoyo: true, repeat: -1, duration: 700, ease: 'Sine.inOut' }); }
       else if (c === 'b') this.addE(new GroundBot(this, cx, gy, this.fx));
       else if (c === 'd') this.addE(new ScoutDrone(this, cx, gy, this.fx));
@@ -175,6 +220,11 @@ export class Level1 extends Phaser.Scene {
     const kb = this.input.keyboard!;
     const pause = () => { if (this.ending) return; this.scene.launch('Pause'); this.scene.pause(); };
     kb.on('keydown-P', pause); kb.on('keydown-ESC', pause);
+    kb.on('keydown-R', () => this.checkpoint()); kb.on('keydown-BACKSPACE', () => this.checkpoint());
+    // never carry a held key/touch across pause, tab switch or focus loss (missed keyup = Sakura "stuck" charging/walking)
+    const clear = () => this.player?.resetInput();
+    this.events.on('resume', clear); this.events.on('pause', clear); this.game.events.on('blur', clear); this.game.events.on('hidden', clear);
+    showRespawnBtn(true); this.events.once('shutdown', () => { showRespawnBtn(false); this.game.events.off('blur', clear); this.game.events.off('hidden', clear); });
     this.toast.show('Akari Valley. Home — after all these years.');
     (window as any).__lvl = this;
   }
@@ -271,11 +321,14 @@ export class Level1 extends Phaser.Scene {
         let e = x; while (S(e, y) && !S(e, y - 1)) e++; const run = e - x; const px = x * TS, top = y * TS;
         // background ruins chunk behind long runs
         if (run >= 10 && rnd() < 0.5) { const k = pick(DECO.chunk, run * TS - 20); if (k) this.cull(this.add.image(px + rnd() * (run * TS - DECO_SIZE[k][0]) + DECO_SIZE[k][0] / 2, top + 6, 'dc_' + k).setOrigin(0.5, 1).setDepth(-16).setTint(0xc9c0dd)); }
-        // trees on wide runs
-        if (run >= 6 && rnd() < 0.6) { const k = pick(DECO.tree, 60); const tx = px + 24 + rnd() * (run * TS - 48); if (k && !busy(Math.floor(tx / TS), y)) this.cull(this.add.image(tx, top + 2, 'dc_' + k).setOrigin(0.5, 1).setDepth(-13).setScale(rnd() < 0.5 ? 1 : 0.8)); }
-        // regenerated cherry trees (from the tileset trees): big landmark trees on long runs, saplings sprinkled in
-        if (run >= 14 && rnd() < 0.55) { const tx = px + 70 + rnd() * (run * TS - 140); if (!busy(Math.floor(tx / TS), y)) this.cull(this.add.image(tx, top + 3, 'pr_tree_big' + (rnd() < 0.5 ? 0 : 1)).setOrigin(0.5, 1).setDepth(-14).setFlipX(rnd() < 0.5)); }
-        if (run >= 4) for (let i = 0, m = run >= 12 ? 2 : 1; i < m; i++) if (rnd() < 0.5) { const tx = px + 14 + rnd() * (run * TS - 28); if (!busy(Math.floor(tx / TS), y)) this.cull(this.add.image(tx, top + 2, 'pr_tree_s' + Math.floor(rnd() * 3)).setOrigin(0.5, 1).setDepth(-12).setFlipX(rnd() < 0.5)); }
+        // cherry trees: ONE spaced pass of cohesive custom trees (no overlapping stacks)
+        { const sizes: [string, number][] = [['pr_tree_big0', 138], ['pr_tree_big1', 160], ['pr_tree_m0', 87], ['pr_tree_m1', 102], ['pr_tree_s0', 44], ['pr_tree_s1', 55], ['pr_tree_s2', 63]];
+          let cxp = px + 10 + rnd() * 30; const end = px + run * TS - 10;
+          while (cxp < end) { const room = end - cxp; const fits = sizes.filter(([, w]) => w * 0.8 <= room && (w < 120 || run >= 16));
+            if (!fits.length || rnd() < 0.3) { cxp += 40 + rnd() * 60; continue; }
+            const [k, w] = fits[Math.floor(rnd() * fits.length)]; const tx = cxp + w * 0.4;
+            const gc = Math.floor(tx / TS); if (!busy(gc, y) && !(y === 62 && ((gc > 188 && gc < 224) || (gc > 360 && gc < 392)))) (w > 70 && this.treeTops.push([tx, top + 3 - w * 0.75, w]), this.cull(this.add.image(tx, top + 3, k).setOrigin(0.5, 1).setDepth(w > 120 ? -14 : w > 70 ? -13 : -12).setFlipX(rnd() < 0.5)));
+            cxp += w * 0.8 + 30 + rnd() * 80; } }
         // small ground props every 2-6 tiles
         for (let cx = x + 1; cx < e - 1; cx += 2 + Math.floor(rnd() * 5)) { if (busy(cx, y)) continue;
           const k = pick(DECO.ground, 40); if (!k) continue; const front = rnd() < 0.12 && DECO_SIZE[k][1] < 14;
@@ -286,8 +339,7 @@ export class Level1 extends Phaser.Scene {
     // landmarks & water pieces from the sheet near pits / waterfalls
     const lm = DECO.landmark; let li = 0;
     for (let x = 6; x < M[0].length - 6; x += 37) { const y = this.surfaceBelow(x, 80, S); if (y > 0 && !busy(x, y)) this.cull(this.add.image(x * TS, y * TS + 2, 'dc_' + lm[li++ % lm.length]).setOrigin(0.5, 1).setDepth(-7)); }
-    const wl = DECO.water; let wi = 0;
-    for (const f of this.falls) this.cull(this.add.image(f.x + 16, f.y + f.height - 2, 'dc_' + wl[wi++ % wl.length]).setOrigin(0.5, 1).setDepth(2).setAlpha(0.95));
+    // (old: sheet water pieces stamped at each fall foot — replaced by fallUnit lips/basins)
   }
   // ---- second-gen pieces (regenerated in the sakuratileset style): ruins, pillars, walls, scaffolds, banners, lanterns, rocks, plants ----
   sway: Phaser.GameObjects.Image[] = []; lanterns: Phaser.GameObjects.Image[] = [];
@@ -310,6 +362,11 @@ export class Level1 extends Phaser.Scene {
       x = e; } }
   }
   animateProps() {
+    // petals drift off the bigger cherry trees; the shrine breathes a soft pink glow
+    this.treeTops.forEach(([x, y, w], i) => this.add.particles(0, 0, 'petal', { x: { min: x - w * 0.35, max: x + w * 0.35 }, y: { min: y, max: y + w * 0.3 }, speedX: { min: -26, max: -6 }, speedY: { min: 10, max: 24 }, rotate: { min: 0, max: 360 }, scale: { min: 0.5, max: 0.9 }, alpha: { start: 1, end: 0.2 }, lifespan: 4200, frequency: 700 + (i * 131) % 600 }).setDepth(-11));
+    if (this.shrineX) { const sy = this.surfaceBelow(Math.floor(this.shrineX / TS), 0, (x, y) => /[#\/]/.test(LEVEL1[y]?.[x] ?? '')) * TS;
+      const g = this.add.image(this.shrineX, sy - 16, 'glow').setTint(0xff8ad8).setBlendMode(Phaser.BlendModes.ADD).setScale(2).setAlpha(0.25).setDepth(-4.9);
+      this.tweens.add({ targets: g, alpha: 0.8, scale: 2.6, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.inOut' }); }
     // grass & flower clumps sway from their base; lanterns flicker with an additive glow; crystal veins in the ground pulse
     this.sway.forEach((o, i) => this.tweens.add({ targets: o, angle: { from: -2.5, to: 2.5 }, duration: 1400 + (i * 137) % 900, yoyo: true, repeat: -1, ease: 'Sine.inOut', delay: (i * 211) % 1200 }));
     for (const l of this.lanterns) { const g = this.cull(this.add.image(l.x, l.y - l.displayHeight * 0.55, 'glow').setTint(0xffb347).setBlendMode(Phaser.BlendModes.ADD).setScale(1.6).setDepth(l.depth + 0.1));
@@ -340,6 +397,27 @@ export class Level1 extends Phaser.Scene {
       p.setPosition(this.spawn.x, this.spawn.y); } else p.setPosition(this.safe.x, this.safe.y);
     b.setVelocity(0, 0); p.iT = 1;
   }
+  /** manual "respawn at last checkpoint" (HUD button / R / Backspace / Pause menu). No HP cost. */
+  checkpoint() {
+    if (this.ending) return; const p = this.player; p.resetInput(); p.hurtT = 0; p.dashing = false; p.dashT = 0;
+    if (this.arena) { this.arena = false; this.walls.clear(true, true); this.boss.reset(); this.hud.draw(-1, -1); this.cameras.main.setBounds(0, 0, LEVEL1[0].length * TS, LEVEL1.length * TS); }
+    p.setPosition(this.spawn.x, this.spawn.y); p.body_.setVelocity(0, 0); p.iT = 1; this.stuckT = 0; this.manualRespawns++;
+    this.cameras.main.flash(200, 255, 200, 230); this.toast.show('Back to the last checkpoint.', '#ffd6f0');
+  }
+  stuckT = 0; embedT = 0; lastPx = 0; manualRespawns = 0; unsticks = 0;
+  /** watchdog: un-embed from solid tiles, and if input says move but nothing moves for 0.6s with no wall contact, clear pose/input locks and nudge */
+  watchdog(dt: number) {
+    const p = this.player, b = p.body_; if (!b.enable || p.hurtT > 0) { this.stuckT = 0; return; }
+    const solid = (x: number, y: number) => this.at(Math.floor(x / TS), Math.floor(y / TS)) === '#';
+    const midY = b.y + b.height * 0.45;
+    if (solid(b.x + 2, midY) && solid(b.x + b.width - 2, midY)) this.embedT += dt; else this.embedT = 0;
+    if (this.embedT > 0.12) { this.embedT = 0; for (let i = 1; i <= 3; i++) if (!solid(b.x + b.width / 2, midY - i * TS)) { p.y -= i * TS; b.y -= i * TS; b.velocity.y = 0; this.unsticks++; break; } }
+    const k = p.keys as any; const want = k.left.isDown || k.right.isDown || k.a.isDown || k.d.isDown || touch.left || touch.right;
+    const walled = b.blocked.left || b.blocked.right;
+    if (want && !walled && Math.abs(p.x - this.lastPx) < 0.05) this.stuckT += dt; else this.stuckT = 0;
+    this.lastPx = p.x;
+    if (this.stuckT > 0.6) { this.stuckT = 0; this.unsticks++; const held = k.j.isDown || k.x.isDown || touch.shoot; if (!held || p.poseLock) p.resetInput(); p.y -= 2; b.y -= 2; b.velocity.y = Math.min(b.velocity.y, -40); }
+  }
   lockArena() {
     this.arena = true; const top = 64 * TS, h = 32 * TS;
     for (const c of [ARENA.x0 + 1, ARENA.x1 - 1]) { const w = this.walls.create(c * TS + 8, top + h / 2, 'px').setVisible(false) as any; w.body.setSize(16, h); w.refreshBody?.(); w.body.setSize(16, h); }
@@ -351,9 +429,11 @@ export class Level1 extends Phaser.Scene {
     for (const w of this.falls) w.tilePositionY -= dt * 70; for (const f of this.falls2) f.t.tilePositionY -= dt * f.v; for (const w of this.waters) w.tilePositionX += dt * 8; if (this.gateFx) this.gateFx.tilePositionY += dt * 40;
     const cam = this.cameras.main; if ((this.cullT -= dt) <= 0) { this.cullT = 0.2; const vx = cam.scrollX - 120, vy = cam.scrollY - 120;
       for (const o of this.deco) o.setVisible(o.x > vx && o.x < vx + 720 && o.y > vy && o.y - o.displayHeight < vy + 510); }
+    this.fx.tick();
     if (this.ending || this.fx.stopped) return;
     const p = this.player; this.time_ += dt; this.hud.setTime(this.time_);
-    p.update(dt); p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
+    if (touch.respawnP) { touch.respawnP = false; this.checkpoint(); }
+    p.update(dt); this.watchdog(dt); p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
     this.enemies = this.enemies.filter(e => e.active);
     for (const e of this.enemies) { const near = Math.abs(e.x - p.x) < 560 && Math.abs(e.y - p.y) < 340; e.b.enable = near && !e.dead; if (near) e.tick(dt, p.x, p.y - 14); else e.b.setVelocity(0, 0); }
     if (this.boss.active && !this.boss.dead) this.boss.tick(dt, p.x, p.y - 14);

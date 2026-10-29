@@ -17,6 +17,7 @@ export class Boot extends Phaser.Scene {
     for (const k of SHEETS) this.load.spritesheet('p_' + k, `assets/sakura/${k}.png`, { frameWidth: 64, frameHeight: 48 });
     for (const k of ['far', 'mid', 'near']) this.load.image('L_' + k, `assets/bg/L_${k}.png`);
     this.load.json('parallax', 'assets/bg/parallax.json');
+    for (const [i, w] of [[0, 56], [1, 88], [2, 176]]) this.load.spritesheet('wf_basin' + i, `assets/props2/wf_basin${i}.png`, { frameWidth: w as number, frameHeight: 22 });
     this.load.spritesheet('tiles', 'assets/tiles/tileset2.png', { frameWidth: 16, frameHeight: 16 });
     for (const k of ['torii', 'lantern', 'shrine', 'tree', 'tree2', 'bridge', 'flower', 'car']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     this.load.spritesheet('e_drone', 'assets/enemies/drone8.png', { frameWidth: 37, frameHeight: 24 });
@@ -25,16 +26,17 @@ export class Boot extends Phaser.Scene {
     this.load.spritesheet('e_boom', 'assets/enemies/boom4.png', { frameWidth: 43, frameHeight: 32 });
     this.load.spritesheet('fx_boom', 'assets/fx/boom.png', { frameWidth: 50, frameHeight: 42 });
     for (const k of ['shot', 'ebolt', 'flash', 'pip', 'pip_e', 'spark', 'spark2', 'petal', 'waterfall']) this.load.image(k, `assets/fx/${k}.png`);
+    this.load.image('pr_torii_big', 'assets/props/torii.png'); this.load.image('pr_stone_gate', 'assets/props/stone_gate.png'); this.load.image('pr_lantern_stone', 'assets/props/lantern_stone.png');
     this.load.image('petal_soft', 'assets/fx/petal.png');
     for (let i = 0; i < 3; i++) this.load.image('cloud' + i, `assets/bg/cloud${i}.png`);
     this.load.image('P_far', 'assets/bg/P_far.png'); this.load.image('P_mid', 'assets/bg/P_mid.png'); this.load.json('pano', 'assets/bg/pano.json');
     for (const k of ['lantern2', 'arch', 'fence']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     this.load.image('panorama', 'assets/bg/panorama_full.png');
-    for (const k of ['bush', 'bush2', 'jetboots', 'bridge_parts', 'tree_big0', 'tree_big1', 'tree_s0', 'tree_s1', 'tree_s2']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
+    for (const k of ['bush', 'bush2', 'jetboots', 'bridge_parts', 'tree_big0', 'tree_big1', 'tree_s0', 'tree_s1', 'tree_s2', 'tree_m0', 'tree_m1', 'wf_lip0', 'wf_lip1', 'wf_lip2', 'wf_rocks']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     for (const k of Object.keys(DECO_SIZE)) this.load.image('dc_' + k, `assets/deco/${k}.png`);
     this.load.spritesheet('boss', 'assets/enemies/boss.png', { frameWidth: 60, frameHeight: 45 });
     this.load.spritesheet('slopes', 'assets/tiles/slopes.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.image('ui_logo', 'assets/ui_logo.png'); this.load.image('water', 'assets/fx/water.png');
+    this.load.image('ui_logo', 'assets/ui_logo2.png'); this.load.image('water', 'assets/fx/water.png');
     this.load.image('strip2', 'assets/bg/strip2.png');
     for (const k of ['far_mtn', 'mid_hills', 'near_forest', 'fg', 'lake']) this.load.image('g2_' + k, `assets/gen2/L_${k}.png`);
     for (let i = 0; i < 17; i++) this.load.image('g2cloud' + i, `assets/gen2/cloud${i}.png`);
@@ -48,6 +50,7 @@ export class Boot extends Phaser.Scene {
       this.anims.create({ key: k, frames: this.anims.generateFrameNumbers('p_' + a.src, { frames: a.frames }), frameRate: a.rate, repeat: a.repeat });
     // generated test tiles (16x16): pink-capped stone + plain stone, petal particle
     makeCombatTextures(this);
+    for (const i of [0, 1, 2]) this.anims.create({ key: 'wf_basin' + i, frames: this.anims.generateFrameNumbers('wf_basin' + i, {}), frameRate: 6, repeat: -1 });
     this.anims.create({ key: 'boss_idle', frames: this.anims.generateFrameNumbers('boss', { frames: [0, 1, 2, 1] }), frameRate: 8, repeat: -1 });
     this.scene.start(location.search.includes('test') ? 'TestRoom' : 'Title');
   }

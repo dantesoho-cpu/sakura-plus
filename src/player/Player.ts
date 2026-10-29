@@ -9,6 +9,7 @@ export const T = {
 };
 // Jet boots (Kurogen-tech upgrade): hold jump after the double jump to thrust upward while fuel lasts; refills on landing.
 export const JET = { fuel: 0.55, vel: 170, accel: 3000 };
+const CHARGE_WALK = 34; // charging slows Sakura to a walk (was: vx*=0.25 every frame -> effectively frozen while held)
 type State = 'idle' | 'run' | 'jump' | 'doublejump' | 'fall' | 'land' | 'dash' | 'hurt';
 export const HP_MAX = 5, IFRAMES = 1.0, HURT_TIME = 0.3;
 export class Player extends Phaser.Physics.Arcade.Sprite {
@@ -43,6 +44,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setAnimState('hurt', true); this.emit('hurt', this.hp); return true;
   }
   get body_() { return this.body as Phaser.Physics.Arcade.Body; }
+  /** clears every held input + charge/pose state (used on blur, pause/resume, respawn, and by the stuck watchdog) */
+  resetInput() {
+    for (const k of Object.values(this.keys as any)) (k as any)?.reset?.();
+    for (const k of Object.keys(touch)) (touch as any)[k] = false;
+    document.querySelectorAll('#tc .tb.dn').forEach(e => e.classList.remove('dn'));
+    this.jumpPressed = this.dashPressed = this.shootPressed = false; this.dashBuf = 0; this.holdT = 0; this.shootAnimT = 0;
+    if (this.beam) this.beam.cancel(); if (this.poseLock) { this.poseLock = false; this.anims.timeScale = 1; this.play(this.state_, true); }
+  }
   update(dt: number) {
     const k = this.keys, b = this.body_, onGround = b.blocked.down;
     if (touch.jumpP) { this.jumpPressed = true; touch.jumpP = false; } if (touch.dashP) { this.dashPressed = true; touch.dashP = false; } if (touch.shootP) { this.shootPressed = true; touch.shootP = false; }
@@ -103,7 +112,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       else { if (this.beam.release(mx, my, this.facing)) this.shootAnimT = 0; this.holdT = 0; }
       const charging = this.beam.chargeT > 0.25 && !this.beam.firing;
       if (this.beam.firing) { if (onGround) b.setVelocityX(-this.facing * 25); this.play('beamfire', true); this.poseLock = true; }
-      else if (charging) { if (onGround) b.setVelocityX(b.velocity.x * 0.25); this.play('charge', true); this.anims.timeScale = this.beam.level === 2 ? 1.8 : this.beam.level === 1 ? 1.3 : 1; this.poseLock = true; }
+      else if (charging) { if (onGround) b.setVelocityX(Phaser.Math.Clamp(b.velocity.x, -CHARGE_WALK, CHARGE_WALK)); this.play('charge', true); this.anims.timeScale = this.beam.level === 2 ? 1.8 : this.beam.level === 1 ? 1.3 : 1; this.poseLock = true; }
       else if (this.poseLock) { this.poseLock = false; this.play(this.state_, true); }
     }
     if (this.poseLock) return;

@@ -4,7 +4,7 @@ import type { Fx } from '../systems/Fx';
 import type { Blaster } from '../weapons/Blaster';
 // Scout drone: hovers on a sine path; when Sakura is near it strafes above her, telegraphs, then dives (lunge) and climbs back.
 export class ScoutDrone extends Enemy {
-  home: Phaser.Math.Vector2; kind = 'drone'; engaged = false; mode: 'patrol' | 'strafe' | 'tele' | 'dive' | 'recover' = 'patrol'; mT = 0; tgt = new Phaser.Math.Vector2();
+  home: Phaser.Math.Vector2; kind = 'drone'; engaged = false; mode: 'patrol' | 'strafe' | 'tele' | 'dive' | 'recover' = 'patrol'; mT = 0; tgt = new Phaser.Math.Vector2(); rdir = 1;
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx) {
     super(s, x, y, 'e_drone', 2, fx); this.home = new Phaser.Math.Vector2(x, y); this.b.setAllowGravity(false); this.b.setSize(24, 14).setOffset(6, 6); this.setOrigin(0.5, 1); this.play('drone_idle');
   }
@@ -16,12 +16,12 @@ export class ScoutDrone extends Enemy {
     if (this.mode === 'patrol') { tx = this.home.x + Math.sin(this.t * 1.2) * 30; ty = this.home.y + Math.sin(this.t * 2.4) * 8; if (near) { this.mode = 'strafe'; this.mT = 1.2 + Math.random(); } }
     else if (this.mode === 'strafe') { tx = px + Math.sin(this.t * 2.6) * 70; ty = py - 44 + Math.sin(this.t * 5) * 6; sp = 110; if (!near) this.mode = 'patrol'; else if (this.mT <= 0) { this.mode = 'tele'; this.mT = 0.5; this.telegraph(0.5); this.tgt.set(px, py - 4); } }
     else if (this.mode === 'tele') { this.b.setVelocity(-this.faceDir * 20, -25); this.face(Math.sign(px - this.x)); this.play('drone_attack', true); if (this.mT <= 0) { this.mode = 'dive'; this.mT = 0.55; this.punch(1.25, 0.8); } return; }
-    else if (this.mode === 'dive') { const d = this.tgt.clone().subtract(new Phaser.Math.Vector2(this.x, this.y)).normalize().scale(220); this.b.setVelocity(d.x, d.y); this.setAngle(Phaser.Math.Clamp(d.x * 0.12, -25, 25)); if (this.mT <= 0 || Phaser.Math.Distance.Between(this.x, this.y, this.tgt.x, this.tgt.y) < 8) { this.mode = 'recover'; this.mT = 0.6; } return; }
-    else { tx = this.x - this.faceDir * 30; ty = py - 50; sp = 90; if (this.mT <= 0) { this.mode = near ? 'strafe' : 'patrol'; this.mT = 1.4 + Math.random(); } }
+    else if (this.mode === 'dive') { const d = this.tgt.clone().subtract(new Phaser.Math.Vector2(this.x, this.y)).normalize().scale(220); this.b.setVelocity(d.x, d.y); this.setAngle(Phaser.Math.Clamp(d.x * 0.12, -25, 25)); if (this.mT <= 0 || Phaser.Math.Distance.Between(this.x, this.y, this.tgt.x, this.tgt.y) < 8) { this.mode = 'recover'; this.mT = 0.6; this.rdir = Math.sign(this.x - px) || -this.faceDir; } return; }
+    else { tx = this.x + this.rdir * 30; ty = py - 50; sp = 90; if (this.mT <= 0) { this.mode = near ? 'strafe' : 'patrol'; this.mT = 1.4 + Math.random(); } }
     this.b.setVelocity(Phaser.Math.Clamp((tx - this.x) * 3, -sp, sp), Phaser.Math.Clamp((ty - this.y) * 3, -sp, sp));
-    this.face(Math.sign(px - this.x) || this.faceDir); this.setAngle(Phaser.Math.Clamp(this.b.velocity.x * 0.15, -14, 14)); this.play(this.mode === 'strafe' ? 'drone_attack' : 'drone_idle', true);
+    if (this.mode === 'recover') this.face(-this.rdir); /* backs away (locked dir) while still facing the player: no flip jitter */ else this.face(Math.sign(px - this.x) || this.faceDir); this.setAngle(Phaser.Math.Clamp(this.b.velocity.x * 0.15, -14, 14)); this.play(this.mode === 'strafe' ? 'drone_attack' : 'drone_idle', true);
   }
-  knock(dir: number) { this.b.setVelocity(dir * 150, -60); if (this.mode === 'dive') { this.mode = 'recover'; this.mT = 0.5; } }
+  knock(dir: number) { this.b.setVelocity(dir * 150, -60); if (this.mode === 'dive') { this.mode = 'recover'; this.mT = 0.5; this.rdir = dir || 1; } }
 }
 // Ground bot: patrols (with the odd hop); on sight it turns, crouches (telegraph) then lunges with a hop, recovers, and keeps pressing.
 export class GroundBot extends Enemy {
