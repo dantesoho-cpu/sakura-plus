@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 // All visible art is loaded PNGs (see Boot). This only builds the 2px invisible helper and the animations.
 export function makeCombatTextures(s: Phaser.Scene) {
+  if (!s.textures.exists('glow')) { const c = s.textures.createCanvas('glow', 32, 32)!, x = c.getContext(); const g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.35, 'rgba(255,255,255,0.45)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 32, 32); c.refresh(); }
   if (!s.textures.exists('px')) { const g = s.add.graphics(); g.fillStyle(0xffffff).fillRect(0, 0, 2, 2); g.generateTexture('px', 2, 2); g.destroy(); }
   const A = s.anims, mk = (k: string, t: string, f: number[], r: number, rep = -1) => A.create({ key: k, frames: A.generateFrameNumbers(t, { frames: f }), frameRate: r, repeat: rep });
   mk('drone_idle', 'e_drone', [0, 1, 2, 3], 14); mk('drone_attack', 'e_drone', [0, 1, 2, 3], 24);

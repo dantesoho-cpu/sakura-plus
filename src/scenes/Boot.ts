@@ -16,7 +16,7 @@ export class Boot extends Phaser.Scene {
     for (const k of SHEETS) this.load.spritesheet('p_' + k, `assets/sakura/${k}.png`, { frameWidth: 64, frameHeight: 48 });
     for (const k of ['far', 'mid', 'near']) this.load.image('L_' + k, `assets/bg/L_${k}.png`);
     this.load.json('parallax', 'assets/bg/parallax.json');
-    this.load.spritesheet('tiles', 'assets/tiles/tileset.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('tiles', 'assets/tiles/tileset2.png', { frameWidth: 16, frameHeight: 16 });
     for (const k of ['torii', 'lantern', 'shrine', 'tree', 'tree2', 'bridge', 'flower', 'car']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     this.load.spritesheet('e_drone', 'assets/enemies/drone4.png', { frameWidth: 37, frameHeight: 24 });
     this.load.spritesheet('e_bot', 'assets/enemies/bot4.png', { frameWidth: 23, frameHeight: 32 });
@@ -35,6 +35,12 @@ export class Boot extends Phaser.Scene {
     this.load.spritesheet('slopes', 'assets/tiles/slopes.png', { frameWidth: 16, frameHeight: 16 });
     this.load.image('ui_logo', 'assets/ui_logo.png'); this.load.image('water', 'assets/fx/water.png');
     this.load.image('strip2', 'assets/bg/strip2.png');
+    for (const k of ['far_mtn', 'mid_hills', 'near_forest', 'fg', 'lake']) this.load.image('g2_' + k, `assets/gen2/L_${k}.png`);
+    for (let i = 0; i < 17; i++) this.load.image('g2cloud' + i, `assets/gen2/cloud${i}.png`);
+    for (let i = 0; i < 25; i++) this.load.image('pp' + i, `assets/gen2/pp${i}.png`);
+    for (let i = 20; i < 24; i++) this.load.image('tg' + i, `assets/gen2/tg${i}.png`);
+    this.load.image('car_body', 'assets/gen2/car_body.png'); this.load.image('car_wheel', 'assets/gen2/car_wheel.png'); this.load.json('car_rig', 'assets/gen2/car_rig.json');
+    this.load.spritesheet('bird', 'assets/gen2/bird.png', { frameWidth: 9, frameHeight: 5 });
   }
   create() {
     for (const [k, a] of Object.entries(ANIMS))

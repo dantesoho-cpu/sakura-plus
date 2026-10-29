@@ -82,6 +82,13 @@ for a, b in T3:
     x = a - 7; LADX.append(x); top, tx = ladder(x, 36, 14, 1, 'jet'); JET.append([tx + 1, top, a + 1, 14])
 # jet-only shafts inside T1->T2 (pure vertical, two walls)
 box(110, 111, 39, 61); ledge(106, 46, 4); JET.append([107, 46, 112, 36])
+# ---------- v4 complexity: drop-through loops, extra vertical shaft, secret chamber ----------
+clear(180, 183, 36, 38)                      # T2 -> T1 drop hole (loop back west)
+clear(300, 303, 62, 64)                      # T1 -> T0 drop hole into the lantern meadow
+clear(350, 356, 36, 38); ledge(350, 36, 6, 'H'); box(356, 357, 36, 61); ledge(352, 46, 4); JET.append([353, 46, 358, 36]); LADX.append(352)   # second jet shaft T1->T2
+# secret chamber hung under T2: drop in through a narrow slot, memory on the ledge, exit falls to T1
+clear(256, 258, 36, 38); box(246, 248, 39, 51); box(264, 266, 39, 51); box(248, 257, 51, 51); put(251, 50, 'f'); put(260, 50, 'L')
+LADX += [246, 264]
 # ---------- maze fill: floating stone islands, hanging chunks, pillars (seeded, keeps ladders/shafts clear) ----------
 import random; R = random.Random(7)
 def free(x0, x1, y0, y1):
@@ -115,7 +122,7 @@ box(404, 470, 62, 64)                         # arena ceiling
 on(440, 83, 'K')
 for x, y, c in [(90, 62, 'r'), (130, 62, 'R'), (190, 62, 'B'), (280, 62, 'A'), (360, 62, 'F'), (60, 36, 'R'), (170, 36, 'L'), (250, 36, 'B'), (380, 36, 'r'), (140, 88, 'B'), (290, 88, 'R'), (316, 88, 'F'), (400, 88, 'L')]: on(x, y, c)
 # ---------- flowers (10 memory fragments) ----------
-for x, y in [(40, 62), (70, 14), (96, 36), (150, 14), (246, 14), (300, 62), (358, 14), (388, 36)]: on(x, y, 'f')
+for x, y in [(40, 62), (70, 14), (96, 36), (150, 14), (246, 14), (358, 14), (388, 36)]: on(x, y, 'f')
 # 2 placed in alcoves above
 # ---------- Kurogen forces: quiet start, rising pressure ----------
 ens = [(102, 88, 'b'), (120, 80, 'd'), (165, 88, 'b'), (200, 58, 'd'), (215, 62, 'b'), (186, 86, 't'),

@@ -8,10 +8,10 @@ export function setupTouch() {
   #tc{position:fixed;inset:0;pointer-events:none;z-index:10;display:none;touch-action:none;user-select:none;-webkit-user-select:none}
   #tc.on{display:block}
   .tb{position:absolute;pointer-events:auto;touch-action:none;display:flex;align-items:center;justify-content:center;
-   font:bold 13px monospace;color:#ffe6f4;letter-spacing:1px;text-shadow:0 2px 0 #1a0f2e;
-   background:rgba(58,26,90,.42);border:3px solid rgba(255,143,208,.75);box-shadow:inset 0 -5px 0 rgba(26,15,46,.55),0 0 0 2px rgba(26,15,46,.6);
+   font:bold 13px monospace;color:rgba(255,230,244,.55);letter-spacing:1px;text-shadow:0 2px 0 #1a0f2e;
+   background:rgba(58,26,90,.18);border:3px solid rgba(255,143,208,.3);opacity:.85;box-shadow:inset 0 -5px 0 rgba(26,15,46,.55),0 0 0 2px rgba(26,15,46,.6);
    image-rendering:pixelated;-webkit-tap-highlight-color:transparent}
-  .tb.dn{background:rgba(255,95,176,.6);box-shadow:inset 0 3px 0 rgba(26,15,46,.55),0 0 0 2px rgba(26,15,46,.6);color:#fff}
+  .tb.dn{opacity:1;background:rgba(255,95,176,.55);border-color:rgba(255,200,235,.9);box-shadow:inset 0 3px 0 rgba(26,15,46,.55),0 0 0 2px rgba(26,15,46,.6);color:#fff}
   .dp{width:72px;height:72px;bottom:22px;border-radius:10px;font-size:26px}
   .ab{width:74px;height:74px;border-radius:50%}
   #rot{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;

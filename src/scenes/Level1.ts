@@ -8,6 +8,7 @@ import { Enforcer } from '../entities/Enforcer';
 import { Petals } from '../systems/Petals';
 import { Hud } from '../systems/Hud';
 import { Toast } from '../systems/Toast';
+import { Car } from '../systems/Car';
 import { Parallax } from '../systems/Parallax';
 import { LEVEL1 } from './level1Map';
 import { DECO, DECO_SIZE } from '../decoList';
@@ -34,7 +35,7 @@ export class Level1 extends Phaser.Scene {
   solid!: Phaser.Tilemaps.TilemapLayer; oneway!: Phaser.Tilemaps.TilemapLayer; enemyGroup!: Phaser.Physics.Arcade.Group;
   flowers!: Phaser.Physics.Arcade.StaticGroup; got = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 0, y: 0 }; safe = { x: 0, y: 0 };
   boss!: Enforcer; bossDead = false; arena = false; walls!: Phaser.Physics.Arcade.StaticGroup; gate!: Phaser.Physics.Arcade.Image; gateFx!: Phaser.GameObjects.TileSprite;
-  gateOpen = false; ending = false; shrineX = 0; shrineLit = false; jetPick!: Phaser.Physics.Arcade.Image; carX = 0; car!: Phaser.GameObjects.Image;
+  gateOpen = false; ending = false; shrineX = 0; shrineLit = false; jetPick!: Phaser.Physics.Arcade.Image; carX = 0; car!: Car;
   falls: Phaser.GameObjects.TileSprite[] = []; waters: Phaser.GameObjects.TileSprite[] = []; deco: Phaser.GameObjects.Image[] = []; cullT = 0; gateToastT = 0;
   constructor() { super('Level1'); }
   create() {
@@ -52,7 +53,7 @@ export class Level1 extends Phaser.Scene {
         else if (!S(x, y - 2) && !l && d) f = 22; else if (!S(x, y - 2) && !r && d) f = 23;
         else if (!l) f = d ? 4 : 18; else if (!r) f = d ? 5 : 19; else if (!d) f = 10;
         else if (!S(x, y - 2) && d) f = (x % 2 ? 21 : 20);
-        else if (!S(x + 1, y - 1)) f = 8; else if (!S(x - 1, y - 1)) f = 9; else f = (x * 7 + y * 3) % 5 ? 0 : 1; }
+        else if (!S(x + 1, y - 1)) f = 8; else if (!S(x - 1, y - 1)) f = 9; else f = this.fillTile(x, y); }
       else if (c === '=') o = at(x - 1, y) !== '=' ? 6 : at(x + 1, y) !== '=' ? 7 : (x % 2 ? 3 : 2);
       else if (c === 'H') o = -2;
       else if (c in SLOPES) this.add.image(x * TS, y * TS, 'slopes', SLOPES[c]).setOrigin(0).setDepth(2);
@@ -98,7 +99,7 @@ export class Level1 extends Phaser.Scene {
       else if (c === 'A') prop('pr_arch', cx, gy, -6); else if (c === 'F') prop('pr_fence', cx, gy, -4);
       else if (c === 'S') { prop('pr_shrine', cx, gy, -5); this.shrineX = cx; }
       else if (c === 'T') prop('pr_torii', cx, gy, -6);
-      else if (c === 'C') { this.car = this.add.image(cx, gy, 'pr_car').setOrigin(0.5, 1).setDepth(5); this.carX = cx; }
+      else if (c === 'C') { this.car = new Car(this, cx, gy + 1).setDepth(5); this.carX = cx; }
       else if (c === 'G') { this.gate = this.physics.add.staticImage(cx, gy - 40, 'px').setVisible(false); (this.gate.body as any).setSize(16, 80);
         this.add.image(cx, gy, 'pr_arch').setOrigin(0.5, 1).setDepth(-3).setScale(1.2, 1.6);
         this.gateFx = this.add.tileSprite(cx - 8, gy - 52, 16, 52, 'waterfall').setOrigin(0).setTint(0x66e0ff).setBlendMode(Phaser.BlendModes.ADD).setDepth(7); }
@@ -108,7 +109,9 @@ export class Level1 extends Phaser.Scene {
       this.waters.push(this.add.tileSprite(x * TS, (MH - 4) * TS + 6, (e - x) * TS, 4 * TS, 'water').setOrigin(0).setDepth(3).setAlpha(0.9)); x = e; }
     this.buildSurfaceSkin(at, MW);
     this.placeDeco(at, S);
+    this.placeGen2(at, S);
     this.anchorProps();
+    this.animateProps();
     // --- player + colliders ---
     this.physics.world.setBounds(0, 0, worldW, worldH + 400);
     this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun; this.safe = { ...this.spawn };
@@ -196,7 +199,7 @@ export class Level1 extends Phaser.Scene {
       outer: for (let y = h - 1; y >= 0; y--) { let n = 0; for (let x = 0; x < w; x++) if (this.textures.getPixelAlpha(x, y, img.texture.key, img.frame.name)! > 40) n++; if (n >= Math.max(2, w * 0.08)) break outer; p++; }
       return this.padCache[k] = p; };
     const list: Phaser.GameObjects.Image[] = [...this.deco.filter(o => (o as any).originY === 1 && o.depth !== -16 && !(o.texture.key.startsWith('skin'))) as any];
-    if (this.car) list.push(this.car);
+    if (this.car) { const g = this.groundAt(this.car.x, this.car.y - 18); if (g >= 0) this.car.y = g + 1; }
     this.children.list.forEach(o => { const i = o as any; if (i.texture?.key === 'pr_arch') list.push(i); });
     this.anchored = 0;
     for (const img of list) { const hw = img.displayWidth / 2, near = img.y - 18;
@@ -204,7 +207,15 @@ export class Level1 extends Phaser.Scene {
       const c = this.groundAt(img.x, near), gy = Math.min(Math.max(...g), (c >= 0 ? c : g[0]) + 6);
       const p = pad(img) * img.scaleY; img.y = gy + p + 3; this.anchored++; }
   }
-  anchored = 0;
+  anchored = 0; crystals: [number, number][] = [];
+  // ground fill variety: 2x2 metablocks from tileset2 (mossy / cracked / rooty / crystal), region-weighted noise so no visible repeats
+  fillTile(x: number, y: number) {
+    const h = (a: number, b: number) => { let n = (a * 374761393 + b * 668265263) | 0; n = (n ^ (n >>> 13)) * 1274126177; return ((n ^ (n >>> 16)) >>> 0); };
+    const bx = x >> 1, by = y >> 1, r = h(bx >> 3, by >> 2) % 100, hb = h(bx, by);
+    let kind = r < 40 ? 0 : r < 75 ? 1 : 2; if (hb % 19 === 0) kind = 3; if (hb % 7 === 0) kind = (kind + 1) % 3;
+    if (kind === 3 && (x & 1) === 0 && (y & 1) === 0) this.crystals.push([x * 16 + 16, y * 16 + 16]);
+    return 24 + (kind * 4 + (hb >>> 5) % 4) * 4 + (x & 1) + (y & 1) * 2;
+  }
   addE(e: Enemy) { this.enemies.push(e); this.enemyGroup.add(e); e.b.setAllowGravity(false);
     if (e.kind === 'turret') { e.b.moves = false; e.b.setImmovable(true); }
     e.on('destroyed', (x: Enemy) => { if (x.kind !== 'boss') this.kills++; }); }
@@ -236,6 +247,34 @@ export class Level1 extends Phaser.Scene {
     for (let x = 6; x < M[0].length - 6; x += 37) { const y = this.surfaceBelow(x, 80, S); if (y > 0 && !busy(x, y)) this.cull(this.add.image(x * TS, y * TS + 2, 'dc_' + lm[li++ % lm.length]).setOrigin(0.5, 1).setDepth(-7)); }
     const wl = DECO.water; let wi = 0;
     for (const f of this.falls) this.cull(this.add.image(f.x + 16, f.y + f.height - 2, 'dc_' + wl[wi++ % wl.length]).setOrigin(0.5, 1).setDepth(2).setAlpha(0.95));
+  }
+  // ---- second-gen pieces (regenerated in the sakuratileset style): ruins, pillars, walls, scaffolds, banners, lanterns, rocks, plants ----
+  sway: Phaser.GameObjects.Image[] = []; lanterns: Phaser.GameObjects.Image[] = [];
+  placeGen2(at: (x: number, y: number) => string, S: (x: number, y: number) => boolean) {
+    let seed = 98765; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const BIG = [1, 5, 6, 9, 10, 19], MID = [0, 4, 7, 8, 13, 12, 23, 11], SMALL = [2, 3, 15, 16, 17, 20, 21], PLANT = [22, 24, 22, 24];
+    const W = (i: number) => this.textures.get('pp' + i).getSourceImage().width as number;
+    const bag: Record<string, number[]> = {}; const draw = (name: string, list: number[], maxW: number) => { // shuffle-bag so pieces cycle without repeats
+      let b = bag[name]; if (!b || !b.length) b = bag[name] = [...list].sort(() => rnd() - 0.5); const i = b.findIndex(k => W(k) <= maxW); return i < 0 ? -1 : b.splice(i, 1)[0]; };
+    const busy = (x: number, y: number) => { for (let i = -1; i <= 1; i++) if (/[A-Za-z]/.test(at(x + i, y - 1))) return true; return false; };
+    const M = LEVEL1;
+    for (let y = 1; y < M.length; y++) { let x = 2; while (x < M[0].length - 2) {
+      if (!(S(x, y) && !S(x, y - 1) && at(x, y - 1) === '.')) { x++; continue; }
+      let e = x; while (S(e, y) && !S(e, y - 1)) e++; const run = e - x, top = y * TS;
+      if (run >= 12 && rnd() < 0.45) { const k = draw('big', BIG, run * TS - 40); if (k >= 0) this.cull(this.add.image(x * TS + 20 + rnd() * (run * TS - 40 - W(k)) + W(k) / 2, top + 4, 'pp' + k).setOrigin(0.5, 1).setDepth(-15).setTint(0xd8d0e8)); }
+      if (run >= 5 && rnd() < 0.55) { const k = draw('mid', MID, run * TS - 16); const cx = Math.floor(x + 1 + rnd() * (run - 2)); if (k >= 0 && !busy(cx, y)) { const o = this.cull(this.add.image(cx * TS + 8, top + 2, 'pp' + k).setOrigin(0.5, 1).setDepth(-9)); if (k === 12) this.lanterns.push(o); } }
+      for (let cx = x + 1; cx < e - 1; cx += 3 + Math.floor(rnd() * 6)) { if (busy(cx, y)) continue; const plant = rnd() < 0.6;
+        const k = plant ? draw('plant', PLANT, 60) : draw('small', SMALL, 70); if (k < 0) continue;
+        const o = this.cull(this.add.image(cx * TS + 8, top + 2, 'pp' + k).setOrigin(0.5, 1).setDepth(plant && rnd() < 0.25 ? 11 : -5).setScale(plant ? 0.7 + rnd() * 0.3 : 0.8)); if (plant) this.sway.push(o); }
+      x = e; } }
+  }
+  animateProps() {
+    // grass & flower clumps sway from their base; lanterns flicker with an additive glow; crystal veins in the ground pulse
+    this.sway.forEach((o, i) => this.tweens.add({ targets: o, angle: { from: -2.5, to: 2.5 }, duration: 1400 + (i * 137) % 900, yoyo: true, repeat: -1, ease: 'Sine.inOut', delay: (i * 211) % 1200 }));
+    for (const l of this.lanterns) { const g = this.cull(this.add.image(l.x, l.y - l.displayHeight * 0.55, 'glow').setTint(0xffb347).setBlendMode(Phaser.BlendModes.ADD).setScale(1.6).setDepth(l.depth + 0.1));
+      this.tweens.add({ targets: g, alpha: { from: 0.45, to: 0.95 }, scale: { from: 1.4, to: 1.8 }, duration: 90, yoyo: true, repeat: -1, repeatDelay: 140, ease: 'Stepped' }); }
+    this.crystals.forEach(([cx, cy], i) => { const g = this.cull(this.add.image(cx, cy, 'glow').setTint(0xff7ad9).setBlendMode(Phaser.BlendModes.ADD).setScale(0.9).setDepth(2.2).setAlpha(0.2));
+      this.tweens.add({ targets: g, alpha: 0.75, duration: 900 + (i * 97) % 700, yoyo: true, repeat: -1, ease: 'Sine.inOut', delay: (i * 173) % 1500 }); });
   }
   surfaceBelow(x: number, y0: number, S: (x: number, y: number) => boolean) { for (let y = y0; y < LEVEL1.length; y++) if (S(x, y) && !S(x, y - 1)) return y; return -1; }
   collect(f: any) {
@@ -293,7 +332,7 @@ export class Level1 extends Phaser.Scene {
     const cam = this.cameras.main; cam.stopFollow();
     this.time.delayedCall(450, () => { this.fx.shake(200, 0.003);
       this.tweens.add({ targets: this.car, x: this.carX + 600, duration: 2200, ease: 'Quad.in' });
-      const dust = this.add.particles(0, 0, 'petal', { lifespan: 700, speedX: { min: -80, max: -20 }, speedY: { min: -40, max: 0 }, scale: { start: 1.4, end: 0 }, tint: [0xff8fd0, 0xffffff], frequency: 30, follow: this.car, followOffset: { x: -50, y: -4 } }).setDepth(6);
+      this.car.startTrail(5); const dust = { stop: () => this.car.stopTrail() };
       this.time.delayedCall(1700, () => { cam.fadeOut(600, 255, 230, 240); dust.stop(); });
       this.time.delayedCall(2400, () => this.scene.start('Victory', { time: this.time_, got: this.got, kills: this.kills, deaths: this.deaths })); });
   }
