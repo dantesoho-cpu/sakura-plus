@@ -2,14 +2,8 @@ import { audio } from '../audio/Audio';
 import { touch } from '../systems/Touch';
 import Phaser from 'phaser';
 import { PlayerFx } from './PlayerFx';
-// Tunables (px, px/s, s). 480x270 world; player ~40px tall.
-export const T = {
-  maxRun: 150, accelGround: 1400, decelGround: 1800, accelAir: 900, decelAir: 500,
-  gravity: 1100, fallGravityMult: 1.6, maxFall: 420, jumpVel: 410, doubleJumpVel: 360, jumpCutMult: 0.45,
-  coyote: 0.1, buffer: 0.12, dashSpeed: 400, dashTime: 0.16, dashCooldown: 0.2, landTime: 0.12,
-};
-// Jet boots (Kurogen-tech upgrade): hold jump after the double jump to thrust upward while fuel lasts; refills on landing.
-export const JET = { fuel: 0.55, vel: 170, accel: 3000 };
+import { T, JET, FEEL } from '../tuning';
+export { T, JET };
 const CHARGE_WALK = 34; // charging slows Sakura to a walk (was: vx*=0.25 every frame -> effectively frozen while held)
 type State = 'idle' | 'run' | 'jump' | 'doublejump' | 'fall' | 'land' | 'dash' | 'hurt';
 export const HP_MAX = 5, IFRAMES = 1.0, HURT_TIME = 0.3;
@@ -41,7 +35,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   damage(fromX: number, amt = 1): boolean {
     if (this.iT > 0 || this.hp <= 0) return false;
     audio.sfx('hurt'); this.hp = Math.max(0, this.hp - amt); this.dbgHits++; this.iT = IFRAMES; this.hurtT = HURT_TIME; this.dashing = false; this.dashT = 0; this.trail.stop(); this.jetting = false; this.jetFx.stop(); this.jetPetals.stop();
-    const d = this.x < fromX ? -1 : 1; this.body_.setVelocity(d * 170, -190); this.facing = -d;
+    const d = this.x < fromX ? -1 : 1; this.body_.setVelocity(d * FEEL.hurt.knockX, -FEEL.hurt.knockY); this.setTintFill(0xffffff); this.scene.time.delayedCall(FEEL.hurt.flashMs, () => this.clearTint()); this.facing = -d;
     this.setAnimState('hurt', true); this.emit('hurt', this.hp); return true;
   }
   get body_() { return this.body as Phaser.Physics.Arcade.Body; }
@@ -54,7 +48,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     audio.stopLoops(); if (this.beam) this.beam.cancel(); if (this.poseLock) { this.poseLock = false; this.anims.timeScale = 1; this.play(this.state_, true); }
   }
   update(dt: number) {
-    const k = this.keys, b = this.body_, onGround = b.blocked.down;
+    const k = this.keys, b = this.body_, onGround = b.blocked.down; if (!onGround) this.lastVy = b.velocity.y;
     if (touch.jumpP) { this.jumpPressed = true; touch.jumpP = false; } if (touch.dashP) { this.dashPressed = true; touch.dashP = false; } if (touch.shootP) { this.shootPressed = true; touch.shootP = false; }
     const dir = (k.right.isDown || k.d.isDown || touch.right ? 1 : 0) - (k.left.isDown || k.a.isDown || touch.left ? 1 : 0);
     if (this.iT > 0) { this.iT -= dt; this.setAlpha(this.iT > 0 && Math.floor(this.iT * 20) % 2 ? 0.25 : 1); }
@@ -70,10 +64,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // dash
     if (dashP && this.dashCd <= 0 && this.dashT <= 0 && (onGround || this.canAirDash)) {
       this.dashBuf = 0; audio.sfx('dash'); if (dir) this.facing = dir; this.dashing = true; this.dashCount++; this.dashT = T.dashTime; this.dashCd = T.dashCooldown + T.dashTime; if (!onGround) this.canAirDash = false;
-      this.dbg.cur = { x0: this.x, t: 0 }; this.trail.start(); this.scene.cameras.main.shake(60, 0.002);
+      this.dbg.cur = { x0: this.x, t: 0 }; this.trail.start(); this.scene.cameras.main.shake(FEEL.dashShake[0], FEEL.dashShake[1]);
     }
     if (this.dashing && this.dashT <= 0) { // end dash one frame after the last dash-velocity frame was integrated
-      this.dashing = false; if (this.dbg.cur) { this.dbg.dashes.push({ x0: this.dbg.cur.x0, x1: this.x, dur: this.dbg.cur.t }); this.dbg.cur = null; }
+      this.dashing = false; b.setVelocityX(this.facing * T.dashSpeed * T.dashEndCarry); if (this.dbg.cur) { this.dbg.dashes.push({ x0: this.dbg.cur.x0, x1: this.x, dur: this.dbg.cur.t }); this.dbg.cur = null; }
       b.setVelocityX(this.facing * T.maxRun); this.trail.stop();
     }
     if (this.dashing) {
@@ -91,7 +85,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       else if (this.airJumps > 0) { b.setVelocityY(-T.doubleJumpVel); this.airJumps--; this.dbg.djumps++; audio.sfx('djump'); this.bufferT = 0; this.setAnimState('doublejump', true); this.burst(); this.squash(0.8, 1.2); }
     }
     // gravity: variable height + heavier fall
-    let g = T.gravity; if (b.velocity.y > 0) g *= T.fallGravityMult;
+    let g = T.gravity; if (b.velocity.y > 0) g *= T.fallGravityMult; if (this.jumpHeld && Math.abs(b.velocity.y) < T.apexBand && !this.jetting) g *= T.apexGravMult;
     b.setVelocityY(b.velocity.y + ((this.scene as any).onSlope && b.velocity.y >= 0 ? 0 : g) * dt);
     if (!this.jumpHeld && b.velocity.y < 0) b.setVelocityY(b.velocity.y * Math.pow(T.jumpCutMult, dt * 20));
     // jet boots
@@ -119,7 +113,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.poseLock) return;
     // animation state
     if (onGround) {
-      if (this.state_ === 'fall' || this.state_ === 'doublejump' || this.state_ === 'jump') { if (b.velocity.y >= 0) { this.landT = T.landTime; this.setAnimState('land'); this.squash(1.18, 0.84); } }
+      if (this.state_ === 'fall' || this.state_ === 'doublejump' || this.state_ === 'jump') { if (b.velocity.y >= 0) { const hard = this.lastVy > FEEL.land.dustMinVy; this.landT = T.landTime; this.setAnimState('land'); const q = hard ? FEEL.land.squashHard : FEEL.land.squashSoft; this.squash(q[0], q[1]); if (hard) this.dust(); } }
       if (this.landT > 0) { this.landT -= dt; if (dir) this.landT = 0; }
       if (this.landT <= 0) this.setAnimState(Math.abs(b.velocity.x) > 20 ? 'run' : 'idle');
       if (this.state_ === 'run') this.anims.timeScale = Phaser.Math.Clamp(Math.abs(b.velocity.x) / T.maxRun, 0.5, 1.2);
@@ -136,5 +130,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
   squash(sx: number, sy: number) { this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 140, ease: 'Quad.out' }); }
   burst() { this.trail.explode(10); }
+  lastVy = 0;
+  dust() { const s = this.scene; for (let i = 0; i < 6; i++) { const d = i < 3 ? -1 : 1; const p = s.add.image(this.x + d * (3 + Math.random() * 4), this.y - 2, 'glow').setTint(0xe8dcc8).setAlpha(0.8).setScale(0.35).setDepth(this.depth - 0.1);
+    s.tweens.add({ targets: p, x: p.x + d * (14 + Math.random() * 14), y: p.y - 4 - Math.random() * 5, alpha: 0, scale: 0.12, duration: 260 + Math.random() * 120, ease: 'Quad.out', onComplete: () => p.destroy() }); } }
   setAnimState(s: State, force = false) { if (this.state_ === s && !force) return; this.state_ = s; this.play(s, true); }
 }

@@ -1,3 +1,4 @@
+import { FEEL } from '../tuning';
 import { audio } from '../audio/Audio';
 import Phaser from 'phaser';
 import type { Fx } from '../systems/Fx';
@@ -17,11 +18,11 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
   get b() { return this.body as Phaser.Physics.Arcade.Body; }
   hit(dmg: number, dir: number) {
-    if (this.dead) return; audio.sfx('ehit'); this.hp -= dmg; this.flashT = 0.08; this.setTintFill(0xffffff);
+    if (this.dead) return; audio.sfx('ehit'); this.hp -= dmg; this.flashT = FEEL.ehit.flash; this.setTintFill(0xffffff);
     this.fx.spark(this.x - dir * 4, this.y - this.height / 2); this.knock(dir); this.hitT = 0.18; this.punch(0.8, 1.18, 160);
-    if (this.hp <= 0) this.die(); else this.fx.hitStop(35);
+    if (this.hp <= 0) this.die(); else this.fx.hitStop(FEEL.ehit.stop);
   }
-  knock(dir: number) { if (this.b.moves) this.b.setVelocityX(dir * 90); }
+  knock(dir: number) { if (this.b.moves) this.b.setVelocityX(dir * FEEL.ehit.knock); }
   /** Facing (+1 = right; sheets face right). Turning plays a quick squash-flip and blocks movement while it runs. */
   faceDir = 1; hitT = 0; turning = false; baseSX = 1;
   face(d: number) {

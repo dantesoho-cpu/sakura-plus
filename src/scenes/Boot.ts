@@ -38,7 +38,7 @@ export class Boot extends Phaser.Scene {
     for (const k of Object.keys(DECO_SIZE)) this.load.image('dc_' + k, `assets/deco/${k}.png`);
     this.load.spritesheet('boss', 'assets/enemies/boss.png', { frameWidth: 60, frameHeight: 45 });
     this.load.spritesheet('slopes', 'assets/tiles/slopes.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.image('ui_logo', 'assets/ui_logo2.png'); this.load.image('water', 'assets/fx/water.png');
+    this.load.image('ui_logo', 'assets/ui_logo2.png'); this.load.image('intro_p1', 'assets/intro/pano1.png'); this.load.image('intro_p2', 'assets/intro/pano2.png'); this.load.image('water', 'assets/fx/water.png');
     this.load.image('strip2', 'assets/bg/strip2.png');
     for (const k of ['far_mtn', 'mid_hills', 'near_forest', 'fg', 'lake']) this.load.image('g2_' + k, `assets/gen2/L_${k}.png`);
     for (let i = 0; i < 17; i++) this.load.image('g2cloud' + i, `assets/gen2/cloud${i}.png`);

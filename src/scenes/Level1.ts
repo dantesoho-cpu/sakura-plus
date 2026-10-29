@@ -16,6 +16,7 @@ import { Parallax } from '../systems/Parallax';
 import { LEVEL1 } from './level1Map';
 import { DECO, DECO_SIZE } from '../decoList';
 import { PLAT } from './platPieces';
+import { FEEL } from '../tuning';
 // Akari Valley Zone (chapter 1: 2023). Tilemap layers (GPU-culled) for solids + one-way ledges; decor culled manually.
 export const TS = 16;
 export const MEMORIES = [
@@ -202,20 +203,20 @@ export class Level1 extends Phaser.Scene {
     this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun;
     this.player.beam = new Beam(this, this.fx, () => this.enemyGroup.getChildren() as any, (x, y) => !!this.solid.getTileAtWorldXY(x, y)?.collides); this.player.beam.owner = this.player; this.safe = { ...this.spawn };
     this.physics.add.collider(this.player, this.solid); this.physics.add.collider(this.player, this.oneway); this.physics.add.collider(this.player, deckL);
-    this.physics.world.on('worldstep', () => this.slopeSnap());
+    this.physics.world.on('worldstep', () => { this.slopeSnap(); this.botPlats(); });
     this.physics.add.collider(this.player, this.walls); this.physics.add.collider(this.player, this.gate);
-    this.physics.add.collider(this.enemyGroup, this.solid, undefined, (e: any) => e.kind === 'bot');
+    this.physics.add.collider(this.enemyGroup, this.solid, undefined, (e: any) => e.kind === 'bot'); this.physics.add.collider(this.enemyGroup, this.walls, undefined, (e: any) => e.kind === 'bot');
     this.physics.add.collider(this.gun.shots, this.solid, (s: any) => { this.fx.spark(s.x, s.y); this.gun.kill(s); });
     this.physics.add.collider(this.egun.shots, this.solid, (s: any) => this.egun.kill(s));
     this.physics.add.overlap(this.gun.shots, this.enemyGroup, (s: any, e: any) => { if (!s.active || e.dead) return; this.gun.kill(s); e.hit(s.damage, s.body.velocity.x > 0 ? 1 : -1); });
-    const hurt = () => { this.fx.hitStop(60); this.fx.shake(140, 0.005); };
+    const hurt = () => { this.fx.hitStop(FEEL.hurt.stop); this.fx.shake(FEEL.hurt.shakeMs, FEEL.hurt.shakeI); };
     this.physics.add.overlap(this.player, this.enemyGroup, (_p, e: any) => { if (!e.dead && (e.kind !== 'boss' || e.awake) && this.player.damage(e.x)) hurt(); });
     this.physics.add.overlap(this.player, this.egun.shots, (_p, s: any) => { if (s.active && this.player.damage(s.x)) { this.egun.kill(s); hurt(); } });
     this.physics.add.overlap(this.player, this.flowers, (_p, f: any) => this.collect(f));
     this.physics.add.overlap(this.player, this.jetPick, () => this.pickJet());
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
     this.toast = new Toast(this); this.petals = new Petals(this);
-    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, 0.15, 0.15, 0, 30); cam.setDeadzone(40, 40); cam.setRoundPixels(true);
+    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     cam.fadeIn(400);
     // boss wiring
     this.boss.summon = (x, y) => { if (this.enemies.filter(e => e.kind === 'drone' && e.active && Math.abs(e.x - this.boss.x) < 600).length < 2) this.addE(new ScoutDrone(this, x, y, this.fx)); };
@@ -365,21 +366,53 @@ export class Level1 extends Phaser.Scene {
     // shuffled decks => every piece cycles through before any repeats, so no two runs look alike
     const deck = (a: typeof PLAT) => { let bag: typeof PLAT = []; return [() => { if (!bag.length) bag = [...a].sort(() => rnd() - 0.5); return bag.pop()!; }, (q: typeof PLAT[0]) => bag.unshift(q)] as const; };
     const [nextF, backF] = deck(float), [nextT, backT] = deck(tall);
-    const clear = (x0: number, y0: number, x1: number, y1: number) => { for (let y = Math.floor(y0 / TS) - 2; y <= Math.floor(y1 / TS); y++) for (let x = Math.floor(x0 / TS) - 1; x <= Math.floor(x1 / TS) + 1; x++) { const c = at(x, y); if (c !== '.' && c !== undefined) return false; } return true; };
+    const clear = (x0: number, y0: number, x1: number, y1: number) => { if (nearFall(x0, x1)) return false; for (let y = Math.floor(y0 / TS) - 4; y <= Math.floor(y1 / TS); y++) for (let x = Math.floor(x0 / TS) - 1; x <= Math.floor(x1 / TS) + 1; x++) { const c = at(x, y); if (c !== '.' && c !== undefined) return false; } return true; };
+    const nearFall = (x0: number, x1: number) => [...this.falls, ...this.falls2.map(f => f.t)].some(f => x1 > f.x - 24 && x0 < f.x + f.width + 24);
     const banned = (tx: number) => (tx > 186 && tx < 226) || (tx > 358 && tx < 394) || (tx >= ARENA.x0 - 6 && tx <= ARENA.x1 + 6) || (tx >= 138 && tx <= 174) || tx < 12;
+    // dedicated spots: every sheet piece that the run pass could not fit gets placed somewhere it fits (relaxed lift/spacing)
+    const occ = (x0: number, x1: number, y0: number, y1: number, m = 1) => this.plats.some(q => x1 > q.L - 12 * m && x0 < q.L + q.w + 12 * m && y1 > q.T - 90 * m && y0 < q.T + 150);
+    const runs: [number, number, number][] = [];
+    for (let y = 6; y < M.length - 2; y++) { let x = 2; while (x < MW - 2) { if (!(S(x, y) && !S(x, y - 1) && at(x, y - 1) === '.')) { x++; continue; } let e = x; while (S(e, y) && !S(e, y - 1)) e++; runs.push([x, e, y]); x = e; } }
+    runs.sort((a, b) => (b[1] - b[0]) - (a[1] - a[0]));
+    const fill = (list: typeof PLAT) => { for (const q of list.sort((a, b) => b.w - a.w)) {
+      let done = false; const isG = tall.includes(q);
+      for (let tier = 0; tier < 4 && !done; tier++) { const ix = isG && q.w >= 150 ? 0 : tier === 3 ? q.w * 0.3 : tier ? q.w * 0.2 : 0, iy = tier === 3 ? 90 : tier ? 64 : 0;
+        const lifts = isG ? [0] : tier === 3 ? [52, 70, 88, 40] : tier < 2 ? [52, 70, 88, 106, 40, 124, 64, 80] : [140, 160, 180, 34];
+        for (const [x0, e, y] of runs) { const top = y * TS; if (done) break; if ((e - x0) * TS < q.w * (tier ? 0.6 : 1) + 16) continue;
+          for (let cx = x0 * TS + q.w / 2 - ix + 8; cx <= e * TS - q.w / 2 + ix - 8 && !done; cx += 12) { if (banned(Math.floor(cx / TS))) continue;
+            for (const lift of lifts) { const b = top - lift; if (!clear(cx - q.w / 2 + ix, b - q.h + iy, cx + q.w / 2 - ix, top - 1) || occ(cx - q.w / 2, cx + q.w / 2, b - q.h, b, tier < 3 ? 1 : 0.7)) continue;
+              if (isG) this.groundPlat(q, cx, top); else this.addPlat(q.k, cx, b, rnd() < 0.5, -2); done = true; break; } } } }
+      if (!done) console.warn('plat: no spot for', q.k); } };
+    fill(PLAT.filter(hill)); // big walk-up ramps first: they need the long flat runs
     for (let y = 6; y < M.length - 2; y++) { let x = 2; while (x < MW - 2) {
       if (!(S(x, y) && !S(x, y - 1) && at(x, y - 1) === '.')) { x++; continue; }
       let e = x; while (S(e, y) && !S(e, y - 1)) e++; const run = e - x, top = y * TS;
       for (let cx = (x + 3) * TS + rnd() * 40; cx < (e - 3) * TS; ) {
         const t = Math.floor(cx / TS); if (run < 6 || banned(t)) { cx += 160; continue; }
-        if (rnd() < 0.45) { let q = nextT(), ok = false; for (let k = 0; k < 6 && !(ok = cx + q.w / 2 < e * TS - 8 && clear(cx - q.w / 2, top - q.h, cx + q.w / 2, top - 1)); k++) { backT(q); q = nextT(); } if (ok) { this.addPlat(q.k, cx, top + 3, rnd() < 0.5, -3); cx += q.w + 60 + rnd() * 90; continue; } }
+        if (rnd() < 0.45) { let q = nextT(), ok = false; for (let k = 0; k < 6 && !(ok = cx + q.w / 2 < e * TS - 8 && clear(cx - q.w / 2, top - q.h, cx + q.w / 2, top - 1)); k++) { backT(q); q = nextT(); } if (ok) { this.groundPlat(q, cx, top); cx += q.w + 60 + rnd() * 90; continue; } }
         const lift = 52 + Math.floor(rnd() * 3) * 18; const b = top - lift; let q = nextF(), ok = false;
         for (let tries = 0; tries < 6 && !(ok = clear(cx - q.w / 2, b - q.h, cx + q.w / 2, top - 1) && cx + q.w / 2 < e * TS - 8); tries++) { backF(q); q = nextF(); }
         if (ok) { this.addPlat(q.k, cx, b, rnd() < 0.5, -2); cx += q.w + 50 + rnd() * 90; } else { const q2 = PLAT.filter(z => z.h < 40 && z.w >= 30 && z.w <= q.w); const s2 = q2[Math.floor(rnd() * q2.length)]; if (s2 && clear(cx - s2.w / 2, b - s2.h, cx + s2.w / 2, top - 1)) { this.addPlat(s2.k, cx, b, rnd() < 0.5, -2); cx += s2.w + 60; } else cx += 40; }
       }
       x = e; } }
-    (window as any).__plats = this.plats.length;
+    { const used = new Set(this.plats.map(q => q.k)); fill(PLAT.filter(z => !used.has(z.k))); }
+    (window as any).__plats = this.plats.length; (window as any).__platKinds = new Set(this.plats.map(q => q.k)).size;
   }
+  // ground pieces: walk-up hills sit flush (their low-end walk line = the ground line, sprite base buried under the turf); pillars get solid sides
+  groundPlat(q: typeof PLAT[0], cx: number, top: number) {
+    const v = q.p.filter(t => t >= 0), toe = q.h - Math.max(v[0], v[v.length - 1]);
+    if (q.w >= 150) { this.addPlat(q.k, cx, top + toe, Math.random() < 0.5, -3); return; }
+    this.addPlat(q.k, cx, top + 3, Math.random() < 0.5, -3);
+    const pi = this.plats[this.plats.length - 1], st = Math.max(...v) + 4, inset = 4;
+    const w = this.add.rectangle(pi.L + pi.w / 2, pi.T + st + (top - pi.T - st) / 2, pi.w - inset * 2, top - pi.T - st).setVisible(false);
+    this.physics.add.existing(w, true); this.walls.add(w); }
+  platSolid(x: number, y: number) { const ids = this.platB.get(Math.floor(x / 128)); if (!ids) return false;
+    for (const i of ids) { const q = this.plats[i], c = Math.floor(x - q.L); if (c < 0 || c >= q.w) continue; const t = q.p[c]; if (t >= 0 && y >= q.T + t && y <= q.T + t + 40) return true; } return false; }
+  // Kurogen bots ride the sheet platforms too: snap on the profile (one-way), turn back at a piece's edge
+  botPlats() { for (const e of this.enemies as any[]) { if (e.kind !== 'bot' || e.dead || !e.b.enable) continue; const b = e.b; e.onPlat = false; if (b.velocity.y < 0) continue;
+      const sy = this.platY(b.center.x, b.bottom); if (sy === Infinity || b.bottom < sy - 2) continue;
+      b.y += Math.floor(sy) - b.bottom; b.velocity.y = 0; b.blocked.down = b.touching.down = true; e.onPlat = true;
+      const ahead = this.platY(b.center.x + e.faceDir * 12, sy); if (ahead === Infinity && !this.solid.getTileAtWorldXY(b.center.x + e.faceDir * 12, sy + 4)?.collides && e.mode === 'patrol') e.dir = -e.faceDir; } }
   placeGen2(at: (x: number, y: number) => string, S: (x: number, y: number) => boolean) {
     let seed = 98765; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     const BIG = [1, 5, 6, 9, 10, 19], MID = [0, 4, 7, 8, 13, 12, 23, 11], SMALL = [2, 3, 15, 16, 17, 20, 21], PLANT = [22, 24, 22, 24];
@@ -461,6 +494,7 @@ export class Level1 extends Phaser.Scene {
     this.cameras.main.setBounds(ARENA.x0 * TS, top - 40, (ARENA.x1 - ARENA.x0) * TS, LEVEL1.length * TS - top + 40);
     this.boss.awake = true; this.toast.show('KUROGEN ENFORCER — "Kael Veyron sends his regards."', '#ff8a8a'); this.fx.shake(300, 0.006);
   }
+  lookX = 0; lookY = 0;
   update(_t: number, dms: number) {
     const dt = Math.min(dms, 50) / 1000; this.petals.update(dt); this.bg.update(dt);
     for (const w of this.falls) w.tilePositionY -= dt * 70; for (const f of this.falls2) f.t.tilePositionY -= dt * f.v; for (const w of this.waters) w.tilePositionX += dt * 8; if (this.gateFx) this.gateFx.tilePositionY += dt * 40;
@@ -470,7 +504,10 @@ export class Level1 extends Phaser.Scene {
     if (this.ending || this.fx.stopped) return;
     const p = this.player; this.time_ += dt; this.hud.setTime(this.time_);
     if (touch.respawnP) { touch.respawnP = false; this.checkpoint(); }
-    p.update(dt); this.watchdog(dt); p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
+    p.update(dt); this.watchdog(dt);
+    { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);
+      cam.setFollowOffset(-this.lookX, 30 - this.lookY); } p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
+    for (const g of [this.egun, this.gun]) for (const sh of g.shots.getChildren() as any[]) if (sh.active && this.platSolid(sh.x, sh.y)) { if (g === this.gun) this.fx.spark(sh.x, sh.y); g.kill(sh); }
     this.enemies = this.enemies.filter(e => e.active);
     for (const e of this.enemies) { const near = Math.abs(e.x - p.x) < 560 && Math.abs(e.y - p.y) < 340; e.b.enable = near && !e.dead; if (near) e.tick(dt, p.x, p.y - 14); else e.b.setVelocity(0, 0); }
     if (this.boss.active && !this.boss.dead) this.boss.tick(dt, p.x, p.y - 14);
