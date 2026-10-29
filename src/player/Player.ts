@@ -1,5 +1,6 @@
 import { touch } from '../systems/Touch';
 import Phaser from 'phaser';
+import { PlayerFx } from './PlayerFx';
 // Tunables (px, px/s, s). 480x270 world; player ~40px tall.
 export const T = {
   maxRun: 150, accelGround: 1400, decelGround: 1800, accelAir: 900, decelAir: 500,
@@ -25,12 +26,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.input.keyboard!.on('keydown-SPACE', (e: KeyboardEvent) => { if (!e.repeat) this.jumpPressed = true; });
     scene.input.keyboard!.on('keydown-SHIFT', (e: KeyboardEvent) => { if (!e.repeat) this.dashPressed = true; });
     this.setDepth(10); this.trail.setDepth(9); this.play('idle');
-    this.jetFx = scene.add.particles(0, 0, 'spark', { lifespan: { min: 120, max: 240 }, speedY: { min: 90, max: 170 }, speedX: { min: -18, max: 18 }, scale: { start: 0.7, end: 0 },
-      tint: [0xffffff, 0x9ff3ff, 0x3fd8ff, 0x2a8cff], blendMode: 'ADD', frequency: 12, quantity: 2, emitting: false, follow: this, followOffset: { x: 0, y: -1 } }).setDepth(9);
-    this.jetPetals = scene.add.particles(0, 0, 'petal', { lifespan: 420, speedY: { min: 40, max: 90 }, speedX: { min: -40, max: 40 }, rotate: { min: 0, max: 360 }, scale: { start: 1.2, end: 0.3 },
-      alpha: { start: 1, end: 0 }, tint: [0xff8fd0, 0xffc0e8, 0x9ff3ff], blendMode: 'ADD', frequency: 45, emitting: false, follow: this, followOffset: { x: 0, y: -2 } }).setDepth(9);
+    // thruster plume: white-cyan core (tight, fast) inside a flickering pink/violet outer flame
+    this.jetFx = scene.add.particles(0, 0, 'glow', { lifespan: { min: 90, max: 160 }, speedY: { min: 140, max: 220 }, speedX: { min: -6, max: 6 }, scaleX: { start: 0.22, end: 0.05 }, scaleY: { start: 0.4, end: 0.1 },
+      alpha: { start: 1, end: 0.2 }, tint: [0xffffff, 0xe0ffff, 0x9ff3ff], blendMode: 'ADD', frequency: 8, quantity: 2, emitting: false, follow: this, followOffset: { x: 0, y: 0 } }).setDepth(10);
+    this.jetPetals = scene.add.particles(0, 0, 'glow', { lifespan: { min: 160, max: 300 }, speedY: { min: 80, max: 150 }, speedX: { min: -20, max: 20 }, scale: { start: 0.45, end: 0.1 },
+      alpha: { start: 0.75, end: 0 }, tint: [0xff4fd8, 0xff8fe0, 0xb58cff, 0x8a5cff], blendMode: 'ADD', frequency: 10, quantity: 2, emitting: false, follow: this, followOffset: { x: 0, y: 2 } }).setDepth(9);
+    this.pfx = new PlayerFx(scene, this as any);
   }
   hasJet = false; fuel = JET.fuel; jetting = false; jetFx!: Phaser.GameObjects.Particles.ParticleEmitter; jetPetals!: Phaser.GameObjects.Particles.ParticleEmitter;
+  pfx: PlayerFx; beam: any = null; holdT = 0;
   hp = HP_MAX; iT = 0; hurtT = 0; shootPressed = false; shootAnimT = 0; gun: any = null; dbgHits = 0;
   damage(fromX: number, amt = 1): boolean {
     if (this.iT > 0 || this.hp <= 0) return false;
@@ -90,8 +94,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.jetting !== wasJet) { if (this.jetting) { this.jetFx.start(); this.jetPetals.start(); } else { this.jetFx.stop(); this.jetPetals.stop(); } }
     this.setFlipX(this.facing < 0);
     // shoot (J / X; hold = auto-fire at cooldown rate)
-    const shootHeld = k.j.isDown || k.x.isDown || touch.shoot || this.shootPressed; this.shootPressed = false;
-    if (shootHeld && this.gun && this.gun.tryFire(this.x + this.facing * 15, this.y - 19, this.facing)) this.shootAnimT = 0.22;
+    // tap = blaster shot; hold = charge; release a charged shot = beam
+    const held = k.j.isDown || k.x.isDown || touch.shoot, mx = this.x + this.facing * 15, my = this.y - 19;
+    if (this.shootPressed && this.gun && !(this.beam && this.beam.firing) && this.gun.tryFire(mx, my, this.facing)) this.shootAnimT = 0.22;
+    this.shootPressed = false;
+    if (this.beam) {
+      if (held) { this.holdT += dt; if (this.holdT > 0.25) this.beam.charge(dt, mx, my); }
+      else { if (this.beam.release(mx, my, this.facing)) this.shootAnimT = 0.5; this.holdT = 0; }
+    }
     // animation state
     if (onGround) {
       if (this.state_ === 'fall' || this.state_ === 'doublejump' || this.state_ === 'jump') { if (b.velocity.y >= 0) { this.landT = T.landTime; this.setAnimState('land'); this.squash(1.18, 0.84); } }

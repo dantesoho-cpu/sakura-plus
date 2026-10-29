@@ -30,6 +30,9 @@ await up('right'); await W(600);
 const f0 = await L(() => window.__lvl.gun.fired);
 await down('shoot'); await W(500); await up('shoot');
 out.shotsFired = (await L(() => window.__lvl.gun.fired)) - f0;
+const b0 = await L(() => window.__lvl.player.beam.fired);
+await down('shoot'); await W(1500); out.chargeLevelOnHold = await L(() => window.__lvl.player.beam.level); await up('shoot'); await W(200);
+out.beamOnHoldRelease = (await L(() => window.__lvl.player.beam.fired)) - b0;
 // jet: give boots, double jump then hold
 await L(() => { window.__lvl.player.hasJet = true; }); await W(500);
 await down('jump'); await W(60); await up('jump'); await W(120); await down('jump'); await W(150);

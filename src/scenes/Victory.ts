@@ -14,7 +14,7 @@ export class Victory extends Phaser.Scene {
     const car = new Car(this, -100, 244, 1.5).setDepth(40).setScrollFactor(0); car.startTrail(40); (window as any).__car = car;
     this.tweens.add({ targets: car, x: 600, duration: 5600, ease: 'Sine.inOut' });
     const st = { fontFamily: 'monospace', fontStyle: 'bold', fontSize: '16px', color: '#ffd23f', stroke: '#1a0f2e', strokeThickness: 4 };
-    const title = this.add.text(240, 60, 'CHAPTER 1: 2023 COMPLETE', st).setOrigin(0.5).setDepth(50).setAlpha(0);
+    const title = this.add.text(240, 60, 'CHAPTER 1 COMPLETE', st).setOrigin(0.5).setDepth(50).setAlpha(0);
     const m = Math.floor(d.time / 60), s = String(Math.floor(d.time % 60)).padStart(2, '0');
     const stats = this.add.text(240, 112, `TIME ${m}:${s}\nMEMORIES ${d.got}/10\nKUROGEN DOWNED ${d.kills}\nFALLS ${d.deaths}`, { ...st, fontSize: '10px', color: '#fff', align: 'center', lineSpacing: 4 }).setOrigin(0.5).setDepth(50).setAlpha(0);
     this.prompt = this.add.text(240, 180, 'ENTER restart   ·   T title', { ...st, fontSize: '10px' }).setOrigin(0.5).setDepth(50).setAlpha(0);

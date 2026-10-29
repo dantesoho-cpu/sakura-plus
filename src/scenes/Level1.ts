@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { Beam } from '../weapons/Beam';
 import { Player, HP_MAX, JET } from '../player/Player';
 import { Fx } from '../systems/Fx';
 import { Blaster } from '../weapons/Blaster';
@@ -114,7 +115,8 @@ export class Level1 extends Phaser.Scene {
     this.animateProps();
     // --- player + colliders ---
     this.physics.world.setBounds(0, 0, worldW, worldH + 400);
-    this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun; this.safe = { ...this.spawn };
+    this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun;
+    this.player.beam = new Beam(this, this.fx, () => this.enemyGroup.getChildren() as any, (x, y) => !!this.solid.getTileAtWorldXY(x, y)?.collides); this.safe = { ...this.spawn };
     this.physics.add.collider(this.player, this.solid); this.physics.add.collider(this.player, this.oneway); this.physics.add.collider(this.player, deckL);
     this.physics.world.on('worldstep', () => this.slopeSnap());
     this.physics.add.collider(this.player, this.walls); this.physics.add.collider(this.player, this.gate);
@@ -312,7 +314,7 @@ export class Level1 extends Phaser.Scene {
       for (const o of this.deco) o.setVisible(o.x > vx && o.x < vx + 720 && o.y > vy && o.y - o.displayHeight < vy + 510); }
     if (this.ending || this.fx.stopped) return;
     const p = this.player; this.time_ += dt; this.hud.setTime(this.time_);
-    p.update(dt); this.gun.update(dt); this.egun.update(dt);
+    p.update(dt); p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 15, p.y - 19, p.facing); this.gun.update(dt); this.egun.update(dt);
     this.enemies = this.enemies.filter(e => e.active);
     for (const e of this.enemies) { const near = Math.abs(e.x - p.x) < 560 && Math.abs(e.y - p.y) < 340; e.b.enable = near && !e.dead; if (near) e.tick(dt, p.x, p.y - 14); else e.b.setVelocity(0, 0); }
     if (this.boss.active && !this.boss.dead) this.boss.tick(dt, p.x, p.y - 14);

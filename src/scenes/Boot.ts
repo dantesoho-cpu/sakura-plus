@@ -18,9 +18,9 @@ export class Boot extends Phaser.Scene {
     this.load.json('parallax', 'assets/bg/parallax.json');
     this.load.spritesheet('tiles', 'assets/tiles/tileset2.png', { frameWidth: 16, frameHeight: 16 });
     for (const k of ['torii', 'lantern', 'shrine', 'tree', 'tree2', 'bridge', 'flower', 'car']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
-    this.load.spritesheet('e_drone', 'assets/enemies/drone4.png', { frameWidth: 37, frameHeight: 24 });
-    this.load.spritesheet('e_bot', 'assets/enemies/bot4.png', { frameWidth: 23, frameHeight: 32 });
-    this.load.spritesheet('e_turret', 'assets/enemies/turret4.png', { frameWidth: 27, frameHeight: 30 });
+    this.load.spritesheet('e_drone', 'assets/enemies/drone8.png', { frameWidth: 37, frameHeight: 24 });
+    this.load.spritesheet('e_bot', 'assets/enemies/bot8.png', { frameWidth: 23, frameHeight: 32 });
+    this.load.spritesheet('e_turret', 'assets/enemies/turret8.png', { frameWidth: 27, frameHeight: 30 });
     this.load.spritesheet('e_boom', 'assets/enemies/boom4.png', { frameWidth: 43, frameHeight: 32 });
     this.load.spritesheet('fx_boom', 'assets/fx/boom.png', { frameWidth: 50, frameHeight: 42 });
     for (const k of ['shot', 'ebolt', 'flash', 'pip', 'pip_e', 'spark', 'spark2', 'petal', 'waterfall']) this.load.image(k, `assets/fx/${k}.png`);
