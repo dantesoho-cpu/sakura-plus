@@ -1,0 +1,19 @@
+import Phaser from 'phaser';
+import { Boot } from './scenes/Boot';
+import { TestRoom } from './scenes/TestRoom';
+import { Title } from './scenes/Title';
+import { Level1 } from './scenes/Level1';
+import { Pause } from './scenes/Pause';
+import { Victory } from './scenes/Victory';
+import { setupTouch } from './systems/Touch';
+export const W = 480, H = 270;
+const game = new Phaser.Game({
+  type: Phaser.AUTO, parent: 'game', width: W, height: H, pixelArt: true, roundPixels: true,
+  backgroundColor: '#1a1030',
+  physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 0 }, debug: false } },
+  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+  fps: { target: 60, smoothStep: true },
+  scene: [Boot, TestRoom, Title, Level1, Pause, Victory],
+});
+setupTouch();
+(window as any).__game = game;

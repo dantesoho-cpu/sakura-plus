@@ -1,0 +1,196 @@
+{
+ "start": {
+  "hp": 5,
+  "iT": 0,
+  "kills": [],
+  "enemies": [
+   [
+    "drone",
+    2,
+    1389,
+    75
+   ],
+   [
+    "drone",
+    2,
+    621,
+    123
+   ],
+   [
+    "bot",
+    3,
+    363,
+    208
+   ],
+   [
+    "turret",
+    4,
+    920,
+    208
+   ],
+   [
+    "bot",
+    3,
+    1467,
+    208
+   ]
+  ],
+  "fired": 0,
+  "petals": 53,
+  "x": 40,
+  "anim": "idle",
+  "fps": 59
+ },
+ "afterBot": {
+  "hp": 5,
+  "iT": 998.1,
+  "kills": [
+   "bot"
+  ],
+  "enemies": [
+   [
+    "drone",
+    2,
+    1363,
+    83
+   ],
+   [
+    "drone",
+    2,
+    595,
+    131
+   ],
+   [
+    "turret",
+    4,
+    920,
+    208
+   ],
+   [
+    "bot",
+    3,
+    1500,
+    208
+   ]
+  ],
+  "fired": 3,
+  "petals": 53,
+  "x": 314,
+  "anim": "idle",
+  "fps": 60
+ },
+ "afterTurret": {
+  "hp": 5,
+  "iT": 996.82,
+  "kills": [
+   "bot",
+   "turret"
+  ],
+  "enemies": [
+   [
+    "drone",
+    2,
+    1342,
+    78
+   ],
+   [
+    "drone",
+    2,
+    574,
+    126
+   ],
+   [
+    "bot",
+    3,
+    1508,
+    208
+   ]
+  ],
+  "fired": 8,
+  "petals": 53,
+  "x": 1020,
+  "anim": "idle",
+  "fps": 60
+ },
+ "afterDrone": {
+  "hp": 5,
+  "iT": 996.07,
+  "kills": [
+   "bot",
+   "turret",
+   "drone"
+  ],
+  "enemies": [
+   [
+    "drone",
+    2,
+    587,
+    124
+   ],
+   [
+    "bot",
+    3,
+    1480,
+    208
+   ]
+  ],
+  "fired": 10,
+  "petals": 53,
+  "x": 920,
+  "anim": "idle",
+  "fps": 60
+ },
+ "dmg": {
+  "hp0": 5,
+  "log": [
+   [
+    "after1",
+    5,
+    "0.00",
+    "idle"
+   ],
+   [
+    "after2_inIframes",
+    5
+   ],
+   [
+    "after3_postIframes",
+    5
+   ]
+  ],
+  "alphaBlinkSeen": true
+ },
+ "blink": [
+  0.25,
+  1
+ ],
+ "end": {
+  "hp": 4,
+  "iT": -0.02,
+  "kills": [
+   "bot",
+   "turret",
+   "drone"
+  ],
+  "enemies": [
+   [
+    "drone",
+    2,
+    575,
+    130
+   ],
+   [
+    "bot",
+    3,
+    1493,
+    208
+   ]
+  ],
+  "fired": 10,
+  "petals": 53,
+  "x": 293,
+  "anim": "idle",
+  "fps": 60
+ },
+ "errors": []
+}

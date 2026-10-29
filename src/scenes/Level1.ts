@@ -1,0 +1,300 @@
+import Phaser from 'phaser';
+import { Player, HP_MAX, JET } from '../player/Player';
+import { Fx } from '../systems/Fx';
+import { Blaster } from '../weapons/Blaster';
+import { Enemy } from '../entities/Enemy';
+import { ScoutDrone, GroundBot, Turret } from '../entities/Kurogen';
+import { Enforcer } from '../entities/Enforcer';
+import { Petals } from '../systems/Petals';
+import { Hud } from '../systems/Hud';
+import { Toast } from '../systems/Toast';
+import { Parallax } from '../systems/Parallax';
+import { LEVEL1 } from './level1Map';
+import { DECO, DECO_SIZE } from '../decoList';
+// Akari Valley Zone (chapter 1: 2023). Tilemap layers (GPU-culled) for solids + one-way ledges; decor culled manually.
+export const TS = 16;
+export const MEMORIES = [
+  'Memory: Mom humming by the lake while the blossoms fell.',
+  'Memory: Racing Kenji up the shrine steps — he always let me win.',
+  'Memory: The valley lanterns lit for the first night of spring.',
+  'Memory: Dad\'s hands, grease-black, fixing the old car.',
+  'Memory: "Wherever you go, Akari Valley will remember you."',
+  'Memory: Paper cranes on the bridge rail, one for every wish.',
+  'Memory: The waterfall roar, and falling asleep on warm stone.',
+  'Memory: The day the Kurogen ships first darkened the sky.',
+  'Memory: Promising to come home once the war was over.',
+  'Memory: 2023 — the last spring before everything changed.',
+];
+// slope tiles: frame index + surface height (px from tile top) at local x 0..15
+export const SLOPES: Record<string, number> = { '/': 0, '\\': 1, u: 2, U: 3, n: 4, N: 5 };
+export const slopeH = (f: number, c: number) => [15 - c, c, 16 - (c + 1) / 2, 8 - (c + 1) / 2, c / 2, 8 + c / 2][f];
+const ARENA = { x0: 404, x1: 470 };
+export class Level1 extends Phaser.Scene {
+  player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; hud!: Hud; toast!: Toast; bg!: Parallax;
+  solid!: Phaser.Tilemaps.TilemapLayer; oneway!: Phaser.Tilemaps.TilemapLayer; enemyGroup!: Phaser.Physics.Arcade.Group;
+  flowers!: Phaser.Physics.Arcade.StaticGroup; got = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 0, y: 0 }; safe = { x: 0, y: 0 };
+  boss!: Enforcer; bossDead = false; arena = false; walls!: Phaser.Physics.Arcade.StaticGroup; gate!: Phaser.Physics.Arcade.Image; gateFx!: Phaser.GameObjects.TileSprite;
+  gateOpen = false; ending = false; shrineX = 0; shrineLit = false; jetPick!: Phaser.Physics.Arcade.Image; carX = 0; car!: Phaser.GameObjects.Image;
+  falls: Phaser.GameObjects.TileSprite[] = []; waters: Phaser.GameObjects.TileSprite[] = []; deco: Phaser.GameObjects.Image[] = []; cullT = 0; gateToastT = 0;
+  constructor() { super('Level1'); }
+  create() {
+    const M = LEVEL1, MW = M[0].length, MH = M.length, worldW = MW * TS, worldH = MH * TS;
+    Object.assign(this, { enemies: [], got: 0, kills: 0, deaths: 0, time_: 0, bossDead: false, arena: false, gateOpen: false, ending: false, shrineLit: false, falls: [], waters: [], deco: [] });
+    this.bg = new Parallax(this);
+    const at = (x: number, y: number) => (x < 0 || x >= MW) ? '#' : (y < 0 ? '.' : y >= MH ? (M[MH - 1][x] === '#' ? '#' : '.') : M[y][x]);
+    const S = (x: number, y: number) => at(x, y) === '#' || at(x, y) in SLOPES; this.at = at;
+    // --- tile layers ---
+    const sd: number[][] = [], od: number[][] = [];
+    for (let y = 0; y < MH; y++) { sd.push([]); od.push([]); for (let x = 0; x < MW; x++) {
+      const c = M[y][x]; let f = -1, o = -1;
+      if (c === '#') { const u = S(x, y - 1), l = S(x - 1, y), r = S(x + 1, y), d = S(x, y + 1);
+        if (!u) f = !l ? 6 : !r ? 7 : (x % 2 ? 3 : 2);
+        else if (!S(x, y - 2) && !l && d) f = 22; else if (!S(x, y - 2) && !r && d) f = 23;
+        else if (!l) f = d ? 4 : 18; else if (!r) f = d ? 5 : 19; else if (!d) f = 10;
+        else if (!S(x, y - 2) && d) f = (x % 2 ? 21 : 20);
+        else if (!S(x + 1, y - 1)) f = 8; else if (!S(x - 1, y - 1)) f = 9; else f = (x * 7 + y * 3) % 5 ? 0 : 1; }
+      else if (c === '=') o = at(x - 1, y) !== '=' ? 6 : at(x + 1, y) !== '=' ? 7 : (x % 2 ? 3 : 2);
+      else if (c === 'H') o = -2;
+      else if (c in SLOPES) this.add.image(x * TS, y * TS, 'slopes', SLOPES[c]).setOrigin(0).setDepth(2);
+      sd[y].push(f); od[y].push(o === -2 ? -1 : o);
+    } }
+    const mk = (data: number[][], depth: number) => { const map = this.make.tilemap({ data, tileWidth: TS, tileHeight: TS });
+      const ts = map.addTilesetImage('tiles', 'tiles', TS, TS, 0, 0)!; return map.createLayer(0, ts, 0, 0)!.setDepth(depth); };
+    this.solid = mk(sd, 2); this.solid.setCollisionByExclusion([-1]);
+    // ground directly under a slope tile is handled by the slope probe (avoids corner snags on the slope seam)
+    this.solid.forEachTile(t => { if (t.index >= 0 && at(t.x, t.y - 1) in SLOPES) t.setCollision(false, false, false, false); });
+    this.oneway = mk(od, 2); this.oneway.setCollisionByExclusion([-1]);
+    this.oneway.forEachTile(t => { if (t.index >= 0) t.setCollision(false, false, true, false); });
+    // bridge decks (H): invisible one-way tiles + bridge art
+    const deck = this.make.tilemap({ width: MW, height: MH, tileWidth: TS, tileHeight: TS }); const dts = deck.addTilesetImage('tiles', 'tiles', TS, TS, 0, 0)!;
+    const deckL = deck.createBlankLayer('deck', dts)!.setVisible(false);
+    for (let y = 0; y < MH; y++) { let x = 0; while (x < MW) { if (M[y][x] !== 'H') { x++; continue; } let e = x; while (M[y][e] === 'H') e++;
+      for (let i = x; i < e; i++) deckL.putTileAt(2, i, y).setCollision(false, false, true, false);
+      for (let bx = x * TS; bx < e * TS; bx += 92) this.add.image(bx, y * TS + 10, 'pr_bridge').setOrigin(0, 0.5).setDepth(3).setCrop(0, 0, Math.min(94, e * TS - bx), 34);
+      x = e; } }
+    // --- systems ---
+    this.flowers = this.physics.add.staticGroup(); this.walls = this.physics.add.staticGroup();
+    this.fx = new Fx(this); this.gun = new Blaster(this, 'p', 'shot'); this.egun = new Blaster(this, 'e', 'ebolt', { cooldown: 0, speed: 150, life: 3 });
+    this.enemyGroup = this.physics.add.group({ allowGravity: false });
+    const prop = (k: string, x: number, y: number, d = -10) => this.cull(this.add.image(x, y, k).setOrigin(0.5, 1).setDepth(d));
+    let bushN = 0, mem = 0;
+    M.forEach((row, y) => [...row].forEach((c, x) => {
+      const px = x * TS, cx = px + 8, gy = (y + 1) * TS;
+      if (c === 'w') { let e = y; while (e < MH && !S(x, e) && at(x, e) !== '=') e++;
+        this.falls.push(this.add.tileSprite(px - 8, y * TS, 32, (e - y) * TS + 8, 'waterfall').setOrigin(0).setDepth(1).setAlpha(0.92));
+        this.add.image(cx, e * TS + 4, 'spark').setDepth(4).setBlendMode(Phaser.BlendModes.ADD).setScale(2); }
+      else if (c === 'f') { const fl = this.flowers.create(cx, gy - 8, 'pr_flower').setDepth(6) as any; fl.mem = mem++;
+        this.tweens.add({ targets: fl, y: gy - 11, yoyo: true, repeat: -1, duration: 700, ease: 'Sine.inOut' }); }
+      else if (c === 'b') this.addE(new GroundBot(this, cx, gy, this.fx));
+      else if (c === 'd') this.addE(new ScoutDrone(this, cx, gy, this.fx));
+      else if (c === 't') this.addE(new Turret(this, cx, gy, this.fx, this.egun));
+      else if (c === 'K') { this.boss = new Enforcer(this, cx, gy - 30, this.fx, this.egun); this.enemyGroup.add(this.boss); this.boss.b.setAllowGravity(false);
+        const bg = this.rawGround(cx, gy - 8); if (bg > 0) { this.boss.gy = bg - 36; this.boss.y = this.boss.gy; } }
+      else if (c === 'P') { this.spawn = { x: cx, y: gy }; }
+      else if (c === 'J') { this.jetPick = this.physics.add.staticImage(cx, gy - 12, 'pr_jetboots').setDepth(6);
+        this.tweens.add({ targets: this.jetPick, y: gy - 16, yoyo: true, repeat: -1, duration: 600, ease: 'Sine.inOut' }); }
+      else if (c === 'R') prop('pr_tree', cx, gy, -12); else if (c === 'r') prop('pr_tree2', cx, gy, -12);
+      else if (c === 'L') prop('pr_lantern2', cx, gy, -5); else if (c === 'B') prop(bushN++ % 2 ? 'pr_bush2' : 'pr_bush', cx, gy, -4);
+      else if (c === 'A') prop('pr_arch', cx, gy, -6); else if (c === 'F') prop('pr_fence', cx, gy, -4);
+      else if (c === 'S') { prop('pr_shrine', cx, gy, -5); this.shrineX = cx; }
+      else if (c === 'T') prop('pr_torii', cx, gy, -6);
+      else if (c === 'C') { this.car = this.add.image(cx, gy, 'pr_car').setOrigin(0.5, 1).setDepth(5); this.carX = cx; }
+      else if (c === 'G') { this.gate = this.physics.add.staticImage(cx, gy - 40, 'px').setVisible(false); (this.gate.body as any).setSize(16, 80);
+        this.add.image(cx, gy, 'pr_arch').setOrigin(0.5, 1).setDepth(-3).setScale(1.2, 1.6);
+        this.gateFx = this.add.tileSprite(cx - 8, gy - 52, 16, 52, 'waterfall').setOrigin(0).setTint(0x66e0ff).setBlendMode(Phaser.BlendModes.ADD).setDepth(7); }
+    }));
+    // water in pits (lakes)
+    for (let x = 0; x < MW; x++) if (!S(x, MH - 1) && M[MH - 1][x] !== '#') { let e = x; while (e < MW && !S(e, MH - 1)) e++;
+      this.waters.push(this.add.tileSprite(x * TS, (MH - 4) * TS + 6, (e - x) * TS, 4 * TS, 'water').setOrigin(0).setDepth(3).setAlpha(0.9)); x = e; }
+    this.buildSurfaceSkin(at, MW);
+    this.placeDeco(at, S);
+    this.anchorProps();
+    // --- player + colliders ---
+    this.physics.world.setBounds(0, 0, worldW, worldH + 400);
+    this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun; this.safe = { ...this.spawn };
+    this.physics.add.collider(this.player, this.solid); this.physics.add.collider(this.player, this.oneway); this.physics.add.collider(this.player, deckL);
+    this.physics.world.on('worldstep', () => this.slopeSnap());
+    this.physics.add.collider(this.player, this.walls); this.physics.add.collider(this.player, this.gate);
+    this.physics.add.collider(this.enemyGroup, this.solid, undefined, (e: any) => e.kind === 'bot');
+    this.physics.add.collider(this.gun.shots, this.solid, (s: any) => { this.fx.spark(s.x, s.y); this.gun.kill(s); });
+    this.physics.add.collider(this.egun.shots, this.solid, (s: any) => this.egun.kill(s));
+    this.physics.add.overlap(this.gun.shots, this.enemyGroup, (s: any, e: any) => { if (!s.active || e.dead) return; this.gun.kill(s); e.hit(s.damage, s.body.velocity.x > 0 ? 1 : -1); });
+    const hurt = () => { this.fx.hitStop(60); this.fx.shake(140, 0.005); };
+    this.physics.add.overlap(this.player, this.enemyGroup, (_p, e: any) => { if (!e.dead && (e.kind !== 'boss' || e.awake) && this.player.damage(e.x)) hurt(); });
+    this.physics.add.overlap(this.player, this.egun.shots, (_p, s: any) => { if (s.active && this.player.damage(s.x)) { this.egun.kill(s); hurt(); } });
+    this.physics.add.overlap(this.player, this.flowers, (_p, f: any) => this.collect(f));
+    this.physics.add.overlap(this.player, this.jetPick, () => this.pickJet());
+    this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
+    this.toast = new Toast(this); this.petals = new Petals(this);
+    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, 0.15, 0.15, 0, 30); cam.setDeadzone(40, 40); cam.setRoundPixels(true);
+    cam.fadeIn(400);
+    // boss wiring
+    this.boss.summon = (x, y) => { if (this.enemies.filter(e => e.kind === 'drone' && e.active && Math.abs(e.x - this.boss.x) < 600).length < 2) this.addE(new ScoutDrone(this, x, y, this.fx)); };
+    this.boss.on('dying', () => { this.hud.draw(-1, 0); }); this.boss.on('destroyed', () => this.onBossDead());
+    const kb = this.input.keyboard!;
+    const pause = () => { if (this.ending) return; this.scene.launch('Pause'); this.scene.pause(); };
+    kb.on('keydown-P', pause); kb.on('keydown-ESC', pause);
+    this.toast.show('Akari Valley. Home — after all these years.');
+    (window as any).__lvl = this;
+  }
+  at!: (x: number, y: number) => string; onSlope = false; slopeLog: { x: number; y: number; g: boolean }[] = [];
+  // Sonic-style two-sensor ground probe: surface under the body's left/right foot; snaps onto slopes, keeps contact downhill.
+  surface(x: number, feet: number): number {
+    const cx = Math.floor(x / TS), r0 = Math.floor(feet / TS); let best = Infinity;
+    for (let ry = r0 - 1; ry <= r0 + 1; ry++) { const c = this.at(cx, ry), up = this.at(cx, ry - 1);
+      let sy = Infinity; if (c in SLOPES) sy = ry * TS + slopeH(SLOPES[c], Phaser.Math.Clamp(x - cx * TS, 0, 15));
+      else if (c === '#' && up !== '#' && !(up in SLOPES)) sy = ry * TS;
+      if (sy >= feet - 10 && sy < best) best = sy; }
+    const k = this.skinY.get(Math.round(x)); if (k !== undefined && best !== Infinity && Math.abs(k - best) < 8) best = Math.min(best, k);
+    return best;
+  }
+  slopeSnap() {
+    const p = this.player, b = p?.body_; if (!b || !b.enable) return; const was = this.onSlope; this.onSlope = false;
+    if (b.velocity.y < 0) return;
+    const feet = b.bottom, lead = 3, xs = [b.left - (b.velocity.x < 0 ? lead : 0), b.right - 0.01 + (b.velocity.x > 0 ? lead : 0)]; let sy = Infinity, slope = false;
+    for (const x of xs) { const v = this.surface(x, feet); if (v < sy) sy = v; const cx = Math.floor(x / TS), c = this.at(cx, Math.floor((v - 0.01) / TS)), c2 = this.at(cx, Math.floor(v / TS)); if (c in SLOPES || c2 in SLOPES) slope = true; }
+    if ((!slope && !was) || sy === Infinity) return;
+    const tol = was ? 9 : 1;
+    if (feet >= sy - tol && feet <= sy + 12) { const dy = Math.floor(sy) - feet; b.y += dy; b.velocity.y = 0; b.blocked.down = true; b.touching.down = true; this.onSlope = true; }
+  }
+  // ---- continuous blossom skin over slope zones: smoothed surface => rounded crests / soft toes, cap wraps without stair-steps ----
+  skinY = new Map<number, number>();
+  rawGround(px: number, y0: number): number { // first walkable surface at/under pixel row y0
+    const cx = Math.floor(px / TS);
+    for (let ry = Math.max(0, Math.floor(y0 / TS)); ry < LEVEL1.length; ry++) { const c = this.at(cx, ry), up = this.at(cx, ry - 1);
+      if (c in SLOPES) return ry * TS + slopeH(SLOPES[c], Phaser.Math.Clamp(px - cx * TS, 0, 15));
+      if ((c === '#' || c === '=' || c === 'H') && up !== '#' && !(up in SLOPES)) return ry * TS; }
+    return -1;
+  }
+  groundAt(px: number, y0: number) { const r = this.rawGround(Math.round(px), y0), k = this.skinY.get(Math.round(px)); return k !== undefined && r >= 0 && Math.abs(k - r) < 8 ? k : r; }
+  buildSurfaceSkin(at: (x: number, y: number) => string, MW: number) {
+    const mark = new Uint8Array(MW);
+    for (let y = 0; y < LEVEL1.length; y++) for (let x = 0; x < MW; x++) if (at(x, y) in SLOPES) for (let d = -2; d <= 2; d++) if (x + d >= 0 && x + d < MW) mark[x + d] = 1;
+    const src = this.textures.get('tiles').getSourceImage() as HTMLImageElement;
+    for (let x = 0; x < MW; x++) { if (!mark[x]) continue; let e = x; while (e < MW && mark[e]) e++;
+      // slope rows of this cluster
+      let top = 1e9; for (let cx = x; cx < e; cx++) for (let y = 0; y < LEVEL1.length; y++) if (at(cx, y) in SLOPES) top = Math.min(top, y);
+      const x0 = x * TS, w = (e - x) * TS, raw: number[] = [];
+      for (let px = 0; px < w; px++) raw.push(this.rawGround(x0 + px, (top - 2) * TS));
+      let sm = raw.slice(); for (let pass = 0; pass < 3; pass++) { const n = sm.slice(); for (let i = 0; i < w; i++) { let a = 0, k = 0; for (let j = -4; j <= 4; j++) { const v = sm[Phaser.Math.Clamp(i + j, 0, w - 1)]; if (v >= 0) { a += v; k++; } } n[i] = k ? a / k : sm[i]; } sm = n; }
+      // keep the ends pinned to the flat tiles so the skin meets the normal caps seamlessly
+      for (let i = 0; i < w; i++) { const t = Math.min(i, w - 1 - i) / 12; if (t < 1) sm[i] = raw[i] + (sm[i] - raw[i]) * t; if (raw[i] >= 0) sm[i] = Math.min(sm[i], raw[i]); }
+      const ymin = Math.floor(Math.min(...sm.filter(v => v >= 0))) - 2, ymax = Math.ceil(Math.max(...sm)) + 20;
+      const key = 'skin' + x; if (this.textures.exists(key)) this.textures.remove(key); const ct = this.textures.createCanvas(key, w, ymax - ymin)!; const ctx = ct.getContext();
+      for (let i = 0; i < w; i++) { if (raw[i] < 0) continue; const y = Math.round(sm[i]); this.skinY.set(x0 + i, y);
+        const col = 32 + ((x0 + i) & 15);
+        // stone under the cap where smoothing lifted the surface above the tile art, then the blossom column
+        if (y < raw[i]) ctx.drawImage(src, (x0 + i) & 15, 4, 1, 12, i, y - ymin + 6, 1, raw[i] - y + 4);
+        ctx.drawImage(src, col, 0, 1, 16, i, y - ymin - 1, 1, 16); }
+      ct.refresh(); this.add.image(x0, ymin, key).setOrigin(0).setDepth(2.5); x = e; }
+  }
+  // ---- seat every grounded prop into the terrain: trim transparent padding, follow slope height, bury 3px under the cap ----
+  padCache: Record<string, number> = {};
+  anchorProps() {
+    const pad = (img: Phaser.GameObjects.Image) => { const k = img.texture.key + ':' + img.frame.name; if (this.padCache[k] !== undefined) return this.padCache[k];
+      const w = img.frame.width, h = img.frame.height; let p = 0;
+      outer: for (let y = h - 1; y >= 0; y--) { let n = 0; for (let x = 0; x < w; x++) if (this.textures.getPixelAlpha(x, y, img.texture.key, img.frame.name)! > 40) n++; if (n >= Math.max(2, w * 0.08)) break outer; p++; }
+      return this.padCache[k] = p; };
+    const list: Phaser.GameObjects.Image[] = [...this.deco.filter(o => (o as any).originY === 1 && o.depth !== -16 && !(o.texture.key.startsWith('skin'))) as any];
+    if (this.car) list.push(this.car);
+    this.children.list.forEach(o => { const i = o as any; if (i.texture?.key === 'pr_arch') list.push(i); });
+    this.anchored = 0;
+    for (const img of list) { const hw = img.displayWidth / 2, near = img.y - 18;
+      const g = [img.x, img.x - hw * 0.4, img.x + hw * 0.4].map(x => this.groundAt(x, near)).filter(v => v >= 0); if (!g.length) continue;
+      const c = this.groundAt(img.x, near), gy = Math.min(Math.max(...g), (c >= 0 ? c : g[0]) + 6);
+      const p = pad(img) * img.scaleY; img.y = gy + p + 3; this.anchored++; }
+  }
+  anchored = 0;
+  addE(e: Enemy) { this.enemies.push(e); this.enemyGroup.add(e); e.b.setAllowGravity(false);
+    if (e.kind === 'turret') { e.b.moves = false; e.b.setImmovable(true); }
+    e.on('destroyed', (x: Enemy) => { if (x.kind !== 'boss') this.kills++; }); }
+  cull<T extends Phaser.GameObjects.Image>(o: T) { this.deco.push(o); return o; }
+  placeDeco(at: (x: number, y: number) => string, S: (x: number, y: number) => boolean) {
+    // seeded, non-repeating placement of every cut piece from sakuratileset across all walkable surfaces
+    let seed = 1234; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const recent: string[] = []; const pick = (list: string[], maxW: number) => {
+      const ok = list.filter(k => !recent.includes(k) && DECO_SIZE[k][0] <= maxW); if (!ok.length) return null;
+      const k = ok[Math.floor(rnd() * ok.length)]; recent.push(k); if (recent.length > 10) recent.shift(); return k; };
+    const M = LEVEL1, busy = (x: number, y: number) => { for (let i = -2; i <= 2; i++) if (/[A-Za-z]/.test(at(x + i, y - 1))) return true; return false; };
+    for (let y = 1; y < M.length; y++) {
+      let x = 2; while (x < M[0].length - 2) {
+        if (!(S(x, y) && !S(x, y - 1) && at(x, y - 1) === '.')) { x++; continue; }
+        let e = x; while (S(e, y) && !S(e, y - 1)) e++; const run = e - x; const px = x * TS, top = y * TS;
+        // background ruins chunk behind long runs
+        if (run >= 10 && rnd() < 0.5) { const k = pick(DECO.chunk, run * TS - 20); if (k) this.cull(this.add.image(px + rnd() * (run * TS - DECO_SIZE[k][0]) + DECO_SIZE[k][0] / 2, top + 6, 'dc_' + k).setOrigin(0.5, 1).setDepth(-16).setTint(0xc9c0dd)); }
+        // trees on wide runs
+        if (run >= 6 && rnd() < 0.6) { const k = pick(DECO.tree, 60); const tx = px + 24 + rnd() * (run * TS - 48); if (k && !busy(Math.floor(tx / TS), y)) this.cull(this.add.image(tx, top + 2, 'dc_' + k).setOrigin(0.5, 1).setDepth(-13).setScale(rnd() < 0.5 ? 1 : 0.8)); }
+        // small ground props every 2-6 tiles
+        for (let cx = x + 1; cx < e - 1; cx += 2 + Math.floor(rnd() * 5)) { if (busy(cx, y)) continue;
+          const k = pick(DECO.ground, 40); if (!k) continue; const front = rnd() < 0.12 && DECO_SIZE[k][1] < 14;
+          this.cull(this.add.image(cx * TS + 8, top + 2, 'dc_' + k).setOrigin(0.5, 1).setDepth(front ? 11 : -4)); }
+        x = e;
+      }
+    }
+    // landmarks & water pieces from the sheet near pits / waterfalls
+    const lm = DECO.landmark; let li = 0;
+    for (let x = 6; x < M[0].length - 6; x += 37) { const y = this.surfaceBelow(x, 80, S); if (y > 0 && !busy(x, y)) this.cull(this.add.image(x * TS, y * TS + 2, 'dc_' + lm[li++ % lm.length]).setOrigin(0.5, 1).setDepth(-7)); }
+    const wl = DECO.water; let wi = 0;
+    for (const f of this.falls) this.cull(this.add.image(f.x + 16, f.y + f.height - 2, 'dc_' + wl[wi++ % wl.length]).setOrigin(0.5, 1).setDepth(2).setAlpha(0.95));
+  }
+  surfaceBelow(x: number, y0: number, S: (x: number, y: number) => boolean) { for (let y = y0; y < LEVEL1.length; y++) if (S(x, y) && !S(x, y - 1)) return y; return -1; }
+  collect(f: any) {
+    if (!f.active) return; f.destroy(); this.got++; this.hud.setMem(this.got); this.fx.spark(f.x, f.y); this.player.trail.explode(14, f.x, f.y);
+    this.toast.show(MEMORIES[this.got - 1] + `  (${this.got}/10)`, '#ffd6f0');
+  }
+  pickJet() {
+    if (this.player.hasJet) return; this.player.hasJet = true; this.fx.explode(this.jetPick.x, this.jetPick.y, 0.6); this.jetPick.destroy();
+    this.toast.show('KUROGEN-TECH JET BOOTS — salvaged from a downed scout.', '#7fe9ff');
+    this.toast.show('After a double jump, HOLD SPACE to thrust. Fuel refills on landing.', '#7fe9ff');
+  }
+  onBossDead() {
+    this.bossDead = true; this.arena = false; this.walls.clear(true, true); this.hud.draw(this.player.hasJet ? 1 : -1, -1);
+    this.cameras.main.setBounds(0, 0, LEVEL1[0].length * TS, LEVEL1.length * TS); this.toast.show('The Enforcer falls. The torii path is clear.', '#ffd23f');
+    if (this.got >= 10) this.openGate();
+  }
+  openGate() { if (this.gateOpen) return; this.gateOpen = true; (this.gate.body as any).enable = false; this.tweens.add({ targets: this.gateFx, alpha: 0, duration: 600 }); this.toast.show('All ten memories. The gate remembers you.', '#ffd6f0'); }
+  respawn(full: boolean) {
+    const p = this.player, b = p.body_;
+    if (full) { this.deaths++; p.hp = HP_MAX; this.hud.setHp(p.hp); this.cameras.main.flash(250, 255, 200, 230);
+      if (this.arena) { this.arena = false; this.walls.clear(true, true); this.boss.reset(); this.hud.draw(-1, -1); this.cameras.main.setBounds(0, 0, LEVEL1[0].length * TS, LEVEL1.length * TS); }
+      p.setPosition(this.spawn.x, this.spawn.y); } else p.setPosition(this.safe.x, this.safe.y);
+    b.setVelocity(0, 0); p.iT = 1;
+  }
+  lockArena() {
+    this.arena = true; const top = 64 * TS, h = 32 * TS;
+    for (const c of [ARENA.x0 + 1, ARENA.x1 - 1]) { const w = this.walls.create(c * TS + 8, top + h / 2, 'px').setVisible(false) as any; w.body.setSize(16, h); w.refreshBody?.(); w.body.setSize(16, h); }
+    this.cameras.main.setBounds(ARENA.x0 * TS, top - 40, (ARENA.x1 - ARENA.x0) * TS, LEVEL1.length * TS - top + 40);
+    this.boss.awake = true; this.toast.show('KUROGEN ENFORCER — "Kael Veyron sends his regards."', '#ff8a8a'); this.fx.shake(300, 0.006);
+  }
+  update(_t: number, dms: number) {
+    const dt = Math.min(dms, 50) / 1000; this.petals.update(dt); this.bg.update(dt);
+    for (const w of this.falls) w.tilePositionY -= dt * 70; for (const w of this.waters) w.tilePositionX += dt * 8; if (this.gateFx) this.gateFx.tilePositionY += dt * 40;
+    const cam = this.cameras.main; if ((this.cullT -= dt) <= 0) { this.cullT = 0.2; const vx = cam.scrollX - 120, vy = cam.scrollY - 120;
+      for (const o of this.deco) o.setVisible(o.x > vx && o.x < vx + 720 && o.y > vy && o.y - o.displayHeight < vy + 510); }
+    if (this.ending || this.fx.stopped) return;
+    const p = this.player; this.time_ += dt; this.hud.setTime(this.time_);
+    p.update(dt); this.gun.update(dt); this.egun.update(dt);
+    this.enemies = this.enemies.filter(e => e.active);
+    for (const e of this.enemies) { const near = Math.abs(e.x - p.x) < 560 && Math.abs(e.y - p.y) < 340; e.b.enable = near && !e.dead; if (near) e.tick(dt, p.x, p.y - 14); else e.b.setVelocity(0, 0); }
+    if (this.boss.active && !this.boss.dead) this.boss.tick(dt, p.x, p.y - 14);
+    this.hud.draw(p.hasJet ? p.fuel / JET.fuel : -1, this.arena && this.boss.active ? Math.max(0, this.boss.hp / this.boss.maxHp) : (this.boss.dead && this.boss.active ? 0 : -1));
+    if (p.body_.blocked.down) this.safe = { x: p.x - p.facing * 6, y: p.y };
+    if (!this.shrineLit && this.shrineX && p.x > this.shrineX) { this.shrineLit = true; this.spawn = { x: this.shrineX, y: p.y }; this.fx.explode(this.shrineX, p.y - 20, 0.5); this.toast.show('Lantern shrine lit — checkpoint.', '#ffd23f'); }
+    if (!this.arena && !this.bossDead && p.x > (ARENA.x0 + 3) * TS && p.y > 64 * TS) this.lockArena();
+    if (this.gate && !this.gateOpen && Math.abs(p.x - this.gate.x) < 24 && (this.gateToastT -= dt) <= 0) {
+      this.gateToastT = 3; if (this.bossDead && this.got >= 10) this.openGate(); else this.toast.show(this.bossDead ? `The gate is sealed. Memories ${this.got}/10.` : 'Defeat the Enforcer first.', '#ff8a8a'); }
+    if (p.y > LEVEL1.length * TS + 40) { p.hp -= 1; this.hud.setHp(p.hp); this.fx.shake(120, 0.004); this.respawn(p.hp <= 0); }
+    else if (p.hp <= 0) this.respawn(true);
+    if (this.gateOpen && Math.abs(p.x - this.carX) < 30 && p.body_.blocked.down) this.endChapter();
+  }
+  endChapter() {
+    this.ending = true; const p = this.player; p.body_.setVelocity(0, 0); p.body_.enable = false;
+    this.tweens.add({ targets: p, alpha: 0, x: this.carX, duration: 300 });
+    const cam = this.cameras.main; cam.stopFollow();
+    this.time.delayedCall(450, () => { this.fx.shake(200, 0.003);
+      this.tweens.add({ targets: this.car, x: this.carX + 600, duration: 2200, ease: 'Quad.in' });
+      const dust = this.add.particles(0, 0, 'petal', { lifespan: 700, speedX: { min: -80, max: -20 }, speedY: { min: -40, max: 0 }, scale: { start: 1.4, end: 0 }, tint: [0xff8fd0, 0xffffff], frequency: 30, follow: this.car, followOffset: { x: -50, y: -4 } }).setDepth(6);
+      this.time.delayedCall(1700, () => { cam.fadeOut(600, 255, 230, 240); dust.stop(); });
+      this.time.delayedCall(2400, () => this.scene.start('Victory', { time: this.time_, got: this.got, kills: this.kills, deaths: this.deaths })); });
+  }
+}
