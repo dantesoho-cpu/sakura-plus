@@ -5,7 +5,7 @@ export const BEAM = { start: 0.25, lv1: 0.55, lv2: 1.35, len: 380, dur: [0, 0.5,
 type Tgt = { dead?: boolean; active: boolean; kind?: string; awake?: boolean; getBounds(): Phaser.Geom.Rectangle; hit(d: number, dir: number): void };
 export class Beam {
   g: Phaser.GameObjects.Graphics; glow: Phaser.GameObjects.Image; chargeT = 0; level = 0; swirl: { a: number; r: number }[] = [];
-  fireT = 0; fireLv = 0; t = 0; dmgT = 0; dir = 1; x = 0; y = 0; L = 0; fired = 0; hits = 0;
+  fireT = 0; fireLv = 0; t = 0; dmgT = 0; dir = 1; x = 0; y = 0; L = 0; fired = 0; hits = 0; owner: Phaser.GameObjects.Sprite | null = null; auraT = 0; dustT = 0;
   constructor(public s: Phaser.Scene, public fx: Fx, public targets: () => Tgt[], public blocked: (x: number, y: number) => boolean) {
     this.g = s.add.graphics().setDepth(12).setBlendMode(Phaser.BlendModes.ADD);
     this.glow = s.add.image(0, 0, 'glow').setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setVisible(false);
@@ -74,5 +74,22 @@ export class Beam {
     const fl = 1 + 0.2 * Math.sin(this.t * (30 + lv * 20));
     this.glow.setVisible(true).setPosition(mx, my).setScale((0.25 + 0.55 * k) * fl).setTint(lv === 2 ? (Math.floor(this.t * 20) % 2 ? 0xffffff : 0xff8fe0) : c).setAlpha(0.6 + 0.4 * k);
     g.fillStyle(0xffffff, 0.9).fillCircle(mx, my, 1 + 2.5 * k * fl);
+    this.bodyAura(dt, lv, k);
+  }
+  /** Energy aura flaring around her silhouette + ground dust/debris lifting; intensifies with charge level. */
+  bodyAura(dt: number, lv: number, k: number) {
+    const o = this.owner; if (!o) return; const s = this.s, g = this.g, fy = o.y - 1;
+    // flame tongues licking upward around the body
+    for (let i = 0; i < 7 + lv * 4; i++) { const ph = this.t * (9 + lv * 3) + i * 1.7, x = o.x + Math.sin(ph) * (7 + lv * 2), h = (10 + lv * 6) * (0.6 + 0.4 * Math.sin(ph * 1.3));
+      g.fillStyle([0xff4fd8, 0x9ff3ff, 0xffffff][(i + lv) % 3], 0.18 + 0.1 * lv).fillEllipse(x, fy - 14 - h * 0.4, 3 + lv, h); }
+    g.fillStyle(lv === 2 ? 0xffffff : 0xff8fe0, 0.08 + 0.06 * lv + 0.05 * Math.sin(this.t * 40)).fillEllipse(o.x, fy - 15, 26 + lv * 8 + k * 6, 36 + lv * 6);
+    if ((this.auraT -= dt) <= 0) { this.auraT = lv === 2 ? 0.05 : lv === 1 ? 0.08 : 0.12;
+      const ga = s.add.image(o.x, o.y, o.texture.key, o.frame.name).setOrigin(o.originX, o.originY).setFlipX(o.flipX).setTintFill(lv === 2 ? 0xffffff : lv === 1 ? 0xff6fe0 : 0x7ff3ff)
+        .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.45).setDepth(9.5);
+      s.tweens.add({ targets: ga, scaleX: 1.18 + 0.08 * lv, scaleY: 1.12 + 0.06 * lv, alpha: 0, duration: 220, onComplete: () => ga.destroy() }); }
+    if ((this.dustT -= dt) <= 0) { this.dustT = 0.09 - lv * 0.025;
+      for (let i = 0; i < 1 + lv; i++) { const big = Math.random() < 0.3 + lv * 0.15, x = o.x + (Math.random() - 0.5) * (30 + lv * 14);
+        const d = big ? s.add.rectangle(x, fy, 2, 2, [0x6a5a48, 0x8a7a60, 0xff9fd8][i % 3]).setDepth(9) : s.add.image(x, fy, 'glow').setTint(0xd8c8b8).setAlpha(0.35).setScale(0.18).setDepth(9);
+        s.tweens.add({ targets: d, y: fy - 10 - Math.random() * (14 + lv * 12), x: x + (o.x - x) * 0.3, angle: big ? 360 : 0, alpha: 0, duration: 450 + Math.random() * 300, onComplete: () => d.destroy() }); } }
   }
 }

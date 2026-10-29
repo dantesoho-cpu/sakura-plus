@@ -5,7 +5,7 @@ import { PlayerFx } from './PlayerFx';
 export const T = {
   maxRun: 150, accelGround: 1400, decelGround: 1800, accelAir: 900, decelAir: 500,
   gravity: 1100, fallGravityMult: 1.6, maxFall: 420, jumpVel: 410, doubleJumpVel: 360, jumpCutMult: 0.45,
-  coyote: 0.1, buffer: 0.12, dashSpeed: 400, dashTime: 0.16, dashCooldown: 0.3, landTime: 0.12,
+  coyote: 0.1, buffer: 0.12, dashSpeed: 400, dashTime: 0.16, dashCooldown: 0.2, landTime: 0.12,
 };
 // Jet boots (Kurogen-tech upgrade): hold jump after the double jump to thrust upward while fuel lasts; refills on landing.
 export const JET = { fuel: 0.55, vel: 170, accel: 3000 };
@@ -17,7 +17,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'p_idle', 0); scene.add.existing(this); scene.physics.add.existing(this);
     this.setOrigin(0.5, 1); const b = this.body as Phaser.Physics.Arcade.Body;
-    b.setSize(10, 28).setOffset(27, 18); b.setMaxVelocityY(T.maxFall);
+    b.setSize(10, 28).setOffset(27, 15); b.setMaxVelocityY(T.maxFall);
     this.keys = scene.input.keyboard!.addKeys({ left: 'LEFT', right: 'RIGHT', a: 'A', d: 'D', jump: 'SPACE', dash: 'SHIFT', j: 'J', x: 'X' });
     scene.input.keyboard!.on('keydown-J', (e: KeyboardEvent) => { if (!e.repeat) this.shootPressed = true; });
     scene.input.keyboard!.on('keydown-X', (e: KeyboardEvent) => { if (!e.repeat) this.shootPressed = true; });
@@ -34,7 +34,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.pfx = new PlayerFx(scene, this as any);
   }
   hasJet = false; fuel = JET.fuel; jetting = false; jetFx!: Phaser.GameObjects.Particles.ParticleEmitter; jetPetals!: Phaser.GameObjects.Particles.ParticleEmitter;
-  pfx: PlayerFx; beam: any = null; holdT = 0;
+  dashBuf = 0; poseLock = false; dashCount = 0; pfx: PlayerFx; beam: any = null; holdT = 0;
   hp = HP_MAX; iT = 0; hurtT = 0; shootPressed = false; shootAnimT = 0; gun: any = null; dbgHits = 0;
   damage(fromX: number, amt = 1): boolean {
     if (this.iT > 0 || this.hp <= 0) return false;
@@ -54,12 +54,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       if (this.hurtT <= 0) this.setAnimState(onGround ? 'idle' : 'fall', true); return;
     }
     if (this.jumpPressed) this.bufferT = T.buffer; else this.bufferT -= dt;
-    this.jumpHeld = k.jump.isDown || touch.jump || this.jumpPressed; this.jumpPressed = false; const dashP = this.dashPressed; this.dashPressed = false;
+    this.jumpHeld = k.jump.isDown || touch.jump || this.jumpPressed; this.jumpPressed = false; if (this.dashPressed) this.dashBuf = 0.25; this.dashPressed = false; this.dashBuf -= dt; const dashP = this.dashBuf > 0;
     if (onGround) { this.coyoteT = T.coyote; this.airJumps = 1; this.canAirDash = true; } else this.coyoteT -= dt;
     this.dashCd -= dt;
     // dash
     if (dashP && this.dashCd <= 0 && this.dashT <= 0 && (onGround || this.canAirDash)) {
-      if (dir) this.facing = dir; this.dashing = true; this.dashT = T.dashTime; this.dashCd = T.dashCooldown + T.dashTime; if (!onGround) this.canAirDash = false;
+      this.dashBuf = 0; if (dir) this.facing = dir; this.dashing = true; this.dashCount++; this.dashT = T.dashTime; this.dashCd = T.dashCooldown + T.dashTime; if (!onGround) this.canAirDash = false;
       this.dbg.cur = { x0: this.x, t: 0 }; this.trail.start(); this.scene.cameras.main.shake(60, 0.002);
     }
     if (this.dashing && this.dashT <= 0) { // end dash one frame after the last dash-velocity frame was integrated
@@ -95,13 +95,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setFlipX(this.facing < 0);
     // shoot (J / X; hold = auto-fire at cooldown rate)
     // tap = blaster shot; hold = charge; release a charged shot = beam
-    const held = k.j.isDown || k.x.isDown || touch.shoot, mx = this.x + this.facing * 15, my = this.y - 19;
+    const held = k.j.isDown || k.x.isDown || touch.shoot, mx = this.x + this.facing * 15, my = this.y - (this.poseLock ? 16 : 19);
     if (this.shootPressed && this.gun && !(this.beam && this.beam.firing) && this.gun.tryFire(mx, my, this.facing)) this.shootAnimT = 0.22;
     this.shootPressed = false;
     if (this.beam) {
       if (held) { this.holdT += dt; if (this.holdT > 0.25) this.beam.charge(dt, mx, my); }
-      else { if (this.beam.release(mx, my, this.facing)) this.shootAnimT = 0.5; this.holdT = 0; }
+      else { if (this.beam.release(mx, my, this.facing)) this.shootAnimT = 0; this.holdT = 0; }
+      const charging = this.beam.chargeT > 0.25 && !this.beam.firing;
+      if (this.beam.firing) { if (onGround) b.setVelocityX(-this.facing * 25); this.play('beamfire', true); this.poseLock = true; }
+      else if (charging) { if (onGround) b.setVelocityX(b.velocity.x * 0.25); this.play('charge', true); this.anims.timeScale = this.beam.level === 2 ? 1.8 : this.beam.level === 1 ? 1.3 : 1; this.poseLock = true; }
+      else if (this.poseLock) { this.poseLock = false; this.play(this.state_, true); }
     }
+    if (this.poseLock) return;
     // animation state
     if (onGround) {
       if (this.state_ === 'fall' || this.state_ === 'doublejump' || this.state_ === 'jump') { if (b.velocity.y >= 0) { this.landT = T.landTime; this.setAnimState('land'); this.squash(1.18, 0.84); } }

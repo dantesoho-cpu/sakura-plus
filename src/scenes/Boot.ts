@@ -8,8 +8,9 @@ export const ANIMS: Record<string, { src: string; frames: number[]; rate: number
   fall: { src: 'fall', frames: [0], rate: 1, repeat: -1 }, apex: { src: 'apex', frames: [0], rate: 1, repeat: 0 },
   land: { src: 'dash', frames: [2], rate: 1, repeat: 0 }, dash: { src: 'dash', frames: [0, 1], rate: 20, repeat: 0 },
   shoot: { src: 'shoot', frames: [1, 0], rate: 12, repeat: 0 }, runshoot: { src: 'runshoot', frames: [0], rate: 1, repeat: 0 }, hurt: { src: 'hurt', frames: [0, 1], rate: 8, repeat: 0 },
+  charge: { src: 'charge', frames: [0, 1, 2, 3, 4, 5], rate: 14, repeat: -1 }, beamfire: { src: 'fire', frames: [0, 1, 0, 1, 2], rate: 18, repeat: -1 },
 };
-const SHEETS = ['idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt'];
+const SHEETS = ['idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt', 'charge', 'fire'];
 export class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {
@@ -29,7 +30,7 @@ export class Boot extends Phaser.Scene {
     this.load.image('P_far', 'assets/bg/P_far.png'); this.load.image('P_mid', 'assets/bg/P_mid.png'); this.load.json('pano', 'assets/bg/pano.json');
     for (const k of ['lantern2', 'arch', 'fence']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     this.load.image('panorama', 'assets/bg/panorama_full.png');
-    for (const k of ['bush', 'bush2', 'jetboots']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
+    for (const k of ['bush', 'bush2', 'jetboots', 'bridge_parts', 'tree_big0', 'tree_big1', 'tree_s0', 'tree_s1', 'tree_s2']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     for (const k of Object.keys(DECO_SIZE)) this.load.image('dc_' + k, `assets/deco/${k}.png`);
     this.load.spritesheet('boss', 'assets/enemies/boss.png', { frameWidth: 60, frameHeight: 45 });
     this.load.spritesheet('slopes', 'assets/tiles/slopes.png', { frameWidth: 16, frameHeight: 16 });

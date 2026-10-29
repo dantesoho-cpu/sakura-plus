@@ -17,10 +17,18 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
   get b() { return this.body as Phaser.Physics.Arcade.Body; }
   hit(dmg: number, dir: number) {
     if (this.dead) return; this.hp -= dmg; this.flashT = 0.08; this.setTintFill(0xffffff);
-    this.fx.spark(this.x - dir * 4, this.y - this.height / 2); this.knock(dir);
+    this.fx.spark(this.x - dir * 4, this.y - this.height / 2); this.knock(dir); this.hitT = 0.18; this.punch(0.8, 1.18, 160);
     if (this.hp <= 0) this.die(); else this.fx.hitStop(35);
   }
   knock(dir: number) { if (this.b.moves) this.b.setVelocityX(dir * 90); }
+  /** Facing (+1 = right; sheets face right). Turning plays a quick squash-flip and blocks movement while it runs. */
+  faceDir = 1; hitT = 0; turning = false; baseSX = 1;
+  face(d: number) {
+    if (!d || d === this.faceDir || this.turning || this.dead) return; this.turning = true; this.faceDir = d;
+    this.scene.tweens.add({ targets: this, scaleX: 0.15, scaleY: 1.08, duration: 70, ease: 'Quad.in', onComplete: () => { if (this.dead) return; this.setFlipX(d < 0);
+      this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 90, ease: 'Back.out', onComplete: () => { this.turning = false; } }); } });
+  }
+  punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: ms, ease: 'Quad.out' }); }
   die() {
     this.dead = true; this.aura.destroy(); this.tele.destroy(); this.debris(); this.fx.explode(this.x, this.y - this.height / 2, this.kind === 'turret' ? 1.3 : 1);
     this.b.enable = false; this.clearTint(); this.setAngle(0);
@@ -42,7 +50,7 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
       s.tweens.add({ targets: p, y: cy - 20 - Math.random() * 14, scale: 1.4, alpha: 0, duration: 700 + i * 120, delay: 80 + i * 40, onComplete: () => p.destroy() }); }
   }
   tick(dt: number, _px: number, _py: number) {
-    this.t += dt; if (this.flashT > 0 && (this.flashT -= dt) <= 0) this.clearTint();
+    this.t += dt; if (this.hitT > 0) this.hitT -= dt; if (this.flashT > 0 && (this.flashT -= dt) <= 0) this.clearTint();
     const ex = this.x + (this.flipX ? -this.eyeX : this.eyeX), ey = this.y - this.height * this.eyeY;
     if (this.kind === 'boss') this.aura.setVisible(false);
     this.aura.setPosition(ex, ey).setScale(0.45 + 0.15 * Math.sin(this.t * 6)).setAlpha(0.3 + 0.2 * Math.sin(this.t * 6));
