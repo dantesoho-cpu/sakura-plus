@@ -1,3 +1,4 @@
+import { audio } from '../audio/Audio';
 import Phaser from 'phaser';
 import type { Fx } from '../systems/Fx';
 // Base Kurogen unit: HP, hit-flash, knockback, destroy explosion.
@@ -16,7 +17,7 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
   get b() { return this.body as Phaser.Physics.Arcade.Body; }
   hit(dmg: number, dir: number) {
-    if (this.dead) return; this.hp -= dmg; this.flashT = 0.08; this.setTintFill(0xffffff);
+    if (this.dead) return; audio.sfx('ehit'); this.hp -= dmg; this.flashT = 0.08; this.setTintFill(0xffffff);
     this.fx.spark(this.x - dir * 4, this.y - this.height / 2); this.knock(dir); this.hitT = 0.18; this.punch(0.8, 1.18, 160);
     if (this.hp <= 0) this.die(); else this.fx.hitStop(35);
   }
@@ -30,7 +31,7 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
   punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: ms, ease: 'Quad.out' }); }
   die() {
-    this.dead = true; this.aura.destroy(); this.tele.destroy(); this.debris(); this.fx.explode(this.x, this.y - this.height / 2, this.kind === 'turret' ? 1.3 : 1);
+    this.dead = true; audio.sfx('explode'); this.aura.destroy(); this.tele.destroy(); this.debris(); this.fx.explode(this.x, this.y - this.height / 2, this.kind === 'turret' ? 1.3 : 1);
     this.b.enable = false; this.clearTint(); this.setAngle(0);
     const d = this.scene.add.sprite(this.x, this.y, 'e_boom', 0).setOrigin(0.5, 1).setDepth(9).setFlipX(this.flipX); d.play('e_destroy');
     const sc = this.scene; d.once('animationcomplete', () => sc.tweens.add({ targets: d, alpha: 0, duration: 200, onComplete: () => d.destroy() })); this.emit('destroyed', this); this.destroy();

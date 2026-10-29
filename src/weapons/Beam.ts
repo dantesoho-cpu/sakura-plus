@@ -1,3 +1,4 @@
+import { audio } from '../audio/Audio';
 import Phaser from 'phaser';
 import type { Fx } from '../systems/Fx';
 // Charge beam: hold to charge (swirling intake particles, building glow, 2 levels), release to fire a piercing helix beam.
@@ -15,7 +16,7 @@ export class Beam {
   charge(dt: number, x: number, y: number) {
     if (this.firing) return; this.chargeT += dt; this.x = x; this.y = y;
     const lv = this.chargeT >= BEAM.lv2 ? 2 : this.chargeT >= BEAM.lv1 ? 1 : 0;
-    if (lv > this.level) { this.level = lv; this.ring(x, y, lv === 2 ? 0xffffff : 0x9ff3ff, 18 + lv * 6); this.s.cameras.main.shake(70, 0.002 * lv); }
+    if (lv > this.level) { this.level = lv; audio.sfx('ping', { rate: lv === 2 ? 1.5 : 1, vary: 0 }); this.ring(x, y, lv === 2 ? 0xffffff : 0x9ff3ff, 18 + lv * 6); this.s.cameras.main.shake(70, 0.002 * lv); }
   }
   cancel() { this.chargeT = 0; this.level = 0; this.glow.setVisible(false); }
   release(x: number, y: number, dir: number) {

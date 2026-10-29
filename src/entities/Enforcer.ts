@@ -1,3 +1,4 @@
+import { audio } from '../audio/Audio';
 import Phaser from 'phaser';
 import { Enemy } from './Enemy';
 import type { Fx } from '../systems/Fx';
@@ -52,7 +53,7 @@ export class Enforcer extends Enemy {
   die() { // chained explosions, then the real destroy
     if (this.st === 'dying') return; this.st = 'dying'; this.dead = true; this.b.setVelocity(0, 0); this.b.enable = false; this.emit('dying', this);
     const sc = this.scene; let n = 0;
-    sc.time.addEvent({ delay: 140, repeat: 9, callback: () => { n++; this.fx.explode(this.x + Phaser.Math.Between(-24, 24), this.y + Phaser.Math.Between(-16, 16), n === 10 ? 2 : 0.8);
+    sc.time.addEvent({ delay: 140, repeat: 9, callback: () => { n++; audio.sfx('explode', { rate: n === 10 ? 0.6 : 1 }); this.fx.explode(this.x + Phaser.Math.Between(-24, 24), this.y + Phaser.Math.Between(-16, 16), n === 10 ? 2 : 0.8);
       this.setTintFill(n % 2 ? 0xffffff : 0xff6040); if (n === 10) { this.emit('destroyed', this); this.destroy(); } } });
   }
 }

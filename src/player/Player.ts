@@ -1,3 +1,4 @@
+import { audio } from '../audio/Audio';
 import { touch } from '../systems/Touch';
 import Phaser from 'phaser';
 import { PlayerFx } from './PlayerFx';
@@ -39,7 +40,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   hp = HP_MAX; iT = 0; hurtT = 0; shootPressed = false; shootAnimT = 0; gun: any = null; dbgHits = 0;
   damage(fromX: number, amt = 1): boolean {
     if (this.iT > 0 || this.hp <= 0) return false;
-    this.hp = Math.max(0, this.hp - amt); this.dbgHits++; this.iT = IFRAMES; this.hurtT = HURT_TIME; this.dashing = false; this.dashT = 0; this.trail.stop(); this.jetting = false; this.jetFx.stop(); this.jetPetals.stop();
+    audio.sfx('hurt'); this.hp = Math.max(0, this.hp - amt); this.dbgHits++; this.iT = IFRAMES; this.hurtT = HURT_TIME; this.dashing = false; this.dashT = 0; this.trail.stop(); this.jetting = false; this.jetFx.stop(); this.jetPetals.stop();
     const d = this.x < fromX ? -1 : 1; this.body_.setVelocity(d * 170, -190); this.facing = -d;
     this.setAnimState('hurt', true); this.emit('hurt', this.hp); return true;
   }
@@ -50,7 +51,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     for (const k of Object.keys(touch)) (touch as any)[k] = false;
     document.querySelectorAll('#tc .tb.dn').forEach(e => e.classList.remove('dn'));
     this.jumpPressed = this.dashPressed = this.shootPressed = false; this.dashBuf = 0; this.holdT = 0; this.shootAnimT = 0;
-    if (this.beam) this.beam.cancel(); if (this.poseLock) { this.poseLock = false; this.anims.timeScale = 1; this.play(this.state_, true); }
+    audio.stopLoops(); if (this.beam) this.beam.cancel(); if (this.poseLock) { this.poseLock = false; this.anims.timeScale = 1; this.play(this.state_, true); }
   }
   update(dt: number) {
     const k = this.keys, b = this.body_, onGround = b.blocked.down;
@@ -68,7 +69,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.dashCd -= dt;
     // dash
     if (dashP && this.dashCd <= 0 && this.dashT <= 0 && (onGround || this.canAirDash)) {
-      this.dashBuf = 0; if (dir) this.facing = dir; this.dashing = true; this.dashCount++; this.dashT = T.dashTime; this.dashCd = T.dashCooldown + T.dashTime; if (!onGround) this.canAirDash = false;
+      this.dashBuf = 0; audio.sfx('dash'); if (dir) this.facing = dir; this.dashing = true; this.dashCount++; this.dashT = T.dashTime; this.dashCd = T.dashCooldown + T.dashTime; if (!onGround) this.canAirDash = false;
       this.dbg.cur = { x0: this.x, t: 0 }; this.trail.start(); this.scene.cameras.main.shake(60, 0.002);
     }
     if (this.dashing && this.dashT <= 0) { // end dash one frame after the last dash-velocity frame was integrated
@@ -86,8 +87,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (dir) this.facing = dir;
     // jump
     if (this.bufferT > 0) {
-      if (onGround || this.coyoteT > 0) { this.dbg.jumps++; if (!onGround) this.dbg.coyoteJumps++; b.setVelocityY(-T.jumpVel); this.bufferT = 0; this.coyoteT = 0; this.setAnimState('jump', true); this.squash(0.85, 1.15); }
-      else if (this.airJumps > 0) { b.setVelocityY(-T.doubleJumpVel); this.airJumps--; this.dbg.djumps++; this.bufferT = 0; this.setAnimState('doublejump', true); this.burst(); this.squash(0.8, 1.2); }
+      if (onGround || this.coyoteT > 0) { this.dbg.jumps++; audio.sfx('jump'); if (!onGround) this.dbg.coyoteJumps++; b.setVelocityY(-T.jumpVel); this.bufferT = 0; this.coyoteT = 0; this.setAnimState('jump', true); this.squash(0.85, 1.15); }
+      else if (this.airJumps > 0) { b.setVelocityY(-T.doubleJumpVel); this.airJumps--; this.dbg.djumps++; audio.sfx('djump'); this.bufferT = 0; this.setAnimState('doublejump', true); this.burst(); this.squash(0.8, 1.2); }
     }
     // gravity: variable height + heavier fall
     let g = T.gravity; if (b.velocity.y > 0) g *= T.fallGravityMult;
@@ -100,17 +101,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       if (b.velocity.y > -JET.vel) b.setVelocityY(Math.max(-JET.vel, b.velocity.y - JET.accel * dt));
       this.fuel = Math.max(0, this.fuel - dt); this.jetting = true; this.dbg.jetT = (this.dbg.jetT || 0) + dt;
     }
-    if (this.jetting !== wasJet) { if (this.jetting) { this.jetFx.start(); this.jetPetals.start(); } else { this.jetFx.stop(); this.jetPetals.stop(); } }
+    audio.loop('jet', this.jetting); if (this.jetting !== wasJet) { if (this.jetting) { this.jetFx.start(); this.jetPetals.start(); } else { this.jetFx.stop(); this.jetPetals.stop(); } }
     this.setFlipX(this.facing < 0);
     // shoot (J / X; hold = auto-fire at cooldown rate)
     // tap = blaster shot; hold = charge; release a charged shot = beam
     const held = k.j.isDown || k.x.isDown || touch.shoot, mx = this.x + this.facing * 15, my = this.y - (this.poseLock ? 16 : 19);
-    if (this.shootPressed && this.gun && !(this.beam && this.beam.firing) && this.gun.tryFire(mx, my, this.facing)) this.shootAnimT = 0.22;
+    if (this.shootPressed && this.gun && !(this.beam && this.beam.firing) && this.gun.tryFire(mx, my, this.facing)) { this.shootAnimT = 0.22; audio.sfx('blaster'); }
     this.shootPressed = false;
     if (this.beam) {
       if (held) { this.holdT += dt; if (this.holdT > 0.25) this.beam.charge(dt, mx, my); }
-      else { if (this.beam.release(mx, my, this.facing)) this.shootAnimT = 0; this.holdT = 0; }
-      const charging = this.beam.chargeT > 0.25 && !this.beam.firing;
+      else { if (this.beam.release(mx, my, this.facing)) { this.shootAnimT = 0; audio.sfx('beam'); } this.holdT = 0; }
+      const charging = this.beam.chargeT > 0.25 && !this.beam.firing; audio.loop('charge', charging, 1 + Math.min(this.beam.chargeT, 2) * 0.6);
       if (this.beam.firing) { if (onGround) b.setVelocityX(-this.facing * 25); this.play('beamfire', true); this.poseLock = true; }
       else if (charging) { if (onGround) b.setVelocityX(Phaser.Math.Clamp(b.velocity.x, -CHARGE_WALK, CHARGE_WALK)); this.play('charge', true); this.anims.timeScale = this.beam.level === 2 ? 1.8 : this.beam.level === 1 ? 1.3 : 1; this.poseLock = true; }
       else if (this.poseLock) { this.poseLock = false; this.play(this.state_, true); }

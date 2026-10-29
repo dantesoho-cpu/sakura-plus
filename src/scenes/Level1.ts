@@ -1,3 +1,4 @@
+import { audio } from '../audio/Audio';
 import { touch, showRespawnBtn } from '../systems/Touch';
 import Phaser from 'phaser';
 import { Beam } from '../weapons/Beam';
@@ -14,6 +15,7 @@ import { Car } from '../systems/Car';
 import { Parallax } from '../systems/Parallax';
 import { LEVEL1 } from './level1Map';
 import { DECO, DECO_SIZE } from '../decoList';
+import { PLAT } from './platPieces';
 // Akari Valley Zone (chapter 1: 2023). Tilemap layers (GPU-culled) for solids + one-way ledges; decor culled manually.
 export const TS = 16;
 export const MEMORIES = [
@@ -192,6 +194,7 @@ export class Level1 extends Phaser.Scene {
     this.buildSurfaceSkin(at, MW);
     this.placeDeco(at, S);
     this.placeGen2(at, S);
+    this.placePlats(at, S);
     this.anchorProps();
     this.animateProps();
     // --- player + colliders ---
@@ -218,13 +221,13 @@ export class Level1 extends Phaser.Scene {
     this.boss.summon = (x, y) => { if (this.enemies.filter(e => e.kind === 'drone' && e.active && Math.abs(e.x - this.boss.x) < 600).length < 2) this.addE(new ScoutDrone(this, x, y, this.fx)); };
     this.boss.on('dying', () => { this.hud.draw(-1, 0); }); this.boss.on('destroyed', () => this.onBossDead());
     const kb = this.input.keyboard!;
-    const pause = () => { if (this.ending) return; this.scene.launch('Pause'); this.scene.pause(); };
+    const pause = () => { if (this.ending) return; audio.stopLoops(); audio.sfx('menu'); this.scene.launch('Pause'); this.scene.pause(); };
     kb.on('keydown-P', pause); kb.on('keydown-ESC', pause);
     kb.on('keydown-R', () => this.checkpoint()); kb.on('keydown-BACKSPACE', () => this.checkpoint());
     // never carry a held key/touch across pause, tab switch or focus loss (missed keyup = Sakura "stuck" charging/walking)
     const clear = () => this.player?.resetInput();
     this.events.on('resume', clear); this.events.on('pause', clear); this.game.events.on('blur', clear); this.game.events.on('hidden', clear);
-    showRespawnBtn(true); this.events.once('shutdown', () => { showRespawnBtn(false); this.game.events.off('blur', clear); this.game.events.off('hidden', clear); });
+    showRespawnBtn(true); this.events.once('shutdown', () => { audio.stopLoops(); showRespawnBtn(false); this.game.events.off('blur', clear); this.game.events.off('hidden', clear); });
     this.toast.show('Akari Valley. Home — after all these years.');
     (window as any).__lvl = this;
   }
@@ -244,6 +247,7 @@ export class Level1 extends Phaser.Scene {
     if (b.velocity.y < 0) return;
     const feet = b.bottom, lead = 3, xs = [b.left - (b.velocity.x < 0 ? lead : 0), b.right - 0.01 + (b.velocity.x > 0 ? lead : 0)]; let sy = Infinity, slope = false;
     for (const x of xs) { const v = this.surface(x, feet); if (v < sy) sy = v; const cx = Math.floor(x / TS), c = this.at(cx, Math.floor((v - 0.01) / TS)), c2 = this.at(cx, Math.floor(v / TS)); if (c in SLOPES || c2 in SLOPES) slope = true; }
+    for (const x of xs) { const v = this.platY(x, feet); if (v < sy) { sy = v; slope = true; } }
     if ((!slope && !was) || sy === Infinity) return;
     const tol = was ? 9 : 1;
     if (feet >= sy - tol && feet <= sy + 12) { const dy = Math.floor(sy) - feet; b.y += dy; b.velocity.y = 0; b.blocked.down = true; b.touching.down = true; this.onSlope = true; }
@@ -322,9 +326,9 @@ export class Level1 extends Phaser.Scene {
         // background ruins chunk behind long runs
         if (run >= 10 && rnd() < 0.5) { const k = pick(DECO.chunk, run * TS - 20); if (k) this.cull(this.add.image(px + rnd() * (run * TS - DECO_SIZE[k][0]) + DECO_SIZE[k][0] / 2, top + 6, 'dc_' + k).setOrigin(0.5, 1).setDepth(-16).setTint(0xc9c0dd)); }
         // cherry trees: ONE spaced pass of cohesive custom trees (no overlapping stacks)
-        { const sizes: [string, number][] = [['pr_tree_big0', 138], ['pr_tree_big1', 160], ['pr_tree_m0', 87], ['pr_tree_m1', 102], ['pr_tree_s0', 44], ['pr_tree_s1', 55], ['pr_tree_s2', 63]];
+        { const sizes: [string, number][] = [['pr_ts0', 129], ['pr_ts1', 126], ['pr_ts2', 114], ['pr_ts3', 107], ['pr_ts0dk', 129], ['pr_ts1lt', 126], ['pr_ts2dk', 114], ['pr_ts3lt', 107], ['pr_ts_sap', 41], ['pr_ts_bush', 54], ['pr_ts_sap', 41]];
           let cxp = px + 10 + rnd() * 30; const end = px + run * TS - 10;
-          while (cxp < end) { const room = end - cxp; const fits = sizes.filter(([, w]) => w * 0.8 <= room && (w < 120 || run >= 16));
+          while (cxp < end) { const room = end - cxp; const fits = sizes.filter(([, w]) => w * 0.8 <= room && (w < 128 || run >= 16));
             if (!fits.length || rnd() < 0.3) { cxp += 40 + rnd() * 60; continue; }
             const [k, w] = fits[Math.floor(rnd() * fits.length)]; const tx = cxp + w * 0.4;
             const gc = Math.floor(tx / TS); if (!busy(gc, y) && !(y === 62 && ((gc > 188 && gc < 224) || (gc > 360 && gc < 392)))) (w > 70 && this.treeTops.push([tx, top + 3 - w * 0.75, w]), this.cull(this.add.image(tx, top + 3, k).setOrigin(0.5, 1).setDepth(w > 120 ? -14 : w > 70 ? -13 : -12).setFlipX(rnd() < 0.5)));
@@ -343,6 +347,39 @@ export class Level1 extends Phaser.Scene {
   }
   // ---- second-gen pieces (regenerated in the sakuratileset style): ruins, pillars, walls, scaffolds, banners, lanterns, rocks, plants ----
   sway: Phaser.GameObjects.Image[] = []; lanterns: Phaser.GameObjects.Image[] = [];
+  // ---- sheet platforms: pieces cut 1:1 from the user's tilesheet; one-way pixel-profile tops (ramps = real slopes) ----
+  plats: { L: number; T: number; w: number; p: number[]; k: string }[] = []; platB = new Map<number, number[]>();
+  platY(x: number, feet: number): number { let best = Infinity; const ids = this.platB.get(Math.floor(x / 128)); if (!ids) return best;
+    for (const i of ids) { const q = this.plats[i], c = Math.floor(x - q.L); if (c < 0 || c >= q.w) continue; const t = q.p[c]; if (t < 0) continue;
+      const sy = q.T + t; if (sy >= feet - 10 && sy <= feet + 14 && sy < best) best = sy; } return best; }
+  addPlat(k: string, cx: number, bottom: number, flip: boolean, d: number) { const q = PLAT.find(z => z.k === k)!; const L = Math.round(cx - q.w / 2), T = Math.round(bottom - q.h);
+    this.cull(this.add.image(L, T, 'pl_' + k).setOrigin(0).setFlipX(flip).setDepth(d));
+    const i = this.plats.push({ L, T, w: q.w, p: flip ? [...q.p].reverse() : q.p, k }) - 1;
+    for (let b = Math.floor(L / 128); b <= Math.floor((L + q.w) / 128); b++) { if (!this.platB.has(b)) this.platB.set(b, []); this.platB.get(b)!.push(i); } }
+  placePlats(at: (x: number, y: number) => string, S: (x: number, y: number) => boolean) {
+    let seed = 4242; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const M = LEVEL1, MW = M[0].length;
+    const toe = (q: typeof PLAT[0]) => { const v = q.p.filter(t => t >= 0); return q.h - Math.max(v[0], v[v.length - 1]); };
+    const hill = (q: typeof PLAT[0]) => q.w >= 150 && toe(q) <= 14; // walk-up ramps resting on the ground
+    const tall = PLAT.filter(q => (q.h >= 100 && q.w <= 110) || hill(q)), float = PLAT.filter(q => q.w >= 30 && !tall.includes(q) && q.h < 145);
+    // shuffled decks => every piece cycles through before any repeats, so no two runs look alike
+    const deck = (a: typeof PLAT) => { let bag: typeof PLAT = []; return [() => { if (!bag.length) bag = [...a].sort(() => rnd() - 0.5); return bag.pop()!; }, (q: typeof PLAT[0]) => bag.unshift(q)] as const; };
+    const [nextF, backF] = deck(float), [nextT, backT] = deck(tall);
+    const clear = (x0: number, y0: number, x1: number, y1: number) => { for (let y = Math.floor(y0 / TS) - 2; y <= Math.floor(y1 / TS); y++) for (let x = Math.floor(x0 / TS) - 1; x <= Math.floor(x1 / TS) + 1; x++) { const c = at(x, y); if (c !== '.' && c !== undefined) return false; } return true; };
+    const banned = (tx: number) => (tx > 186 && tx < 226) || (tx > 358 && tx < 394) || (tx >= ARENA.x0 - 6 && tx <= ARENA.x1 + 6) || (tx >= 138 && tx <= 174) || tx < 12;
+    for (let y = 6; y < M.length - 2; y++) { let x = 2; while (x < MW - 2) {
+      if (!(S(x, y) && !S(x, y - 1) && at(x, y - 1) === '.')) { x++; continue; }
+      let e = x; while (S(e, y) && !S(e, y - 1)) e++; const run = e - x, top = y * TS;
+      for (let cx = (x + 3) * TS + rnd() * 40; cx < (e - 3) * TS; ) {
+        const t = Math.floor(cx / TS); if (run < 6 || banned(t)) { cx += 160; continue; }
+        if (rnd() < 0.45) { let q = nextT(), ok = false; for (let k = 0; k < 6 && !(ok = cx + q.w / 2 < e * TS - 8 && clear(cx - q.w / 2, top - q.h, cx + q.w / 2, top - 1)); k++) { backT(q); q = nextT(); } if (ok) { this.addPlat(q.k, cx, top + 3, rnd() < 0.5, -3); cx += q.w + 60 + rnd() * 90; continue; } }
+        const lift = 52 + Math.floor(rnd() * 3) * 18; const b = top - lift; let q = nextF(), ok = false;
+        for (let tries = 0; tries < 6 && !(ok = clear(cx - q.w / 2, b - q.h, cx + q.w / 2, top - 1) && cx + q.w / 2 < e * TS - 8); tries++) { backF(q); q = nextF(); }
+        if (ok) { this.addPlat(q.k, cx, b, rnd() < 0.5, -2); cx += q.w + 50 + rnd() * 90; } else { const q2 = PLAT.filter(z => z.h < 40 && z.w >= 30 && z.w <= q.w); const s2 = q2[Math.floor(rnd() * q2.length)]; if (s2 && clear(cx - s2.w / 2, b - s2.h, cx + s2.w / 2, top - 1)) { this.addPlat(s2.k, cx, b, rnd() < 0.5, -2); cx += s2.w + 60; } else cx += 40; }
+      }
+      x = e; } }
+    (window as any).__plats = this.plats.length;
+  }
   placeGen2(at: (x: number, y: number) => string, S: (x: number, y: number) => boolean) {
     let seed = 98765; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     const BIG = [1, 5, 6, 9, 10, 19], MID = [0, 4, 7, 8, 13, 12, 23, 11], SMALL = [2, 3, 15, 16, 17, 20, 21], PLANT = [22, 24, 22, 24];
@@ -376,7 +413,7 @@ export class Level1 extends Phaser.Scene {
   }
   surfaceBelow(x: number, y0: number, S: (x: number, y: number) => boolean) { for (let y = y0; y < LEVEL1.length; y++) if (S(x, y) && !S(x, y - 1)) return y; return -1; }
   collect(f: any) {
-    if (!f.active) return; f.destroy(); this.got++; this.hud.setMem(this.got); this.fx.spark(f.x, f.y); this.player.trail.explode(14, f.x, f.y);
+    if (!f.active) return; audio.sfx('flower'); f.destroy(); this.got++; this.hud.setMem(this.got); this.fx.spark(f.x, f.y); this.player.trail.explode(14, f.x, f.y);
     this.toast.show(MEMORIES[this.got - 1] + `  (${this.got}/10)`, '#ffd6f0');
   }
   pickJet() {
@@ -389,7 +426,7 @@ export class Level1 extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, LEVEL1[0].length * TS, LEVEL1.length * TS); this.toast.show('The Enforcer falls. The torii path is clear.', '#ffd23f');
     if (this.got >= 10) this.openGate();
   }
-  openGate() { if (this.gateOpen) return; this.gateOpen = true; (this.gate.body as any).enable = false; this.tweens.add({ targets: this.gateFx, alpha: 0, duration: 600 }); this.toast.show('All ten memories. The gate remembers you.', '#ffd6f0'); }
+  openGate() { if (this.gateOpen) return; audio.sfx('gate'); this.gateOpen = true; (this.gate.body as any).enable = false; this.tweens.add({ targets: this.gateFx, alpha: 0, duration: 600 }); this.toast.show('All ten memories. The gate remembers you.', '#ffd6f0'); }
   respawn(full: boolean) {
     const p = this.player, b = p.body_;
     if (full) { this.deaths++; p.hp = HP_MAX; this.hud.setHp(p.hp); this.cameras.main.flash(250, 255, 200, 230);
@@ -399,7 +436,7 @@ export class Level1 extends Phaser.Scene {
   }
   /** manual "respawn at last checkpoint" (HUD button / R / Backspace / Pause menu). No HP cost. */
   checkpoint() {
-    if (this.ending) return; const p = this.player; p.resetInput(); p.hurtT = 0; p.dashing = false; p.dashT = 0;
+    if (this.ending) return; audio.sfx('respawn'); const p = this.player; p.resetInput(); p.hurtT = 0; p.dashing = false; p.dashT = 0;
     if (this.arena) { this.arena = false; this.walls.clear(true, true); this.boss.reset(); this.hud.draw(-1, -1); this.cameras.main.setBounds(0, 0, LEVEL1[0].length * TS, LEVEL1.length * TS); }
     p.setPosition(this.spawn.x, this.spawn.y); p.body_.setVelocity(0, 0); p.iT = 1; this.stuckT = 0; this.manualRespawns++;
     this.cameras.main.flash(200, 255, 200, 230); this.toast.show('Back to the last checkpoint.', '#ffd6f0');
@@ -439,7 +476,7 @@ export class Level1 extends Phaser.Scene {
     if (this.boss.active && !this.boss.dead) this.boss.tick(dt, p.x, p.y - 14);
     this.hud.draw(p.hasJet ? p.fuel / JET.fuel : -1, this.arena && this.boss.active ? Math.max(0, this.boss.hp / this.boss.maxHp) : (this.boss.dead && this.boss.active ? 0 : -1));
     if (p.body_.blocked.down) this.safe = { x: p.x - p.facing * 6, y: p.y };
-    if (!this.shrineLit && this.shrineX && p.x > this.shrineX) { this.shrineLit = true; this.spawn = { x: this.shrineX, y: p.y }; this.fx.explode(this.shrineX, p.y - 20, 0.5); this.toast.show('Lantern shrine lit — checkpoint.', '#ffd23f'); }
+    if (!this.shrineLit && this.shrineX && p.x > this.shrineX) { this.shrineLit = true; audio.sfx('checkpoint'); this.spawn = { x: this.shrineX, y: p.y }; this.fx.explode(this.shrineX, p.y - 20, 0.5); this.toast.show('Lantern shrine lit — checkpoint.', '#ffd23f'); }
     if (!this.arena && !this.bossDead && p.x > (ARENA.x0 + 3) * TS && p.y > 64 * TS) this.lockArena();
     if (this.gate && !this.gateOpen && Math.abs(p.x - this.gate.x) < 24 && (this.gateToastT -= dt) <= 0) {
       this.gateToastT = 3; if (this.bossDead && this.got >= 10) this.openGate(); else this.toast.show(this.bossDead ? `The gate is sealed. Memories ${this.got}/10.` : 'Defeat the Enforcer first.', '#ff8a8a'); }

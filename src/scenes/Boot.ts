@@ -1,3 +1,4 @@
+import { PLAT } from './platPieces';
 import Phaser from 'phaser';
 import { makeCombatTextures } from '../systems/Textures';
 import { DECO_SIZE } from '../decoList';
@@ -32,7 +33,8 @@ export class Boot extends Phaser.Scene {
     this.load.image('P_far', 'assets/bg/P_far.png'); this.load.image('P_mid', 'assets/bg/P_mid.png'); this.load.json('pano', 'assets/bg/pano.json');
     for (const k of ['lantern2', 'arch', 'fence']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     this.load.image('panorama', 'assets/bg/panorama_full.png');
-    for (const k of ['bush', 'bush2', 'jetboots', 'bridge_parts', 'tree_big0', 'tree_big1', 'tree_s0', 'tree_s1', 'tree_s2', 'tree_m0', 'tree_m1', 'wf_lip0', 'wf_lip1', 'wf_lip2', 'wf_rocks']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
+    for (const q of PLAT) this.load.image('pl_' + q.k, `assets/plat/${q.k}.png`);
+    for (const k of ['bush', 'bush2', 'jetboots', 'bridge_parts', 'tree_big0', 'tree_big1', 'tree_s0', 'tree_s1', 'tree_s2', 'tree_m0', 'tree_m1', ...['ts0','ts1','ts2','ts3'].flatMap(t => [t, t + 'dk', t + 'lt']), 'ts_sap', 'ts_bush', 'wf_lip0', 'wf_lip1', 'wf_lip2', 'wf_rocks']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     for (const k of Object.keys(DECO_SIZE)) this.load.image('dc_' + k, `assets/deco/${k}.png`);
     this.load.spritesheet('boss', 'assets/enemies/boss.png', { frameWidth: 60, frameHeight: 45 });
     this.load.spritesheet('slopes', 'assets/tiles/slopes.png', { frameWidth: 16, frameHeight: 16 });
