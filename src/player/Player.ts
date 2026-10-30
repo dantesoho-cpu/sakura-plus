@@ -31,12 +31,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
   hasJet = false; fuel = JET.fuel; jetting = false; jetFx!: Phaser.GameObjects.Particles.ParticleEmitter; jetPetals!: Phaser.GameObjects.Particles.ParticleEmitter;
   dashBuf = 0; poseLock = false; dashCount = 0; pfx: PlayerFx; beam: any = null; holdT = 0;
-  hp = HP_MAX; iT = 0; hurtT = 0; shootPressed = false; shootBuf = 0; shootAnimT = 0; gun: any = null; dbgHits = 0;
+  hp = HP_MAX; iT = 0; sil = false; hurtT = 0; shootPressed = false; shootBuf = 0; shootAnimT = 0; gun: any = null; dbgHits = 0;
+  /** hit shards: square palette pixels, gravity, no AA */
+  shards(d: number) { const sc = this.scene; if (!sc.textures.exists('px2')) { const g = sc.add.graphics(); g.fillStyle(0xffffff).fillRect(0, 0, 2, 2); g.generateTexture('px2', 2, 2); g.destroy(); }
+    const e = sc.add.particles(this.x, this.y - 20, 'px2', { speedX: { min: d * 40, max: d * 160 }, speedY: { min: -170, max: -40 }, gravityY: 520, lifespan: { min: 260, max: 480 }, tint: [0xff5c8a, 0xffd2e4, 0xff2e5a, 0xfff4fb], quantity: 9, emitting: false }).setDepth(this.depth + 1);
+    e.explode(9); sc.time.delayedCall(600, () => e.destroy()); }
   damage(fromX: number, amt = 1): boolean {
     if (this.iT > 0 || this.hp <= 0) return false;
     audio.sfx('hurt'); this.hp = Math.max(0, this.hp - amt); this.dbgHits++; this.iT = IFRAMES; this.hurtT = HURT_TIME; this.dashing = false; this.dashT = 0; this.trail.stop(); this.jetting = false; this.jetFx.stop(); this.jetPetals.stop();
     const d = this.x < fromX ? -1 : 1; this.body_.setVelocity(d * FEEL.hurt.knockX, -FEEL.hurt.knockY); this.setTintFill(0xffffff); this.scene.time.delayedCall(FEEL.hurt.flashMs, () => this.clearTint()); this.facing = -d;
-    this.setAnimState('hurt', true); this.emit('hurt', this.hp); return true;
+    this.shards(d); this.setAnimState('hurt', true); this.emit('hurt', this.hp); return true;
   }
   get body_() { return this.body as Phaser.Physics.Arcade.Body; }
   /** clears every held input + charge/pose state (used on blur, pause/resume, respawn, and by the stuck watchdog) */
@@ -51,7 +55,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const k = this.keys, b = this.body_, onGround = b.blocked.down; if (!onGround) this.lastVy = b.velocity.y;
     if (touch.jumpP) { this.jumpPressed = true; touch.jumpP = false; } if (touch.dashP) { this.dashPressed = true; touch.dashP = false; } if (touch.shootP) { this.shootPressed = true; touch.shootP = false; }
     const dir = (k.right.isDown || k.d.isDown || touch.right ? 1 : 0) - (k.left.isDown || k.a.isDown || touch.left ? 1 : 0);
-    if (this.iT > 0) { this.iT -= dt; this.setAlpha(this.iT > 0 && Math.floor(this.iT * 20) % 2 ? 0.25 : 1); }
+    if (this.iT > 0) { this.iT -= dt; const on = this.iT > 0 && this.iT < IFRAMES - FEEL.hurt.flashMs / 1000 && Math.floor(this.iT * 16) % 2 === 1; /* hi-bit i-frames: hard flicker to a solid plum silhouette, no translucency */
+      if (on !== this.sil) { this.sil = on; if (on) this.setTintFill(0x2a1238); else this.clearTint(); } this.setAlpha(1); }
     if (this.hurtT > 0) {
       this.hurtT -= dt; let gh = T.gravity * (b.velocity.y > 0 ? T.fallGravityMult : 1); b.setVelocityY(b.velocity.y + gh * dt);
       b.setVelocityX(b.velocity.x * Math.pow(0.05, dt)); this.jumpPressed = this.dashPressed = this.shootPressed = false; this.setFlipX(this.facing < 0);
