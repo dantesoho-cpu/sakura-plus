@@ -19,6 +19,7 @@ export class Title extends Phaser.Scene {
     const go = () => { audio.sfx('menu'); this.cameras.main.fadeOut(300); this.time.delayedCall(320, () => this.scene.start(Title.introOn() ? 'Intro' : 'Level1')); };
     let gone = false; const go1 = go; const goOnce = () => { if (!gone) { gone = true; go1(); } };
     this.input.keyboard!.once('keydown-ENTER', goOnce); this.input.on('pointerdown', goOnce); if (isTouch()) this.prompt.setText('TAP TO START'); this.input.keyboard!.once('keydown-SPACE', goOnce);
+    this.input.keyboard!.once('keydown-TWO', () => this.scene.start('Level2')); if (/[?&]lvl=2/.test(location.search)) this.time.delayedCall(50, () => this.scene.start('Level2'));
     this.cameras.main.fadeIn(300);
   }
   update(_t: number, d: number) { const dt = d / 1000; this.t += dt; this.cameras.main.scrollX += 20 * dt; this.bg.update(dt); this.petals.update(dt); this.prompt.setAlpha(0.5 + 0.5 * Math.sin(this.t * 4)); }
