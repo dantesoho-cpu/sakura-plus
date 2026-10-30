@@ -1,5 +1,5 @@
 {
- "vic": false,
- "restarted": false,
+ "vic": true,
+ "restarted": true,
  "errs": []
 }

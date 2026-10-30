@@ -381,7 +381,7 @@ export class Level1 extends Phaser.Scene {
     const toe = (q: typeof PLAT[0]) => { const v = q.p.filter(t => t >= 0); return q.h - Math.max(v[0], v[v.length - 1]); };
     const hill = (q: typeof PLAT[0]) => q.w >= 150 && toe(q) <= 90;
     // ground under the whole footprint must be solid down to the toe depth, so a sunk ramp never shows its base over a pit
-    const deep = (q: typeof PLAT[0], cx: number, y: number) => { const n = Math.ceil(toe(q) / TS) + 1; for (let x = Math.floor((cx - q.w / 2) / TS); x <= Math.floor((cx + q.w / 2) / TS); x++) for (let d = 0; d < n; d++) if (!S(x, y + d)) return false; return true; }; // walk-up ramps resting on the ground
+    const deep = (q: typeof PLAT[0], cx: number, y: number) => { const n = Math.ceil((toe(q) + 3) / TS); /* buried toe inside solid ground, 3px margin; drawn behind tiles */ for (let x = Math.floor((cx - q.w / 2) / TS); x <= Math.floor((cx + q.w / 2) / TS); x++) for (let d = 0; d < n; d++) if (!S(x, y + d)) return false; return true; }; // walk-up ramps resting on the ground
     const tall = PLAT.filter(q => (q.h >= 100 && q.w <= 110) || hill(q)), float = PLAT.filter(q => q.w >= 30 && !tall.includes(q) && q.h < 145);
     // shuffled decks => every piece cycles through before any repeats, so no two runs look alike
     const deck = (a: typeof PLAT) => { let bag: typeof PLAT = []; return [() => { if (!bag.length) bag = [...a].sort(() => rnd() - 0.5); return bag.pop()!; }, (q: typeof PLAT[0]) => bag.unshift(q)] as const; };
@@ -394,15 +394,15 @@ export class Level1 extends Phaser.Scene {
     const runs: [number, number, number][] = [];
     for (let y = 6; y < M.length - 2; y++) { let x = 2; while (x < MW - 2) { if (!(S(x, y) && !S(x, y - 1) && at(x, y - 1) === '.')) { x++; continue; } let e = x; while (S(e, y) && !S(e, y - 1)) e++; runs.push([x, e, y]); x = e; } }
     runs.sort((a, b) => (b[1] - b[0]) - (a[1] - a[0]));
-    const fill = (list: typeof PLAT) => { for (const q of list.sort((a, b) => b.w - a.w)) {
+    const fill = (list: typeof PLAT, relax = 1, quiet = false) => { for (const q of list.sort((a, b) => b.w - a.w)) {
       let done = false; const isG = tall.includes(q);
       for (let tier = 0; tier < 4 && !done; tier++) { const ix = isG && q.w >= 150 ? 0 : tier === 3 ? q.w * 0.3 : tier ? q.w * 0.2 : 0, iy = tier === 3 ? 90 : tier ? 64 : 0;
         const lifts = isG ? [0] : tier === 3 ? [52, 70, 88, 40] : tier < 2 ? [52, 70, 88, 106, 40, 124, 64, 80] : [140, 160, 180, 34];
         for (const [x0, e, y] of runs) { const top = y * TS; if (done) break; if ((e - x0) * TS < q.w * (tier ? 0.6 : 1) + 16) continue;
           for (let cx = x0 * TS + q.w / 2 - ix + 8; cx <= e * TS - q.w / 2 + ix - 8 && !done; cx += 12) { if (banned(Math.floor(cx / TS))) continue;
-            for (const lift of lifts) { const b = top - lift; if (!clear(cx - q.w / 2 + ix, b - q.h + iy, cx + q.w / 2 - ix, top - 1) || (isG && q.w >= 150 && !deep(q, cx, y)) || occ(cx - q.w / 2, cx + q.w / 2, b - q.h, b, tier < 3 ? 1 : 0.7)) continue;
+            for (const lift of lifts) { const b = top - lift; if (!clear(cx - q.w / 2 + ix, b - q.h + iy, cx + q.w / 2 - ix, top - 1) || (isG && q.w >= 150 && !deep(q, cx, y)) || occ(cx - q.w / 2, cx + q.w / 2, b - q.h, b, (tier < 3 ? 1 : 0.7) * relax)) continue;
               if (isG) this.groundPlat(q, cx, top); else this.addPlat(q.k, cx, b, rnd() < 0.5, -2); done = true; break; } } } }
-      if (!done) console.warn('plat: no spot for', q.k); } };
+      if (!done && !quiet) console.warn('plat: no spot for', q.k); } };
     fill(PLAT.filter(hill)); // big walk-up ramps first: they need the long flat runs
     for (let y = 6; y < M.length - 2; y++) { let x = 2; while (x < MW - 2) {
       if (!(S(x, y) && !S(x, y - 1) && at(x, y - 1) === '.')) { x++; continue; }
@@ -415,7 +415,9 @@ export class Level1 extends Phaser.Scene {
         if (ok) { this.addPlat(q.k, cx, b, rnd() < 0.5, -2); cx += q.w + 50 + rnd() * 90; } else { const q2 = PLAT.filter(z => z.h < 40 && z.w >= 30 && z.w <= q.w); const s2 = q2[Math.floor(rnd() * q2.length)]; if (s2 && clear(cx - s2.w / 2, b - s2.h, cx + s2.w / 2, top - 1)) { this.addPlat(s2.k, cx, b, rnd() < 0.5, -2); cx += s2.w + 60; } else cx += 40; }
       }
       x = e; } }
-    { const used = new Set(this.plats.map(q => q.k)); fill(PLAT.filter(z => !used.has(z.k))); }
+    { const used = new Set(this.plats.map(q => q.k)); fill(PLAT.filter(z => !used.has(z.k) && !hill(z))); }
+    // last chance for wide walk-up hills: tighter spacing, but still flush on deep ground
+    for (const r of [0.5, 0.25]) { const used = new Set(this.plats.map(q => q.k)); const left = PLAT.filter(z => !used.has(z.k) && hill(z)); if (left.length) fill(left, r, r > 0.25); }
     (window as any).__plats = this.plats.length; (window as any).__platKinds = new Set(this.plats.map(q => q.k)).size;
   }
   // ground pieces: walk-up hills sit flush (their low-end walk line = the ground line, sprite base buried under the turf); pillars get solid sides
