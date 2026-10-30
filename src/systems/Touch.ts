@@ -30,8 +30,19 @@ export function setupTouch() {
     ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, anyUp as any, true)); ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => b.addEventListener(t, up as any));
   };
   const sb = 'env(safe-area-inset-bottom,0px)';
-  mk('left', '◀', 'dp', `left:calc(18px + env(safe-area-inset-left,0px));bottom:calc(22px + ${sb})`);
-  mk('right', '▶', 'dp', `left:calc(100px + env(safe-area-inset-left,0px));bottom:calc(22px + ${sb})`);
+  // circular analog stick (very transparent): horizontal deflection past a dead zone drives touch.left/right
+  const st = document.createElement('div'); st.id = 'stick'; st.dataset.k = 'stick';
+  st.setAttribute('style', `position:absolute;pointer-events:auto;touch-action:none;width:124px;height:124px;border-radius:50%;left:calc(18px + env(safe-area-inset-left,0px));bottom:calc(16px + ${sb});background:radial-gradient(circle,rgba(58,26,90,.10) 0 58%,rgba(58,26,90,.16) 60%);border:2px solid rgba(255,143,208,.22);box-shadow:0 0 0 2px rgba(26,15,46,.25);-webkit-tap-highlight-color:transparent`);
+  const kn = document.createElement('div'); kn.id = 'knob';
+  kn.setAttribute('style', 'position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:rgba(255,143,208,.20);border:2px solid rgba(255,200,235,.35);box-shadow:inset 0 -4px 0 rgba(26,15,46,.3);pointer-events:none');
+  st.appendChild(kn); tc.appendChild(st);
+  let sid = -1;
+  const mv = (e: PointerEvent) => { const r = st.getBoundingClientRect(), R = r.width / 2; let dx = e.clientX - r.left - R, dy = e.clientY - r.top - R; const d = Math.hypot(dx, dy), m = R * 0.62; if (d > m) { dx *= m / d; dy *= m / d; }
+    kn.style.transform = `translate(${dx}px,${dy}px)`; const ax = dx / m; touch.right = ax > 0.3; touch.left = ax < -0.3; kn.style.background = touch.left || touch.right ? 'rgba(255,95,176,.42)' : 'rgba(255,143,208,.20)'; };
+  const rel = (e: PointerEvent) => { if (e.pointerId !== sid) return; sid = -1; touch.left = touch.right = false; kn.style.transform = ''; kn.style.background = 'rgba(255,143,208,.20)'; };
+  st.addEventListener('pointerdown', e => { e.preventDefault(); sid = e.pointerId; st.setPointerCapture?.(e.pointerId); mv(e); });
+  st.addEventListener('pointermove', e => { if (e.pointerId === sid) { e.preventDefault(); mv(e); } });
+  ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, rel as any, true)); st.addEventListener('lostpointercapture', rel as any);
   const r = 'env(safe-area-inset-right,0px)';
   mk('shoot', 'SHOOT', 'ab', `right:calc(176px + ${r});bottom:calc(18px + ${sb})`);
   mk('dash', 'DASH', 'ab', `right:calc(96px + ${r});bottom:calc(66px + ${sb})`);

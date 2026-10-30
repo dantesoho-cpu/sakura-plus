@@ -1,8 +1,11 @@
 import { audio } from '../audio/Audio';
+import { GIANT_DECKS } from './giantDecks';
+import { WaspBomber, Sentry, ShieldTrooper } from '../entities/Kurogen2';
 import { touch, showRespawnBtn } from '../systems/Touch';
 import Phaser from 'phaser';
 import { Beam } from '../weapons/Beam';
 import { Player, HP_MAX, JET } from '../player/Player';
+import { Pickups, POWER_T, type PK } from '../systems/Pickups';
 import { Fx } from '../systems/Fx';
 import { Blaster } from '../weapons/Blaster';
 import { Enemy } from '../entities/Enemy';
@@ -38,6 +41,7 @@ const ARENA = { x0: 404, x1: 470 };
 export class Level1 extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; giants: [number, number, string][] = []; treeTops: [number, number, number][] = []; hud!: Hud; toast!: Toast; bg!: Parallax;
   solid!: Phaser.Tilemaps.TilemapLayer; oneway!: Phaser.Tilemaps.TilemapLayer; enemyGroup!: Phaser.Physics.Arcade.Group;
+  pk!: Pickups; powT = 0; rapT = 0; auraT2 = 0;
   flowers!: Phaser.Physics.Arcade.StaticGroup; got = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 0, y: 0 }; safe = { x: 0, y: 0 };
   boss!: Enforcer; bossDead = false; arena = false; walls!: Phaser.Physics.Arcade.StaticGroup; gate!: Phaser.Physics.Arcade.Image; gateFx!: Phaser.GameObjects.TileSprite;
   gateOpen = false; ending = false; shrineX = 0; shrineLit = false; jetPick!: Phaser.Physics.Arcade.Image; carX = 0; car!: Car;
@@ -45,15 +49,17 @@ export class Level1 extends Phaser.Scene {
   constructor() { super('Level1'); }
   falls2: { t: Phaser.GameObjects.TileSprite; v: number }[] = [];
   /** Lush waterfall: two scrolling sheets at different speeds, lip foam, plunge foam, rising mist, splash droplets and glints. */
-  waterfall(x: number, y: number, w: number, h: number, big = false, lipFoam = true) {
-    const back = this.add.tileSprite(x - 2, y, w + 4, h, 'waterfall').setOrigin(0).setDepth(big ? -6 : 0.9).setAlpha(0.55).setTint(0x8fd8ff).setTileScale(big ? 1 : 1, 1);
-    const front = this.add.tileSprite(x, y, w, h, 'waterfall').setOrigin(0).setDepth(big ? -5.9 : 1).setAlpha(0.92);
-    const hi = this.add.tileSprite(x + w * 0.2, y, w * 0.6, h, 'waterfall').setOrigin(0).setDepth(big ? -5.8 : 1.1).setAlpha(0.35).setBlendMode(Phaser.BlendModes.ADD);
+  wfRects: { x: number; y: number; w: number; h: number; behind: boolean }[] = []; sil: Phaser.GameObjects.Sprite | null = null; fallVol = 0; behindNow = false;
+  waterfall(x: number, y: number, w: number, h: number, big = false, lipFoam = true, behind = false) {
+    this.wfRects.push({ x, y, w, h, behind }); const D = behind ? 9.5 : 0;
+    const back = this.add.tileSprite(x - 2, y, w + 4, h, 'waterfall').setOrigin(0).setDepth(big ? -6 : 0.9 + D).setAlpha(0.55).setTint(0x8fd8ff).setTileScale(big ? 1 : 1, 1);
+    const front = this.add.tileSprite(x, y, w, h, 'waterfall').setOrigin(0).setDepth(big ? -5.9 : 1 + D).setAlpha(0.92);
+    const hi = this.add.tileSprite(x + w * 0.2, y, w * 0.6, h, 'waterfall').setOrigin(0).setDepth(big ? -5.8 : 1.1 + D).setAlpha(0.35).setBlendMode(Phaser.BlendModes.ADD);
     // shaded edges + streaks so the sheet reads as falling water, not a flat stripe
     const ew = big ? 10 : 5; for (const ex of [x, x + w - ew]) this.add.tileSprite(ex, y, ew, h, 'waterfall').setOrigin(0).setDepth(front.depth + 0.05).setTint(0x2a68a8).setAlpha(0.6);
     if (big) for (let i = 0; i < 4; i++) { const st = this.add.tileSprite(x + 14 + i * 24, y, 6, h, 'waterfall').setOrigin(0).setDepth(front.depth + 0.06).setTint(i % 2 ? 0x5aa0e0 : 0xffffff).setAlpha(0.3).setBlendMode(i % 2 ? Phaser.BlendModes.NORMAL : Phaser.BlendModes.ADD); this.falls2.push({ t: st, v: 90 + i * 25 }); }
     this.falls.push(front); this.falls2.push({ t: back, v: 45 }, { t: hi, v: 120 });
-    const bot = y + h - 6, cx = x + w / 2, d = big ? -5.7 : 4;
+    const bot = y + h - 6, cx = x + w / 2, d = big ? -5.7 : behind ? 10.9 : 4;
     if (lipFoam) this.add.ellipse(cx, y + 2, w + 6, 6, 0xbfe8ff, 0.6).setDepth(d);   // lip foam (springs use their rock lip instead)
     const foam = this.add.ellipse(cx, bot + 2, w * 1.5, big ? 14 : 9, 0xffffff, 0.8).setDepth(d); this.tweens.add({ targets: foam, scaleX: 1.12, scaleY: 0.85, yoyo: true, repeat: -1, duration: 420, ease: 'Sine.inOut' });
     this.add.particles(0, 0, 'glow', { x: { min: x - 6, max: x + w + 6 }, y: bot, speedY: { min: -14, max: -30 }, speedX: { min: -12, max: 12 }, scale: { start: big ? 0.9 : 0.5, end: big ? 1.8 : 1.1 }, alpha: { start: 0.28, end: 0 }, tint: 0xe8f8ff, lifespan: 1600, frequency: big ? 60 : 160 }).setDepth(d + 0.1);
@@ -64,7 +70,7 @@ export class Level1 extends Phaser.Scene {
   /** A complete spring: mossy outcrop lip (source) -> falling sheet -> stone basin with animated ripples + splash rocks + foam. */
   fallUnit(cx: number, yTop: number, ySurf: number, size: number, r: number) {
     this.fallPos.push([cx, yTop, ySurf]); const w = size ? 32 : 22, lip = this.add.image(cx, yTop - 7, 'pr_wf_lip' + size).setOrigin(0.5, 0).setDepth(1.2);
-    this.waterfall(cx - w / 2, yTop - 7 + lip.height * 0.5, w, ySurf - yTop + 7 - lip.height * 0.5 + 4, false, false);
+    this.waterfall(cx - w / 2, yTop - 7 + lip.height * 0.5, w, ySurf - yTop + 7 - lip.height * 0.5 + 4, false, false, this.fallPos.length % 2 === 1);
     const bs = this.add.sprite(cx, ySurf + 9, 'wf_basin' + size, 0).setOrigin(0.5, 1).setDepth(4.5); bs.play('wf_basin' + size);
     bs.anims.setProgress(r);
     for (const sx of [-1, 1]) this.add.image(cx + sx * (bs.width / 2 - 4), ySurf + 2, 'pr_wf_rocks').setOrigin(0.5, 1).setDepth(4.6).setFlipX(sx > 0);
@@ -90,8 +96,8 @@ export class Level1 extends Phaser.Scene {
     this.add.image(x0 - 8, yt + 20, 'pr_bridge_parts', 'capL').setOrigin(0, 1).setDepth(3.3); this.add.image(x1 - 2, yt + 20, 'pr_bridge_parts', 'capR').setOrigin(0, 1).setDepth(3.3);
   }
   create() {
-    const M = LEVEL1, MW = M[0].length, MH = M.length, worldW = MW * TS, worldH = MH * TS;
-    Object.assign(this, { enemies: [], got: 0, kills: 0, deaths: 0, time_: 0, bossDead: false, arena: false, gateOpen: false, ending: false, shrineLit: false, falls: [], falls2: [], waters: [], deco: [] });
+    const M = LEVEL1.map((r, y) => y === 46 ? r.slice(0, 186) + r.slice(186, 200).replace(/=/g, '.') + r.slice(200) : r), MW = M[0].length, MH = M.length, worldW = MW * TS, worldH = MH * TS;
+    Object.assign(this, { enemies: [], got: 0, kills: 0, deaths: 0, time_: 0, bossDead: false, arena: false, gateOpen: false, ending: false, shrineLit: false, falls: [], falls2: [], wfRects: [], sil: null, waters: [], deco: [] });
     this.bg = new Parallax(this);
     const at = (x: number, y: number) => (x < 0 || x >= MW) ? '#' : (y < 0 ? '.' : y >= MH ? (M[MH - 1][x] === '#' ? '#' : '.') : M[y][x]);
     const S = (x: number, y: number) => at(x, y) === '#' || at(x, y) in SLOPES; this.at = at;
@@ -128,7 +134,11 @@ export class Level1 extends Phaser.Scene {
     const deckRun = (x0: number, x1: number, yPx: number) => { const r = Math.round(yPx / TS); for (let i = Math.floor(x0 / TS); i <= Math.floor(x1 / TS); i++) deckL.putTileAt(2, i, r).setCollision(false, false, true, false); };
     const giant = (k: string, cx: number, floor: number, sc: number, w: number, h: number, decks: [number, number, number][], d = -3) => {
       const L = cx - w * sc / 2, T = floor - h * sc; this.add.image(cx, floor + 2, k).setOrigin(0.5, 1).setScale(sc).setDepth(d);
-      for (const [y, a, b] of decks) deckRun(L + a * sc, L + b * sc, T + y * sc); this.giants.push([cx, T, k]); return { L, T }; };
+      void decks; // pixel-exact top-edge profiles traced from the art (tools/giant_decks.py)
+      for (const [a, prof] of GIANT_DECKS[k]) { const L0 = Math.round(L + a * sc), p: number[] = []; for (let i = 0; i < prof.length * sc; i++) p.push(prof[Math.floor(i / sc)] * sc);
+        const id = this.plats.push({ L: L0, T: Math.round(T), w: p.length, p, k: 'g_' + k } as any) - 1;
+        for (let bk = Math.floor(L0 / 128); bk <= Math.floor((L0 + p.length) / 128); bk++) { if (!this.platB.has(bk)) this.platB.set(bk, []); this.platB.get(bk)!.push(id); } }
+      this.giants.push([cx, T, k]); return { L, T }; };
     const gLantern = (cx: number, floor: number) => { const { T } = giant('pr_lantern_stone', cx, floor, 2, 58, 122, [[12, 12, 46], [54, 12, 46], [78, 9, 49], [99, 2, 55]], -2.5);
       const g = this.add.image(cx, T + 54, 'glow').setTint(0xffb347).setBlendMode(Phaser.BlendModes.ADD).setScale(2.6).setDepth(-2.4);
       this.tweens.add({ targets: g, alpha: { from: 0.5, to: 1 }, scale: { from: 2.3, to: 3.0 }, duration: 110, yoyo: true, repeat: -1, repeatDelay: 180, ease: 'Stepped' });
@@ -152,7 +162,7 @@ export class Level1 extends Phaser.Scene {
       for (let y = 4; y < MH - 6; y++) for (let x = 6; x < MW - 6; x++) {
         if (!(at(x, y) === '#' && !S(x, y + 1))) continue; const edge = !S(x + 1, y) ? 1 : !S(x - 1, y) ? -1 : 0; if (!edge) continue;
         let e = y + 1; while (e < MH && !S(x, e) && !S(x - 1, e) && !S(x + 1, e) && at(x, e) === '.') e++;
-        const drop = e - y - 1; if (drop < 5 || drop > 30 || e >= MH - 4 || !S(x, e) || !S(x - 1, e) || !S(x + 1, e)) continue;
+        const drop = e - y - 1; if (drop < 5 || drop > 20 || [1, 2, 3].some(i => !S(x - edge * i, y)) || [-2, -1, 0, 1, 2].some(i => !S(x + i, e)) || [...Array(drop)].some((_, k) => at(x - 1, y + 1 + k) !== '.' && !S(x - 1, y + 1 + k) || at(x + 1, y + 1 + k) !== '.' && !S(x + 1, y + 1 + k)) || e >= MH - 4 || !S(x, e) || !S(x - 1, e) || !S(x + 1, e)) continue;
         if ((x >= 138 && x <= 174) || (x >= ARENA.x0 - 4 && x <= ARENA.x1 + 4)) continue;
         cands.push([x, y, e]); }
       let seedW = 99; const r2 = () => ((seedW = (seedW * 16807) % 2147483647) / 2147483647);
@@ -166,14 +176,14 @@ export class Level1 extends Phaser.Scene {
     this.fx = new Fx(this); this.gun = new Blaster(this, 'p', 'shot'); this.egun = new Blaster(this, 'e', 'ebolt', { cooldown: 0, speed: 150, life: 3 });
     this.enemyGroup = this.physics.add.group({ allowGravity: false });
     const prop = (k: string, x: number, y: number, d = -10) => this.cull(this.add.image(x, y, k).setOrigin(0.5, 1).setDepth(d));
-    let bushN = 0, mem = 0;
+    let bushN = 0, mem = 0, nB = 0, nD = 0, nT = 0;
     M.forEach((row, y) => [...row].forEach((c, x) => {
       const px = x * TS, cx = px + 8, gy = (y + 1) * TS;
       if (c === 'f') { const fl = this.flowers.create(cx, gy - 8, 'pr_flower').setDepth(6) as any; fl.mem = mem++;
         this.tweens.add({ targets: fl, y: gy - 11, yoyo: true, repeat: -1, duration: 700, ease: 'Sine.inOut' }); }
-      else if (c === 'b') this.addE(new GroundBot(this, cx, gy, this.fx));
-      else if (c === 'd') this.addE(new ScoutDrone(this, cx, gy, this.fx));
-      else if (c === 't') this.addE(new Turret(this, cx, gy, this.fx, this.egun));
+      else if (c === 'b') this.addE(nB++ % 3 === 1 ? new ShieldTrooper(this, cx, gy, this.fx, this.egun) : new GroundBot(this, cx, gy, this.fx));
+      else if (c === 'd') this.addE(nD++ % 3 === 1 ? new WaspBomber(this, cx, gy, this.fx, this.egun) : new ScoutDrone(this, cx, gy, this.fx));
+      else if (c === 't') this.addE(nT++ % 4 === 2 ? new Sentry(this, cx, gy, this.fx, this.egun) : new Turret(this, cx, gy, this.fx, this.egun));
       else if (c === 'K') { this.boss = new Enforcer(this, cx, gy - 30, this.fx, this.egun); this.enemyGroup.add(this.boss); this.boss.b.setAllowGravity(false);
         const bg = this.rawGround(cx, gy - 8); if (bg > 0) { this.boss.gy = bg - 36; this.boss.y = this.boss.gy; } }
       else if (c === 'P') { this.spawn = { x: cx, y: gy }; }
@@ -186,7 +196,7 @@ export class Level1 extends Phaser.Scene {
       else if (c === 'T') prop('pr_torii', cx, gy, -6);
       else if (c === 'C') { this.car = new Car(this, cx, gy + 1).setDepth(5); this.carX = cx; }
       else if (c === 'G') { this.gate = this.physics.add.staticImage(cx, gy - 40, 'px').setVisible(false); (this.gate.body as any).setSize(16, 80);
-        this.add.image(cx, gy, 'pr_arch').setOrigin(0.5, 1).setDepth(-3).setScale(1.2, 1.6);
+        this.add.image(cx, gy + 1, 'pr_torii11').setOrigin(0.5, 1).setDepth(-3);
         this.gateFx = this.add.tileSprite(cx - 8, gy - 52, 16, 52, 'waterfall').setOrigin(0).setTint(0x66e0ff).setBlendMode(Phaser.BlendModes.ADD).setDepth(7); }
     }));
     // water in pits (lakes)
@@ -197,6 +207,10 @@ export class Level1 extends Phaser.Scene {
     this.placeGen2(at, S);
     this.placePlats(at, S);
     this.anchorProps();
+    this.pk = new Pickups(this, (x, y) => this.groundAt(x, y));
+    (this.flowers.getChildren() as any[]).forEach((f, i) => { if (i % 2 === 0) return; const kind: PK = (['heart', 'rapid', 'heart', 'power', 'heart'] as PK[])[(i - 1) / 2 % 5];
+      let ok = false; for (const dx of [40, -40, 56, -56, 72, -72, 96, -96, 120, -120, 150, -150]) { if (ok) break; const x = f.x + dx, sy = f.y - (Math.abs(dx) > 56 ? 48 : 20), g = this.groundAt(x, sy); if (g > 0 && Math.abs(g - (f.y + 8)) < (Math.abs(dx) > 56 ? 40 : 6) && !this.solid.getTileAtWorldXY(x, g - 8)?.collides && Math.abs(this.groundAt(x - 6, sy) - g) < 4 && Math.abs(this.groundAt(x + 6, sy) - g) < 4) { this.pk.add(kind, x, g); ok = true; break; } }
+      if (!ok) this.pk.add(kind, f.x, f.y - 16); });
     this.animateProps();
     // --- player + colliders ---
     this.physics.world.setBounds(0, 0, worldW, worldH + 400);
@@ -208,7 +222,8 @@ export class Level1 extends Phaser.Scene {
     this.physics.add.collider(this.enemyGroup, this.solid, undefined, (e: any) => e.kind === 'bot'); this.physics.add.collider(this.enemyGroup, this.walls, undefined, (e: any) => e.kind === 'bot');
     this.physics.add.collider(this.gun.shots, this.solid, (s: any) => { this.fx.spark(s.x, s.y); this.gun.kill(s); });
     this.physics.add.collider(this.egun.shots, this.solid, (s: any) => this.egun.kill(s));
-    this.physics.add.overlap(this.gun.shots, this.enemyGroup, (s: any, e: any) => { if (!s.active || e.dead) return; this.gun.kill(s); e.hit(s.damage, s.body.velocity.x > 0 ? 1 : -1); });
+    this.physics.add.overlap(this.gun.shots, this.enemyGroup, (s: any, e: any) => { if (!s.active || e.dead) return; if (s.lastE === e) return; s.lastE = e; const d = s.body.velocity.x > 0 ? 1 : -1;
+      this.impact(s.x, s.y, s.tier || 1, d); if (s.pierce > 0) s.pierce--; else this.gun.kill(s); e.hit(s.damage * (this.powT > 0 ? 2 : 1), d); });
     const hurt = () => { this.fx.hitStop(FEEL.hurt.stop); this.fx.shake(FEEL.hurt.shakeMs, FEEL.hurt.shakeI); };
     this.physics.add.overlap(this.player, this.enemyGroup, (_p, e: any) => { if (!e.dead && (e.kind !== 'boss' || e.awake) && this.player.damage(e.x)) hurt(); });
     this.physics.add.overlap(this.player, this.egun.shots, (_p, s: any) => { if (s.active && this.player.damage(s.x)) { this.egun.kill(s); hurt(); } });
@@ -219,6 +234,9 @@ export class Level1 extends Phaser.Scene {
     const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     cam.fadeIn(400);
     // boss wiring
+    this.boss.target = () => [this.player.x, this.player.y - 18];
+    this.boss.zap = (x1, y1, x2, y2, w) => { const p = this.player, px = p.x, py = p.y - 18, dx = x2 - x1, dy = y2 - y1, t = Phaser.Math.Clamp(((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy), 0, 1);
+      if (Math.hypot(x1 + dx * t - px, y1 + dy * t - py) < w + 8 && p.damage(x1)) hurt(); };
     this.boss.summon = (x, y) => { if (this.enemies.filter(e => e.kind === 'drone' && e.active && Math.abs(e.x - this.boss.x) < 600).length < 2) this.addE(new ScoutDrone(this, x, y, this.fx)); };
     this.boss.on('dying', () => { this.hud.draw(-1, 0); }); this.boss.on('destroyed', () => this.onBossDead());
     const kb = this.input.keyboard!;
@@ -311,7 +329,7 @@ export class Level1 extends Phaser.Scene {
   }
   addE(e: Enemy) { this.enemies.push(e); this.enemyGroup.add(e); e.b.setAllowGravity(false);
     if (e.kind === 'turret') { e.b.moves = false; e.b.setImmovable(true); }
-    e.on('destroyed', (x: Enemy) => { if (x.kind !== 'boss') this.kills++; }); }
+    e.on('destroyed', (x: Enemy) => { if (x.kind !== 'boss') { this.kills++; if (this.kills % 4 === 0 || (this.player && this.player.hp <= 2 && Math.random() < 0.5)) this.pk?.add(this.kills % 12 === 0 ? 'power' : 'heart', x.x, x.y - 10, true); } }); }
   cull<T extends Phaser.GameObjects.Image>(o: T) { this.deco.push(o); return o; }
   placeDeco(at: (x: number, y: number) => string, S: (x: number, y: number) => boolean) {
     // seeded, non-repeating placement of every cut piece from sakuratileset across all walkable surfaces
@@ -361,7 +379,9 @@ export class Level1 extends Phaser.Scene {
     let seed = 4242; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     const M = LEVEL1, MW = M[0].length;
     const toe = (q: typeof PLAT[0]) => { const v = q.p.filter(t => t >= 0); return q.h - Math.max(v[0], v[v.length - 1]); };
-    const hill = (q: typeof PLAT[0]) => q.w >= 150 && toe(q) <= 14; // walk-up ramps resting on the ground
+    const hill = (q: typeof PLAT[0]) => q.w >= 150 && toe(q) <= 90;
+    // ground under the whole footprint must be solid down to the toe depth, so a sunk ramp never shows its base over a pit
+    const deep = (q: typeof PLAT[0], cx: number, y: number) => { const n = Math.ceil(toe(q) / TS) + 1; for (let x = Math.floor((cx - q.w / 2) / TS); x <= Math.floor((cx + q.w / 2) / TS); x++) for (let d = 0; d < n; d++) if (!S(x, y + d)) return false; return true; }; // walk-up ramps resting on the ground
     const tall = PLAT.filter(q => (q.h >= 100 && q.w <= 110) || hill(q)), float = PLAT.filter(q => q.w >= 30 && !tall.includes(q) && q.h < 145);
     // shuffled decks => every piece cycles through before any repeats, so no two runs look alike
     const deck = (a: typeof PLAT) => { let bag: typeof PLAT = []; return [() => { if (!bag.length) bag = [...a].sort(() => rnd() - 0.5); return bag.pop()!; }, (q: typeof PLAT[0]) => bag.unshift(q)] as const; };
@@ -380,7 +400,7 @@ export class Level1 extends Phaser.Scene {
         const lifts = isG ? [0] : tier === 3 ? [52, 70, 88, 40] : tier < 2 ? [52, 70, 88, 106, 40, 124, 64, 80] : [140, 160, 180, 34];
         for (const [x0, e, y] of runs) { const top = y * TS; if (done) break; if ((e - x0) * TS < q.w * (tier ? 0.6 : 1) + 16) continue;
           for (let cx = x0 * TS + q.w / 2 - ix + 8; cx <= e * TS - q.w / 2 + ix - 8 && !done; cx += 12) { if (banned(Math.floor(cx / TS))) continue;
-            for (const lift of lifts) { const b = top - lift; if (!clear(cx - q.w / 2 + ix, b - q.h + iy, cx + q.w / 2 - ix, top - 1) || occ(cx - q.w / 2, cx + q.w / 2, b - q.h, b, tier < 3 ? 1 : 0.7)) continue;
+            for (const lift of lifts) { const b = top - lift; if (!clear(cx - q.w / 2 + ix, b - q.h + iy, cx + q.w / 2 - ix, top - 1) || (isG && q.w >= 150 && !deep(q, cx, y)) || occ(cx - q.w / 2, cx + q.w / 2, b - q.h, b, tier < 3 ? 1 : 0.7)) continue;
               if (isG) this.groundPlat(q, cx, top); else this.addPlat(q.k, cx, b, rnd() < 0.5, -2); done = true; break; } } } }
       if (!done) console.warn('plat: no spot for', q.k); } };
     fill(PLAT.filter(hill)); // big walk-up ramps first: they need the long flat runs
@@ -389,7 +409,7 @@ export class Level1 extends Phaser.Scene {
       let e = x; while (S(e, y) && !S(e, y - 1)) e++; const run = e - x, top = y * TS;
       for (let cx = (x + 3) * TS + rnd() * 40; cx < (e - 3) * TS; ) {
         const t = Math.floor(cx / TS); if (run < 6 || banned(t)) { cx += 160; continue; }
-        if (rnd() < 0.45) { let q = nextT(), ok = false; for (let k = 0; k < 6 && !(ok = cx + q.w / 2 < e * TS - 8 && clear(cx - q.w / 2, top - q.h, cx + q.w / 2, top - 1)); k++) { backT(q); q = nextT(); } if (ok) { this.groundPlat(q, cx, top); cx += q.w + 60 + rnd() * 90; continue; } }
+        if (rnd() < 0.45) { let q = nextT(), ok = false; for (let k = 0; k < 6 && !(ok = cx + q.w / 2 < e * TS - 8 && clear(cx - q.w / 2, top - q.h, cx + q.w / 2, top - 1) && (q.w < 150 || deep(q, cx, y))); k++) { backT(q); q = nextT(); } if (ok) { this.groundPlat(q, cx, top); cx += q.w + 60 + rnd() * 90; continue; } }
         const lift = 52 + Math.floor(rnd() * 3) * 18; const b = top - lift; let q = nextF(), ok = false;
         for (let tries = 0; tries < 6 && !(ok = clear(cx - q.w / 2, b - q.h, cx + q.w / 2, top - 1) && cx + q.w / 2 < e * TS - 8); tries++) { backF(q); q = nextF(); }
         if (ok) { this.addPlat(q.k, cx, b, rnd() < 0.5, -2); cx += q.w + 50 + rnd() * 90; } else { const q2 = PLAT.filter(z => z.h < 40 && z.w >= 30 && z.w <= q.w); const s2 = q2[Math.floor(rnd() * q2.length)]; if (s2 && clear(cx - s2.w / 2, b - s2.h, cx + s2.w / 2, top - 1)) { this.addPlat(s2.k, cx, b, rnd() < 0.5, -2); cx += s2.w + 60; } else cx += 40; }
@@ -459,6 +479,19 @@ export class Level1 extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, LEVEL1[0].length * TS, LEVEL1.length * TS); this.toast.show('The Enforcer falls. The torii path is clear.', '#ffd23f');
     if (this.got >= 10) this.openGate();
   }
+  take(k: PK) { const p = this.player;
+    if (k === 'heart') { if (p.hp >= HP_MAX) return false; p.hp = Math.min(HP_MAX, p.hp + 1); this.hud.setHp(p.hp); this.toast.show('+1 HP', '#ff8fb8'); return true; }
+    if (k === 'rapid') { this.rapT = POWER_T; this.toast.show('RAPID FIRE  12s', '#7fe9ff'); return true; }
+    this.powT = POWER_T; this.toast.show('OVERDRIVE  2x damage + fast charge  12s', '#ffd23f'); return true; }
+  /** tier-styled hit burst for the 3-tap combo */
+  impact(x: number, y: number, tier: number, d: number) {
+    const col = [0, 0x3ff3ff, 0xff4fd8, 0xffd23f][tier] || 0x3ff3ff; this.fx.spark(x, y);
+    const r = this.add.ellipse(x, y, 3, 3).setStrokeStyle(1 + (tier > 2 ? 1 : 0), col).setDepth(12).setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({ targets: r, scale: 2 + tier * 1.5, alpha: 0, duration: 150 + tier * 40, onComplete: () => r.destroy() });
+    for (let i = 0; i < tier * 3; i++) { const a = Math.PI + (Math.random() - 0.5) * 2.2, p = this.add.rectangle(x, y, tier > 2 ? 2 : 1, tier > 2 ? 2 : 1, i % 2 ? col : 0xffffff).setDepth(12).setBlendMode(Phaser.BlendModes.ADD);
+      this.tweens.add({ targets: p, x: x - d * Math.cos(a) * (8 + tier * 6) * Math.random(), y: y + Math.sin(a) * (6 + tier * 5), alpha: 0, duration: 220, onComplete: () => p.destroy() }); }
+    if (tier === 3) this.cameras.main.shake(50, 0.003);
+  }
   openGate() { if (this.gateOpen) return; audio.sfx('gate'); this.gateOpen = true; (this.gate.body as any).enable = false; this.tweens.add({ targets: this.gateFx, alpha: 0, duration: 600 }); this.toast.show('All ten memories. The gate remembers you.', '#ffd6f0'); }
   respawn(full: boolean) {
     const p = this.player, b = p.body_;
@@ -505,6 +538,15 @@ export class Level1 extends Phaser.Scene {
     const p = this.player; this.time_ += dt; this.hud.setTime(this.time_);
     if (touch.respawnP) { touch.respawnP = false; this.checkpoint(); }
     p.update(dt); this.watchdog(dt);
+    { // waterfalls: distance-scaled roar + dark silhouette while behind a run-behind sheet
+      let dmin = 1e9, beh = false; const py = p.y - 16;
+      for (const r of this.wfRects) { const dx = Math.max(r.x - p.x, 0, p.x - (r.x + r.w)), dy = Math.max(r.y - py, 0, py - (r.y + r.h)), d = Math.hypot(dx, dy) - (r.w > 60 ? 40 : 0); if (d < dmin) dmin = d; if (r.behind && dx === 0 && dy === 0) beh = true; }
+      this.fallVol = Math.pow(Phaser.Math.Clamp(1 - dmin / 380, 0, 1), 2) * 0.55; audio.loop('falls', this.fallVol > 0.01, 1, this.fallVol);
+      if (!this.sil) this.sil = this.add.sprite(0, 0, p.texture.key).setDepth(10.8).setTintFill(0x101a30).setAlpha(0.74).setVisible(false);
+      this.behindNow = beh; this.sil.setVisible(beh && p.visible);
+      if (beh) this.sil.setTexture(p.texture.key, p.frame.name).setPosition(p.x, p.y).setOrigin(p.originX, p.originY).setFlipX(p.flipX).setScale(p.scaleX, p.scaleY).setRotation(p.rotation); }
+    this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
+    if (this.rapT > 0 || this.powT > 0) { if ((this.auraT2 -= dt) <= 0) { this.auraT2 = 0.12; const c = this.powT > 0 ? 0xffd23f : 0x3ff3ff, sp = this.add.rectangle(p.x + Phaser.Math.Between(-7, 7), p.y - Phaser.Math.Between(4, 30), 1, 3, c).setDepth(10).setBlendMode(Phaser.BlendModes.ADD); this.tweens.add({ targets: sp, y: sp.y - 14, alpha: 0, duration: 400, onComplete: () => sp.destroy() }); } }
     { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);
       cam.setFollowOffset(-this.lookX, 30 - this.lookY); } p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
     for (const g of [this.egun, this.gun]) for (const sh of g.shots.getChildren() as any[]) if (sh.active && this.platSolid(sh.x, sh.y)) { if (g === this.gun) this.fx.spark(sh.x, sh.y); g.kill(sh); }

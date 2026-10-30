@@ -5,7 +5,7 @@ const b = await chromium.launch({ args:['--use-gl=swiftshader','--enable-unsafe-
 const ctx = await b.newContext({ ...devices['iPhone 13 landscape'] }); const p = await ctx.newPage();
 const errs = []; p.on('pageerror', e => errs.push(String(e)));
 const cdp = await ctx.newCDPSession(p); const L = (f, a) => p.evaluate(f, a); const W = ms => p.waitForTimeout(ms);
-const ctr = async k => L(k => { const r = document.querySelector(`[data-k=${k}]`).getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }, k);
+const ctr = async k => (k === 'right' || k === 'left') ? L(k => { const r = document.getElementById('stick').getBoundingClientRect(); return [r.x + r.width / 2 + (k === 'right' ? 40 : -40), r.y + r.height / 2]; }, k) : L(k => { const r = document.querySelector(`[data-k=${k}]`).getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }, k);
 const held = new Map(); let nid = 1;
 const send = type => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: [...held.values()] });
 const down = async k => { const [x, y] = await ctr(k); held.set(k, { x, y, id: nid++ }); await send('touchStart'); };
@@ -26,7 +26,7 @@ const x1 = await L(() => window.__lvl.player.x); out.moveRight = Math.round(x1 -
 const y0 = await L(() => window.__lvl.player.y); await down('jump'); let minY = y0;
 for (let i = 0; i < 10; i++) { await W(40); minY = Math.min(minY, await L(() => window.__lvl.player.y)); }
 await up('jump'); out.jumpRise = Math.round(y0 - minY);
-await up('right'); await W(600);
+await up('right'); await W(600); out.stoppedAfterRelease = Math.abs(await L(() => window.__lvl.player.body.velocity.x)) < 5;
 const f0 = await L(() => window.__lvl.gun.fired);
 await down('shoot'); await W(500); await up('shoot');
 out.shotsFired = (await L(() => window.__lvl.gun.fired)) - f0;

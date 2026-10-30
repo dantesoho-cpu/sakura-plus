@@ -8,7 +8,7 @@ const CHARGE_WALK = 34; // charging slows Sakura to a walk (was: vx*=0.25 every 
 type State = 'idle' | 'run' | 'jump' | 'doublejump' | 'fall' | 'land' | 'dash' | 'dashend' | 'hurt';
 export const HP_MAX = 5, IFRAMES = 1.0, HURT_TIME = 0.3;
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  state_: State = 'idle'; facing = 1; coyoteT = 0; bufferT = 0; airJumps = 1; dashT = 0; dashCd = 0; canAirDash = true; landT = 0; dbg = { dashes: [] as {x0:number,x1:number,dur:number}[], jumps: 0, djumps: 0, coyoteJumps: 0, cur: null as any, jetT: 0 };
+  state_: State = 'idle'; facing = 1; coyoteT = 0; bufferT = 0; airJumps = 1; dashT = 0; dashCd = 0; canAirDash = true; landT = 0; dbg = { dashes: [] as {x0:number,x1:number,dur:number}[], jumps: 0, djumps: 0, coyoteJumps: 0, cur: null as any, jetT: 0, wallJumps: 0, wallSlideT: 0 };
   jumpHeld = false; dashing = false; jumpPressed = false; dashPressed = false; keys: any; trail: Phaser.GameObjects.Particles.ParticleEmitter;
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'p_idle', 0); scene.add.existing(this); scene.physics.add.existing(this);
@@ -31,7 +31,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
   hasJet = false; fuel = JET.fuel; jetting = false; jetFx!: Phaser.GameObjects.Particles.ParticleEmitter; jetPetals!: Phaser.GameObjects.Particles.ParticleEmitter;
   dashBuf = 0; poseLock = false; dashCount = 0; pfx: PlayerFx; beam: any = null; holdT = 0;
-  hp = HP_MAX; iT = 0; hurtT = 0; shootPressed = false; shootAnimT = 0; gun: any = null; dbgHits = 0;
+  hp = HP_MAX; iT = 0; hurtT = 0; shootPressed = false; shootBuf = 0; shootAnimT = 0; gun: any = null; dbgHits = 0;
   damage(fromX: number, amt = 1): boolean {
     if (this.iT > 0 || this.hp <= 0) return false;
     audio.sfx('hurt'); this.hp = Math.max(0, this.hp - amt); this.dbgHits++; this.iT = IFRAMES; this.hurtT = HURT_TIME; this.dashing = false; this.dashT = 0; this.trail.stop(); this.jetting = false; this.jetFx.stop(); this.jetPetals.stop();
@@ -75,19 +75,24 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       else { b.setVelocity(this.facing * T.dashSpeed, 0); this.dashT -= dt; if (this.dbg.cur) this.dbg.cur.t += dt; this.setFlipX(this.facing < 0); this.setAnimState('dash'); return; }
     }
     // horizontal
-    const target = dir * T.maxRun, accel = dir ? (onGround ? T.accelGround : T.accelAir) : (onGround ? T.decelGround : T.decelAir);
+    this.wjT -= dt; const wallDir = !onGround ? (b.blocked.left ? -1 : b.blocked.right ? 1 : 0) : 0;
+    const target = (this.wjT > 0 ? 0 : dir) * T.maxRun, accel = dir ? (onGround ? T.accelGround : T.accelAir) : (onGround ? T.decelGround : T.decelAir);
     const vx = b.velocity.x; const turning = dir && Math.sign(vx) !== dir && vx !== 0;
-    b.setVelocityX(Phaser.Math.Linear(vx, target, 0) + Phaser.Math.Clamp(target - vx, -accel * dt * (turning ? 1.5 : 1), accel * dt * (turning ? 1.5 : 1)));
-    if (dir) this.facing = dir;
+    if (this.wjT <= 0) b.setVelocityX(Phaser.Math.Linear(vx, target, 0) + Phaser.Math.Clamp(target - vx, -accel * dt * (turning ? 1.5 : 1), accel * dt * (turning ? 1.5 : 1)));
+    if (dir && this.wjT <= 0) this.facing = dir;
     // jump
     if (this.bufferT > 0) {
       if (onGround || this.coyoteT > 0) { this.dbg.jumps++; audio.sfx('jump'); if (!onGround) this.dbg.coyoteJumps++; b.setVelocityY(-T.jumpVel); this.bufferT = 0; this.coyoteT = 0; this.setAnimState('jump', true); this.squash(0.85, 1.15); }
+      else if (wallDir && (this.wallSliding || dir === wallDir)) { b.setVelocity(-wallDir * T.maxRun * 1.15, -T.jumpVel * 0.92); this.wjT = 0.16; this.facing = -wallDir; this.bufferT = 0; this.wallSliding = false; this.dbg.wallJumps = (this.dbg.wallJumps || 0) + 1; audio.sfx('jump'); this.setAnimState('jump', true); this.squash(0.85, 1.15); }
       else if (this.airJumps > 0) { b.setVelocityY(-T.doubleJumpVel); this.airJumps--; this.dbg.djumps++; audio.sfx('djump'); this.bufferT = 0; this.setAnimState('doublejump', true); this.burst(); this.squash(0.8, 1.2); }
     }
     // gravity: variable height + heavier fall
     let g = T.gravity; if (b.velocity.y > 0) g *= T.fallGravityMult; if (this.jumpHeld && Math.abs(b.velocity.y) < T.apexBand && !this.jetting) g *= T.apexGravMult;
     b.setVelocityY(b.velocity.y + ((this.scene as any).onSlope && b.velocity.y >= 0 ? 0 : g) * dt);
     if (!this.jumpHeld && b.velocity.y < 0) b.setVelocityY(b.velocity.y * Math.pow(T.jumpCutMult, dt * 20));
+    // wall slide: airborne, falling, pushing into a wall -> slow capped descent, refresh air dash
+    this.wallSliding = !!wallDir && dir === wallDir && b.velocity.y > 0 && !this.dashing;
+    if (this.wallSliding) { if (b.velocity.y > 95) b.setVelocityY(95); this.canAirDash = true; this.dbg.wallSlideT = (this.dbg.wallSlideT || 0) + dt; this.wsFx -= dt; if (this.wsFx <= 0) { this.wsFx = 0.08; const s = this.scene, q = s.add.image(this.x + wallDir * 6, this.y - 8, 'glow').setTint(0xe8dcc8).setAlpha(0.7).setScale(0.25).setDepth(this.depth - 0.1); s.tweens.add({ targets: q, y: q.y - 6, x: q.x - wallDir * 5, alpha: 0, duration: 240, onComplete: () => q.destroy() }); } }
     // jet boots
     const wasJet = this.jetting; this.jetting = false;
     if (onGround) this.fuel = JET.fuel;
@@ -96,11 +101,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.fuel = Math.max(0, this.fuel - dt); this.jetting = true; this.dbg.jetT = (this.dbg.jetT || 0) + dt;
     }
     audio.loop('jet', this.jetting); if (this.jetting !== wasJet) { if (this.jetting) { this.jetFx.start(); this.jetPetals.start(); } else { this.jetFx.stop(); this.jetPetals.stop(); } }
-    this.setFlipX(this.facing < 0);
+    if (this.wallSliding && !this.poseLock) { this.play('wall', true); this.setFlipX(wallDir < 0); this.wasWall = true; } // wall art: hand braced on the wall in front
+    else { if (this.wasWall) { this.wasWall = false; if (!this.poseLock) this.play(this.state_, true); } this.setFlipX(this.facing < 0); }
     // shoot (J / X; hold = auto-fire at cooldown rate)
     // tap = blaster shot; hold = charge; release a charged shot = beam
     const held = k.j.isDown || k.x.isDown || touch.shoot, mx = this.x + this.facing * 15, my = this.y - (this.poseLock ? 16 : 19);
-    if (this.shootPressed && this.gun && !(this.beam && this.beam.firing) && this.gun.tryFire(mx, my, this.facing)) { this.shootAnimT = 0.22; audio.sfx('blaster'); }
+    if (this.shootPressed) this.shootBuf = 0.16; this.shootBuf -= dt;
+    if (this.shootBuf > 0 && this.gun && !(this.beam && this.beam.firing) && this.gun.tryFire(mx, my, this.facing, 0, true)) { const t = this.gun.tier; this.shootAnimT = 0.22; audio.sfx('blaster' + t); this.shootBuf = 0; (this.dbg as any).combo = ((this.dbg as any).combo || '') + t; if (t === 3 && b.blocked.down) b.setVelocityX(b.velocity.x - this.facing * 60); }
     this.shootPressed = false;
     if (this.beam) {
       if (held) { this.holdT += dt; if (this.holdT > 0.25) this.beam.charge(dt, mx, my); }
@@ -130,7 +137,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
   squash(sx: number, sy: number) { this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 140, ease: 'Quad.out' }); }
   burst() { this.trail.explode(10); }
-  lastVy = 0;
+  lastVy = 0; wjT = 0; wallSliding = false; wsFx = 0; wasWall = false;
   dust() { const s = this.scene; for (let i = 0; i < 6; i++) { const d = i < 3 ? -1 : 1; const p = s.add.image(this.x + d * (3 + Math.random() * 4), this.y - 2, 'glow').setTint(0xe8dcc8).setAlpha(0.8).setScale(0.35).setDepth(this.depth - 0.1);
     s.tweens.add({ targets: p, x: p.x + d * (14 + Math.random() * 14), y: p.y - 4 - Math.random() * 5, alpha: 0, scale: 0.12, duration: 260 + Math.random() * 120, ease: 'Quad.out', onComplete: () => p.destroy() }); } }
   setAnimState(s: State, force = false) { if (this.state_ === s && !force) return; this.state_ = s; this.play(s, true); }

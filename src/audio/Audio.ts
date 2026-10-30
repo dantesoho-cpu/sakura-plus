@@ -1,4 +1,5 @@
 import { PLAYLIST, DEFAULTS } from './config';
+import { GEN } from './Sfx2';
 // Global audio: one continuous album playlist (survives every scene change) + synthesized 8-bit SFX with pitch variance and voice limits.
 type Wave = 'sq' | 'saw' | 'tri' | 'noise';
 interface P { w: Wave; f0: number; f1?: number; dur: number; att?: number; duty?: number; arp?: number[]; arpT?: number; vib?: [number, number]; vol?: number; crush?: number; loop?: boolean }
@@ -20,16 +21,17 @@ const DEF: Record<string, P> = {
   respawn: { w: 'tri', f0: 900, f1: 300, dur: 0.3, arp: [1, 2], arpT: 0.05, vol: 0.45 },
   menu: { w: 'sq', f0: 880, dur: 0.05, duty: 0.5, vol: 0.25 },
 };
-const LIMIT: Record<string, number> = { blaster: 4, ehit: 3, explode: 3 };
+const LIMIT: Record<string, number> = { blaster1: 3, blaster2: 3, blaster3: 2, eshot: 3, eshot2: 2, elaser: 2, blaster: 4, ehit: 3, explode: 3 };
 class AudioMgr {
-  ctx = new (window.AudioContext || (window as any).webkitAudioContext)(); master = this.ctx.createGain(); mus = this.ctx.createGain(); fx = this.ctx.createGain();
+  ctx = new (window.AudioContext || (window as any).webkitAudioContext)(); master = this.ctx.createGain(); mus = this.ctx.createGain(); fx = this.ctx.createGain(); trim = this.ctx.createGain();
   set = { ...DEFAULTS }; log: string[] = []; unlocked = false; buf: Record<string, AudioBuffer> = {}; voices: Record<string, number> = {}; active = 0;
   track = -1; src: AudioBufferSourceNode | null = null; startedAt = 0; offset = 0; cache = new Map<number, Promise<AudioBuffer>>(); started = false;
   onTrack: ((t: string) => void) | null = null; ext = new Audio().canPlayType('audio/ogg; codecs="vorbis"') ? 'ogg' : 'mp3';
   constructor() {
-    this.mus.connect(this.master); this.fx.connect(this.master); this.master.connect(this.ctx.destination);
+    this.mus.connect(this.master); const comp = this.ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.12; this.trim.gain.value = 0.62; this.fx.connect(this.trim).connect(comp).connect(this.master); this.master.connect(this.ctx.destination);
     try { Object.assign(this.set, JSON.parse(localStorage.getItem('sakura.audio') || '{}')); } catch { /* defaults */ }
     this.apply(); for (const k in DEF) this.buf[k] = this.synth(DEF[k]);
+    const sr = this.ctx.sampleRate; for (const k in GEN) { const d = GEN[k](sr), b = this.ctx.createBuffer(1, d.length, sr); b.getChannelData(0).set(d); this.buf[k] = b; }
     const unlock = () => { this.ctx.resume().then(() => { if (!this.unlocked) { this.unlocked = true; this.log.push('unlock:' + this.ctx.state); this.start(); } }); };
     for (const e of ['pointerdown', 'touchstart', 'touchend', 'keydown', 'mousedown']) window.addEventListener(e, unlock, { capture: true });
   }
@@ -73,12 +75,13 @@ class AudioMgr {
     s.playbackRate.value = (o.rate ?? 1) * (1 + (Math.random() * 2 - 1) * v); g.gain.value = o.vol ?? 1; s.connect(g).connect(this.fx);
     this.voices[name] = (this.voices[name] || 0) + 1; this.active++; s.onended = () => { this.voices[name]--; this.active--; }; s.start(); this.log.push('sfx:' + name);
   }
-  loops: Record<string, AudioBufferSourceNode> = {};
-  loop(name: string, on: boolean, rate = 1) {
-    const cur = this.loops[name];
-    if (!on) { if (cur) { try { cur.stop(); } catch { /* */ } delete this.loops[name]; } return; }
-    if (cur) { cur.playbackRate.setTargetAtTime(rate, this.ctx.currentTime, 0.03); return; }
-    if (this.ctx.state !== 'running') return; const s = this.ctx.createBufferSource(); s.buffer = this.buf[name]; s.loop = true; s.playbackRate.value = rate; s.connect(this.fx); s.start(); this.loops[name] = s; this.log.push('loop:' + name);
+  loops: Record<string, AudioBufferSourceNode> = {}; loopG: Record<string, GainNode> = {};
+  loop(name: string, on: boolean, rate = 1, vol = 1) {
+    const cur = this.loops[name], t = this.ctx.currentTime;
+    if (!on) { if (cur) { const g = this.loopG[name]; g.gain.setTargetAtTime(0, t, 0.03); try { cur.stop(t + 0.15); } catch { /* */ } delete this.loops[name]; } return; }
+    if (cur) { cur.playbackRate.setTargetAtTime(rate, t, 0.03); this.loopG[name].gain.setTargetAtTime(vol, t, 0.08); return; }
+    if (this.ctx.state !== 'running') return; const s = this.ctx.createBufferSource(), g = this.ctx.createGain(); g.gain.value = 0; g.gain.setTargetAtTime(vol, t, 0.03);
+    s.buffer = this.buf[name]; s.loop = true; s.playbackRate.value = rate; s.connect(g).connect(this.fx); s.start(); this.loops[name] = s; this.loopG[name] = g; this.log.push('loop:' + name);
   }
   stopLoops() { for (const k in this.loops) this.loop(k, false); }
 }

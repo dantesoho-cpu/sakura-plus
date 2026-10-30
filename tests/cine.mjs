@@ -7,7 +7,7 @@ for (let i = 0; i < 24; i++) await snap('i', 120); await p.keyboard.press('Enter
 await p.evaluate(() => window.__intro.finish()); await p.waitForTimeout(2500);
 const boss = await p.evaluate(() => { const L = window.__lvl, B = L.boss, pl = L.player; pl.hp = 99; pl.iT = 999; B.awake = true; pl.body.reset(B.x - 90, B.y + 20); L.cameras.main.stopFollow(); L.cameras.main.centerOn(B.x - 40, B.y); return { x: B.x, y: B.y }; });
 const tele = [];
-for (const k of ['spread', 'charge', 'ring', 'summon']) { await p.evaluate(k => { const B = window.__lvl.boss; B.st = 'hover'; B.stT = 0; B.attacks = [1, 2, 3]; B.hp = k === 'spread' ? 30 : 5; Math.random = (() => { const o = ['spread', 'charge', 'ring', 'summon']; return () => o.indexOf(k) / 4 + 0.01; })(); }, k);
+for (const k of ['spread', 'charge', 'ring', 'summon']) { await p.evaluate(k => { const B = window.__lvl.boss; B.st = 'hover'; B.stT = 0; B.attacks = [1, 2, 3]; B.hp = k === 'spread' ? 30 : 5; Math.random = (() => { const o = ['spread', 'wave', 'charge', 'laser', 'homing', 'ring', 'summon', 'rain']; return () => o.indexOf(k) / 8 + 0.01; })(); }, k);
   for (let i = 0; i < 6; i++) await snap('b', 110); tele.push(await p.evaluate(() => window.__lvl.boss.next)); await p.evaluate(() => { Math.random = window.__rnd; }); await p.waitForTimeout(900); }
 await p.evaluate(() => { const g = window.__game; g.loop.sleep(); window.__T = performance.now(); window.__st = n => { for (let i = 0; i < n; i++) { window.__T += 16.67; g.step(window.__T, 16.67); } }; Math.random = window.__rnd; const B = window.__lvl.boss; B.hp = 1; B.hit(5, 1); }); const ts = await p.evaluate(() => window.__lvl.physics.world.timeScale);
 for (let i = 0; i < 40; i++) { await p.evaluate(() => window.__st(4)); await snap('d'); }

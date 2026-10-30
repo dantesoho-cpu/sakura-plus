@@ -8,5 +8,8 @@ export function makeCombatTextures(s: Phaser.Scene) {
   mk('drone_idle', 'e_drone', [0, 1, 2, 3, 4, 5, 6, 7], 18); mk('drone_attack', 'e_drone', [8, 9, 10, 11, 12, 13, 14, 15], 30);
   mk('bot_idle', 'e_bot', [0, 1, 2, 3, 4, 5, 6, 7], 10); mk('bot_attack', 'e_bot', [8, 9, 10, 11, 12, 13, 14, 15], 18);
   mk('turret_idle', 'e_turret', [0, 1, 2, 3, 4, 5, 6, 7], 8); mk('turret_attack', 'e_turret', [8, 9, 10, 11, 12, 13, 14, 15], 14, 0);
+  mk('wasp_fly', 'e_wasp', [0, 1, 2, 3], 16); mk('wasp_drop', 'e_wasp', [4, 5], 12);
+  mk('sentry_idle', 'e_sentry', [0, 1, 2, 3, 2, 1], 5); mk('sentry_charge', 'e_sentry', [4, 5], 14);
+  mk('trooper_walk', 'e_trooper', [0, 1, 2, 3], 7); mk('trooper_idle', 'e_trooper', [4, 5], 3);
   mk('e_destroy', 'e_boom', [0, 1, 2, 3], 10, 0); mk('fx_boom', 'fx_boom', [0, 1, 2, 3, 4], 16, 0);
 }

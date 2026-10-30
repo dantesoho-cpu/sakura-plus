@@ -23,11 +23,14 @@ export class Boot extends Phaser.Scene {
     for (const k of ['torii', 'lantern', 'shrine', 'tree', 'tree2', 'bridge', 'flower', 'car']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     this.load.spritesheet('e_drone', 'assets/enemies/drone8.png', { frameWidth: 37, frameHeight: 24 });
     this.load.spritesheet('e_bot', 'assets/enemies/bot8.png', { frameWidth: 23, frameHeight: 32 });
+    this.load.spritesheet('e_wasp', 'assets/enemies/wasp6.png', { frameWidth: 34, frameHeight: 22 });
+    this.load.spritesheet('e_sentry', 'assets/enemies/sentry6.png', { frameWidth: 30, frameHeight: 34 });
+    this.load.spritesheet('e_trooper', 'assets/enemies/trooper6.png', { frameWidth: 30, frameHeight: 32 });
     this.load.spritesheet('e_turret', 'assets/enemies/turret8.png', { frameWidth: 27, frameHeight: 30 });
     this.load.spritesheet('e_boom', 'assets/enemies/boom4.png', { frameWidth: 43, frameHeight: 32 });
     this.load.spritesheet('fx_boom', 'assets/fx/boom.png', { frameWidth: 50, frameHeight: 42 });
-    for (const k of ['shot', 'ebolt', 'flash', 'pip', 'pip_e', 'spark', 'spark2', 'petal', 'waterfall']) this.load.image(k, `assets/fx/${k}.png`);
-    this.load.image('pr_torii_big', 'assets/props/torii.png'); this.load.image('pr_stone_gate', 'assets/props/stone_gate.png'); this.load.image('pr_lantern_stone', 'assets/props/lantern_stone.png');
+    for (const k of ['shot', 'ebolt', 'flash', 'pip', 'pip_e', 'spark', 'spark2', 'petal', 'waterfall', 'shot1', 'shot2', 'shot3', 'eorb', 'eneedle', 'eplasma', 'pk_heart', 'pk_rapid', 'pk_power']) this.load.image(k, `assets/fx/${k}.png`);
+    this.load.image('pr_torii_big', 'assets/props/torii.png'); this.load.image('pr_stone_gate', 'assets/props/stone_gate.png'); this.load.image('pr_lantern_stone', 'assets/props/lantern_stone.png'); this.load.image('pr_torii11', 'assets/props2/torii11.png');
     this.load.image('petal_soft', 'assets/fx/petal.png');
     for (let i = 0; i < 3; i++) this.load.image('cloud' + i, `assets/bg/cloud${i}.png`);
     this.load.image('P_far', 'assets/bg/P_far.png'); this.load.image('P_mid', 'assets/bg/P_mid.png'); this.load.json('pano', 'assets/bg/pano.json');
