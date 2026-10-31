@@ -44,7 +44,8 @@ export class Level2 extends Phaser.Scene {
   // Beam / enemy code asks `solid.getTileAtWorldXY(x,y)?.collides` — emulate over our solid rects.
   solid = { getTileAtWorldXY: (x: number, y: number) => (this.rects.some(r => r.contains(x, y)) ? { collides: true } : null) };
   constructor() { super('Level2'); }
-  preload() {
+  static SWAP = ['flash', 'spark', 'spark2', 'pk_rapid', 'pk_power'];
+  preload() { for (const k of Level2.SWAP) this.load.image('l2s_' + k, `${A}swap/${k}.png`);
     preloadInteract(this); preloadEnv(this); preloadDress(this);
     for (let i = 1; i <= 5; i++) this.load.image('nk_L' + i, `${A}bg/nk_L${i}.png`);
     for (const k of Object.keys(PL)) this.load.image('l2p_' + k, `${A}plat/${k}.png`);
@@ -72,6 +73,9 @@ export class Level2 extends Phaser.Scene {
     if (k.startsWith('deck_neon')) { const g = this.add.rectangle(x + w / 2, sy + 2, w - 6, 4, 0xff4fd8, 0.5).setBlendMode(Phaser.BlendModes.ADD).setDepth(2.1); this.neon.push({ o: g, base: 0.5, t: Math.random() * 9 }); }
   }
   create() {
+    // L2 uses sheet-cropped FX/pickup art under the shared keys; restored for L1 on shutdown
+    const tm = this.textures; for (const k of Level2.SWAP) if (tm.exists('l2s_' + k) && !tm.exists(k + '__l1')) { tm.renameTexture(k, k + '__l1'); tm.renameTexture('l2s_' + k, k); }
+    this.events.once('shutdown', () => { for (const k of Level2.SWAP) if (tm.exists(k + '__l1')) { tm.renameTexture(k, 'l2s_' + k); tm.renameTexture(k + '__l1', k); } });
     this.got = 0; this.kills = 0; this.time_ = 0; this.ending = false; this.cpLit = false; this.rects = []; this.neon = []; this.cars = []; this.bg = [];
     this.physics.world.setBounds(0, TOP, WW, WH + 200 - TOP); this.physics.world.setBoundsCollision(true, true, false, false);
     this.add.rectangle(240, 135, 480, 270, 0x2a2a8a).setScrollFactor(0).setDepth(-20);

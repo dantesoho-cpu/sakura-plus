@@ -4,7 +4,7 @@ import { makeCombatTextures } from '../systems/Textures';
 import { DECO_SIZE } from '../decoList';
 // src: sheet key, frames. Core cycles from player2 (generated + processed, tools/gen_frames.py)
 export const ANIMS: Record<string, { src: string; frames: number[]; rate: number; repeat: number }> = {
-  idle: { src: 'idle6', frames: [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], rate: 7, repeat: -1 }, skid: { src: 'idle6', frames: [6], rate: 1, repeat: 0 }, run: { src: 'run8', frames: [0, 1, 2, 3, 4, 5, 6, 7], rate: 15, repeat: -1 },
+  idle: { src: 'idle6', frames: [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], rate: 7, repeat: -1 }, skid: { src: 'land', frames: [0], rate: 1, repeat: 0 }, run: { src: 'run8', frames: [0, 1, 2, 3, 4, 5, 6, 7], rate: 15, repeat: -1 },
   jump: { src: 'rise', frames: [0], rate: 1, repeat: 0 }, doublejump: { src: 'rise', frames: [0], rate: 1, repeat: 0 },
   fall: { src: 'fall2', frames: [0], rate: 1, repeat: -1 }, apex: { src: 'apex2', frames: [0], rate: 1, repeat: 0 },
   land: { src: 'land', frames: [0], rate: 1, repeat: 0 }, dash: { src: 'dash4', frames: [0, 1], rate: 16, repeat: 0 }, dashend: { src: 'dash4', frames: [2, 3], rate: 14, repeat: 0 }, dash_u: { src: 'dash8', frames: [0], rate: 1, repeat: 0 }, dash_ud: { src: 'dash8', frames: [1], rate: 1, repeat: 0 }, dash_dd: { src: 'dash8', frames: [2], rate: 1, repeat: 0 }, dash_d: { src: 'dash8', frames: [3], rate: 1, repeat: 0 },

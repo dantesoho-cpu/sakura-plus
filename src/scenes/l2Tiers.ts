@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/Audio';
+import PROF from './l2CurveProf.json';
 // Neo-Kyo vertical tiers (layout after Dante's two reference maps; all art = sheet crops):
 // LOWER street (y 440) · MID skyway (y 210) · UPPER rooftops (y -20) · SKY spire (y -250, right-side loop tower).
 // Routes link via mega springs, vertical lifts, ledge-stacked climb towers (wall-jumpable) and drop gaps.
@@ -20,10 +21,13 @@ export const TIER_GEMS: [number, number, number][] = [[800, MID - 40, 5], [1600,
 export const TIER_FOES: [string, number, number][] = [['assault', 900, MID], ['drone', 1100, MID - 90], ['shield', 1700, MID], ['assault', 2000, MID], ['heavy', 2700, MID], ['sentry', 3000, MID], ['assault', 3600, MID], ['drone', 3800, MID - 90],
   ['assault', 1500, UP], ['drone', 1700, UP - 90], ['sentry', 2500, UP], ['assault', 2800, UP], ['shield', 3500, UP], ['drone', 3900, UP - 100], ['heavy', 4800, SKY], ['drone', 4700, SKY - 80],
   ['assault', 4400, 440], ['shield', 4700, 440], ['drone', 4950, 330]];
+// curved / sloped sheet-style pieces: [key, left x, surface y (bottom for ground pieces, top for 'overhang')]; walkable via fine one-way step strips following the art's top silhouette
+export const CURVES: [string, number, number][] = [['qramp', 990, 440], ['arch', 1960, 440], ['hill', 3870, 440], ['pipe', 2960, 440], ['slope', 3560, 440], ['overhang', 2160, MID], ['hill', 4700, 440]];
 const DECKS = ['deck_glass_12', 'bridge_16', 'deck_neon_12', 'deck_vent_12'];
 export class Tiers {
   lifts: { im: Phaser.Physics.Arcade.Image; y0: number; y1: number; t: number; gl: Phaser.GameObjects.Image }[] = []; megas: any[] = []; liftGroup: Phaser.Physics.Arcade.Group;
-  dbg = { runs: 0, towers: 0, ledges: 0, lifts: 0, megas: 0, launches: 0, rides: 0, maxTier: 0 };
+  curves: { k: string; x: number; y: number; w: number; top: number[] }[] = [];
+  dbg = { curveSteps: 0, runs: 0, towers: 0, ledges: 0, lifts: 0, megas: 0, launches: 0, rides: 0, maxTier: 0 };
   constructor(public s: any, GY: number) {
     const sc = s as Phaser.Scene; let seed = 4242; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     // skyway runs: tile decks/bridges; support pylons (sheet tiles_09/20/29, dim, behind) drop toward the tier below
@@ -35,6 +39,13 @@ export class Tiers {
         sc.add.tileSprite(px, y + 18, id === '09' ? 51 : 40, h, 'l2t_' + id).setOrigin(0.5, 0).setDepth(0.9).setTint(0x5a50a0).setAlpha(0.85); }
       // edge neon trims
       for (const ex of [x0 + 4, x1 - 4]) { const g = sc.add.image(ex, y + 4, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(ri % 2 ? 0xff4fd8 : 0x3ff3ff).setScale(0.3).setAlpha(0.6).setDepth(2.1); s.neon.push({ o: g, base: 0.55, t: rnd() * 9 }); } });
+    for (const [k, x, sy] of CURVES) { const P: any = (PROF as any)[k]; const y0 = k === 'overhang' ? sy - P.top[Math.floor(P.w / 2)] : sy - P.h + 2;
+      sc.add.image(x, y0, 'l2c_' + k).setOrigin(0, 0).setDepth(2.2);
+      const raw: number[] = P.top; const sm: number[] = raw.map((_: number, i: number) => { const w = raw.slice(Math.max(0, i - 5), i + 6).filter((v: number) => v >= 0).sort((a: number, b: number) => a - b); return w.length ? w[Math.floor(w.length / 2)] : -1; });
+      for (let i = 1; i < sm.length; i++) if (sm[i] >= 0 && sm[i - 1] >= 0) sm[i] = Math.max(sm[i], sm[i - 1] - 2); for (let i = sm.length - 2; i >= 0; i--) if (sm[i] >= 0 && sm[i + 1] >= 0) sm[i] = Math.max(sm[i], sm[i + 1] - 2);
+      const top = sm.map((v: number) => (v < 0 ? -1 : y0 + v + 3)); this.curves.push({ k, x, y: y0, w: P.w, top });
+      if (k !== 'overhang') { const f = top.findIndex((v: number) => v > 0); const lip = sy - top[f]; if (lip > 3 && lip < 30) for (let d = 3; d < lip * 1.4; d += 3) { s.addRect(x + f - d, top[f] + (d / (lip * 1.4)) * lip, 3, 6, true); this.dbg.curveSteps++; } }
+      for (let i = 0, st = 3; i < P.w; i += st) { st = Math.abs((top[Math.min(i + 3, P.w - 1)] || 0) - (top[i] || 0)) > 3 ? 1 : 3; const t = top[i]; if (t < 0) continue; const tt = k === 'overhang' ? t : Math.min(t, sy); if (k !== 'overhang' && tt >= sy) continue; s.addRect(x + i, tt, st, 6, true); this.dbg.curveSteps++; } }
     // climb towers: solid column (sheet pylon crop tiled), ledges alternating left/right every 64px — wall-jump or ledge-hop up
     TOWERS.forEach(([x, yt, yb], ti) => { const w = 40; sc.add.tileSprite(x, yt, 51, yb - yt, 'l2t_09').setOrigin(0.5, 0).setDepth(2.4);
       const cap = sc.add.image(x, yt + 2, 'l2p_deck_neon_3').setOrigin(0.5, 1).setDepth(2.5); s.addRect(x - w / 2, yt + 10, w, yb - yt - 10, false); s.addRect(x - 24, yt, 48, 10, true); this.dbg.towers++; void cap;

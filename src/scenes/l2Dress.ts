@@ -8,7 +8,7 @@ const A = 'assets/l2/', pad = (i: number) => String(i).padStart(2, '0');
 const FAR = [9, 18, 20, 29, 1, 4, 11, 19, 22, 6, 14, 37, 27, 17, 2, 24, 26, 36, 44, 45, 46, 34, 30, 32, 12];
 const ADS = [15, 21, 25, 35, 39, 41, 10, 38, 40, 51, 53, 52];
 const ADC = [0xff4fd8, 0x3ff3ff, 0xffd23f, 0x8f7bff];
-export function preloadDress(s: Phaser.Scene) { for (let i = 0; i < 54; i++) s.load.image('l2t_' + pad(i), `${A}tiles/tiles_${pad(i)}.png`); }
+export function preloadDress(s: Phaser.Scene) { for (const k of ['qramp', 'slope', 'arch', 'overhang', 'pipe', 'hill']) s.load.image('l2c_' + k, `${A}curve/${k}.png`); for (let i = 0; i < 54; i++) s.load.image('l2t_' + pad(i), `${A}tiles/tiles_${pad(i)}.png`); }
 export class Dress {
   far: { o: Phaser.GameObjects.Image; x0: number }[] = []; ads: any[] = []; lan: any[] = []; vend: any[] = []; cab: any[] = []; tubes: any[] = []; strips: any[] = []; terms: any[] = []; vents: any[] = []; bubbles: any[] = []; wires!: Phaser.GameObjects.Graphics;
   dbg = { far: 0, ads: 0, glitch: 0, lanterns: 0, spins: 0, vend: 0, vended: 0, cab: 0, tubes: 0, strips: 0, steps: 0, terms: 0, synced: 0, vents: 0, puffs: 0, branches: 0 };
