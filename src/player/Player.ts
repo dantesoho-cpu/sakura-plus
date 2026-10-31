@@ -1,3 +1,4 @@
+import { pooledImage, releaseImage } from '../systems/Pool';
 import { audio } from '../audio/Audio';
 import { touch } from '../systems/Touch';
 import Phaser from 'phaser';
@@ -146,7 +147,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   squash(sx: number, sy: number) { this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 140, ease: 'Quad.out' }); }
   burst() { this.trail.explode(10); }
   lastVy = 0; wjT = 0; wallSliding = false; wsFx = 0; wasWall = false;
-  dust() { const s = this.scene; for (let i = 0; i < 6; i++) { const d = i < 3 ? -1 : 1; const p = s.add.image(this.x + d * (3 + Math.random() * 4), this.y - 2, 'glow').setTint(0xe8dcc8).setAlpha(0.8).setScale(0.35).setDepth(this.depth - 0.1);
-    s.tweens.add({ targets: p, x: p.x + d * (14 + Math.random() * 14), y: p.y - 4 - Math.random() * 5, alpha: 0, scale: 0.12, duration: 260 + Math.random() * 120, ease: 'Quad.out', onComplete: () => p.destroy() }); } }
+  dust() { const s = this.scene; for (let i = 0; i < 6; i++) { const d = i < 3 ? -1 : 1; const p = pooledImage(s, this.x + d * (3 + Math.random() * 4), this.y - 2, 'glow').setTint(0xe8dcc8).setAlpha(0.8).setScale(0.35).setDepth(this.depth - 0.1);
+    s.tweens.add({ targets: p, x: p.x + d * (14 + Math.random() * 14), y: p.y - 4 - Math.random() * 5, alpha: 0, scale: 0.12, duration: 260 + Math.random() * 120, ease: 'Quad.out', onComplete: () => releaseImage(s, p) }); } }
   setAnimState(s: State, force = false) { if (this.state_ === s && !force) return; this.state_ = s; this.play(s, true); }
 }

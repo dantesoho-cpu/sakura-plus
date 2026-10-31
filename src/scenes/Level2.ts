@@ -1,4 +1,5 @@
 import { SpeedCam } from '../systems/SpeedCam';
+import { CanvasLite } from '../systems/CanvasLite';
 import { Cull } from '../systems/Cull';
 import Phaser from 'phaser';
 import { audio } from '../audio/Audio';
@@ -37,7 +38,7 @@ const FLOWERS: [number, number][] = [...TIER_FLOWERS];
 const FOES: [string, number, number][] = [['assault', 520, GY], ['drone', 700, 330], ['sentry', 828, 392], ['assault', 1040, GY], ['drone', 1300, 300], ['assault', 1620, GY], ['shield', 1780, GY],
   ['drone', 2000, 300], ['assault', 2300, GY], ['heavy', 2420, GY], ['drone', 2700, 300], ['shield', 2820, GY], ['assault', 3350, GY], ['drone', 3400, 320], ['heavy', 3520, GY], ...TIER_FOES];
 export class Level2 extends Phaser.Scene {
-  scam!: SpeedCam; culler!: Cull;
+  scam!: SpeedCam; culler!: Cull; clite!: CanvasLite;
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; ia!: Interact; env!: Env; dress!: Dress;
   solids!: Phaser.Physics.Arcade.StaticGroup; ones!: Phaser.Physics.Arcade.StaticGroup; flowers!: Phaser.Physics.Arcade.StaticGroup;
   bg: Phaser.GameObjects.TileSprite[] = []; cars: any[] = []; train!: Phaser.GameObjects.Image; neon: any[] = [];
@@ -134,7 +135,7 @@ export class Level2 extends Phaser.Scene {
     this.physics.add.collider(this.egun.shots, this.solids, (s: any) => { this.fx.spark(s.x, s.y); this.egun.kill(s); });
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
     this.toast = new Toast(this);
-    const cam = this.cameras.main; cam.setBounds(0, TOP, WW, WH - TOP); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
+    const cam = this.cameras.main; cam.setBounds(0, TOP, WW, WH - TOP); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); this.time.delayedCall(0, () => { const P: any = this.player; this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     const kb = this.input.keyboard!;
     const pause = () => { if (this.ending) return; audio.stopLoops(); audio.sfx('menu'); this.scene.launch('Pause', { lvl: 'Level2' }); this.scene.pause(); };
     kb.on('keydown-P', pause); kb.on('keydown-ESC', pause); kb.on('keydown-R', () => this.checkpoint()); kb.on('keydown-BACKSPACE', () => this.checkpoint());
@@ -184,7 +185,7 @@ export class Level2 extends Phaser.Scene {
     this.cannon.update(dt); this.ia.update(dt); this.env.update(dt); this.dress.update(dt); this.tiers.update(dt);
     this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
     { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);
-      cam.setFollowOffset(-this.lookX, 30 - this.lookY); } this.scam.update(dt); this.culler.update();
+      cam.setFollowOffset(-this.lookX, 30 - this.lookY); } this.scam.update(dt); this.culler.update(); this.clite?.update(dt);
     p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt); this.gun.shots.getChildren().forEach((o: any) => { if (o.active && (this.ia.hitShot(o.x, o.y, o.damage || 1) || this.dress.hitShot(o.x, o.y))) { this.fx.spark(o.x, o.y); this.gun.kill(o); } });
     this.enemies = this.enemies.filter(e => e.active);
     for (const e of this.enemies) { const near = Math.abs(e.x - p.x) < 520 && Math.abs(e.y - p.y) < 320; e.b.enable = near && !e.dead; if (near) e.tick(dt, p.x, p.y - 14); else e.b.setVelocity(0, 0); }

@@ -1,4 +1,5 @@
 import { SpeedCam } from '../systems/SpeedCam';
+import { CanvasLite } from '../systems/CanvasLite';
 import { Cull } from '../systems/Cull';
 import { audio } from '../audio/Audio';
 import { GIANT_DECKS } from './giantDecks';
@@ -42,7 +43,7 @@ export const SLOPES: Record<string, number> = { '/': 0, '\\': 1, u: 2, U: 3, n: 
 export const slopeH = (f: number, c: number) => [15 - c, c, 16 - (c + 1) / 2, 8 - (c + 1) / 2, c / 2, 8 + c / 2][f];
 const ARENA = { x0: 404, x1: 470 };
 export class Level1 extends Phaser.Scene {
-  scam!: SpeedCam; culler!: Cull;
+  scam!: SpeedCam; culler!: Cull; clite!: CanvasLite;
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; giants: [number, number, string][] = []; treeTops: [number, number, number][] = []; hud!: Hud; toast!: Toast; bg!: Parallax;
   solid!: Phaser.Tilemaps.TilemapLayer; oneway!: Phaser.Tilemaps.TilemapLayer; enemyGroup!: Phaser.Physics.Arcade.Group;
   pk!: Pickups; cannon!: Cannon; powT = 0; rapT = 0; auraT2 = 0;
@@ -64,9 +65,9 @@ export class Level1 extends Phaser.Scene {
     if (big) for (let i = 0; i < 4; i++) { const st = this.add.tileSprite(x + 14 + i * 24, y, 6, h, 'waterfall').setOrigin(0).setDepth(front.depth + 0.06).setTint(i % 2 ? 0x5aa0e0 : 0xffffff).setAlpha(0.3).setBlendMode(i % 2 ? Phaser.BlendModes.NORMAL : Phaser.BlendModes.ADD); this.falls2.push({ t: st, v: 90 + i * 25 }); }
     this.falls.push(front); this.falls2.push({ t: back, v: 45 }, { t: hi, v: 120 });
     const bot = y + h - 6, cx = x + w / 2, d = big ? -5.7 : behind ? 10.9 : 4;
-    if (lipFoam) this.add.ellipse(cx, y + 2, w + 6, 6, 0xbfe8ff, 0.6).setDepth(d);   // lip foam (springs use their rock lip instead)
-    const foam = this.add.ellipse(cx, bot + 2, w * 1.5, big ? 14 : 9, 0xffffff, 0.8).setDepth(d); this.tweens.add({ targets: foam, scaleX: 1.12, scaleY: 0.85, yoyo: true, repeat: -1, duration: 420, ease: 'Sine.inOut' });
-    this.add.particles(0, 0, 'glow', { x: { min: x - 6, max: x + w + 6 }, y: bot, speedY: { min: -14, max: -30 }, speedX: { min: -12, max: 12 }, scale: { start: big ? 0.9 : 0.5, end: big ? 1.8 : 1.1 }, alpha: { start: 0.28, end: 0 }, tint: 0xe8f8ff, lifespan: 1600, frequency: big ? 60 : 160 }).setDepth(d + 0.1);
+    if (lipFoam) this.add.image(cx, y + 2, 'glow').setTint(0xbfe8ff).setAlpha(0.7).setScale((w + 10) / 32, 8 / 32).setDepth(d);   // lip foam (springs use their rock lip instead)
+    const foam = this.add.image(cx, bot + 2, 'glow').setAlpha(big ? 0 : 0.95) /* big fall drops behind the pit vista: no floating foam bar */.setScale(w * 1.7 / 32, (big ? 20 : 13) / 32).setDepth(d); /* soft-edged foam (solid ellipse read as a hard white bar) */ this.tweens.add({ targets: foam, scaleX: 1.12, scaleY: 0.85, yoyo: true, repeat: -1, duration: 420, ease: 'Sine.inOut' });
+    this.add.particles(0, 0, 'glow', { x: { min: x - 6, max: x + w + 6 }, y: big ? { min: bot - 24, max: bot + 4 } : bot, speedY: { min: -14, max: -30 }, speedX: { min: -12, max: 12 }, scale: { start: big ? 0.9 : 0.5, end: big ? 1.8 : 1.1 }, alpha: { start: big ? 0.1 : 0.28, end: 0 }, tint: 0xe8f8ff, lifespan: 1600, frequency: big ? 60 : 160 }).setDepth(d + 0.1);
     this.add.particles(0, 0, 'pip', { x: { min: x, max: x + w }, y: bot, speedY: { min: -60, max: -120 }, speedX: { min: -50, max: 50 }, gravityY: 300, scale: { min: 0.3, max: 0.6 }, tint: [0xffffff, 0xbff0ff], lifespan: 700, frequency: big ? 40 : 110 }).setDepth(d + 0.2);
     this.add.particles(0, 0, 'spark', { x: { min: x, max: x + w }, y: { min: y, max: y + h }, scale: { start: 0.5, end: 0 }, alpha: { start: 0.9, end: 0 }, lifespan: 500, frequency: big ? 90 : 300, blendMode: 'ADD' }).setDepth(d + 0.3);
   }
@@ -93,10 +94,12 @@ export class Level1 extends Phaser.Scene {
       const im = this.add.image(x0 + i * 16, yt - 1 + (r() < 0.3 ? 1 : 0), 'pr_bridge_parts', 'p' + f).setOrigin(0).setDepth(3); if (r() < 0.4) im.setFlipX(true); }
     const posts = [x0 + 1]; for (let px = x0 + 44 + Math.floor(r() * 20); px < x1 - 30; px += 44 + Math.floor(r() * 28)) posts.push(px); posts.push(x1 - 5);
     posts.forEach(px => this.add.image(px, yt + 4, 'pr_bridge_parts', 'post').setOrigin(0, 1).setDepth(3.2));
-    const g = this.add.graphics().setDepth(3.1);
-    for (const [dy, sag] of [[-14, 4], [-8, 2]]) for (let i = 0; i < posts.length - 1; i++) { const a = posts[i] + 2, b = posts[i + 1] + 2, sg = sag + (b - a) / 30;
-      const pts = new Phaser.Curves.QuadraticBezier(new V(a, yt + dy), new V((a + b) / 2, yt + dy + sg * 2), new V(b, yt + dy)).getPoints(Math.max(8, Math.round((b - a) / 4)));
+    // ropes are static: draw once and bake to a texture (Graphics re-strokes every frame on the canvas renderer)
+    const g = this.make.graphics({}, false), ox = x0 - 4, oy = yt - 24, bw = x1 - x0 + 12, bk = 'rope_' + x0;
+    for (const [dy, sag] of [[-14, 4], [-8, 2]]) for (let i = 0; i < posts.length - 1; i++) { const a = posts[i] + 2 - ox, b = posts[i + 1] + 2 - ox, sg = sag + (b - a) / 30, yy = yt + dy - oy;
+      const pts = new Phaser.Curves.QuadraticBezier(new V(a, yy), new V((a + b) / 2, yy + sg * 2), new V(b, yy)).getPoints(Math.max(8, Math.round((b - a) / 4)));
       g.lineStyle(2, 0x2c1a1e).strokePoints(pts); g.lineStyle(1, 0xba9668).strokePoints(pts); }
+    if (!this.textures.exists(bk)) g.generateTexture(bk, bw, 40); g.destroy(); this.add.image(ox, oy, bk).setOrigin(0, 0).setDepth(3.1);
     this.add.image(x0 - 8, yt + 20, 'pr_bridge_parts', 'capL').setOrigin(0, 1).setDepth(3.3); this.add.image(x1 - 2, yt + 20, 'pr_bridge_parts', 'capR').setOrigin(0, 1).setDepth(3.3);
   }
   create() {
@@ -236,7 +239,7 @@ export class Level1 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.jetPick, () => this.pickJet());
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
     this.toast = new Toast(this); this.petals = new Petals(this);
-    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
+    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); this.time.delayedCall(0, () => { const P: any = this.player; this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     cam.fadeIn(400);
     // boss wiring
     this.boss.target = () => [this.player.x, this.player.y - 18];
@@ -460,6 +463,18 @@ export class Level1 extends Phaser.Scene {
   }
   animateProps() {
     // petals drift off the bigger cherry trees; the shrine breathes a soft pink glow
+    // integration: big cherry trees must not grow through floating platforms / ruin blocks; slide sideways along the same ground or drop
+    { const at = this.at, sol = (gx: number, gy: number) => at(gx, gy) === '#' || at(gx, gy) in SLOPES; const pls = this.children.list.filter((o: any) => o.texture && /^pl_|^g_/.test(o.texture.key)).map((o: any) => o.getBounds());
+      let moved = 0, dropped = 0;
+      for (const t of this.children.list.filter((o: any) => o.texture && /^pr_ts[0-3]/.test(o.texture.key)) as Phaser.GameObjects.Image[]) {
+        const gy = Math.round((t.y - 3) / TS), hit = (x: number) => { const x0 = x - t.displayWidth * 0.42, x1 = x + t.displayWidth * 0.42, y0 = t.y - t.displayHeight + 6, y1 = t.y - 14;
+          if (pls.some(b => b.right > x0 && b.left < x1 && b.bottom > y0 && b.top < y1)) return true;
+          for (let gx = Math.floor((x - 10) / TS); gx <= Math.floor((x + 10) / TS); gx++) if (!sol(gx, gy) && !sol(gx, gy + 1)) return true; /* trunk on ground */ for (let gx = Math.floor(x0 / TS); gx <= Math.floor(x1 / TS); gx++) { for (let yy = Math.max(0, Math.floor(y0 / TS)); yy < gy; yy++) if (sol(gx, yy)) return true; } return false; };
+        if (!hit(t.x)) continue; const oldX = t.x; let nx = NaN;
+        for (let d = 16; d <= 160 && isNaN(nx); d += 16) for (const sg of [1, -1]) if (!hit(oldX + sg * d)) { nx = oldX + sg * d; break; }
+        const tt = this.treeTops.find(q => Math.abs(q[0] - oldX) < 1);
+        if (!isNaN(nx)) { t.x = nx; if (tt) tt[0] = nx; moved++; } else { t.destroy(); if (tt) this.treeTops.splice(this.treeTops.indexOf(tt), 1); dropped++; } }
+      (window as any).__treeFix = { moved, dropped }; }
     this.treeTops.forEach(([x, y, w], i) => this.add.particles(0, 0, 'petal', { x: { min: x - w * 0.35, max: x + w * 0.35 }, y: { min: y, max: y + w * 0.3 }, speedX: { min: -26, max: -6 }, speedY: { min: 10, max: 24 }, rotate: { min: 0, max: 360 }, scale: { min: 0.5, max: 0.9 }, alpha: { start: 1, end: 0.2 }, lifespan: 4200, frequency: 700 + (i * 131) % 600 }).setDepth(-11));
     if (this.shrineX) { const sy = this.surfaceBelow(Math.floor(this.shrineX / TS), 0, (x, y) => /[#\/]/.test(LEVEL1[y]?.[x] ?? '')) * TS;
       const g = this.add.image(this.shrineX, sy - 16, 'glow').setTint(0xff8ad8).setBlendMode(Phaser.BlendModes.ADD).setScale(2).setAlpha(0.25).setDepth(-4.9);
@@ -556,7 +571,7 @@ export class Level1 extends Phaser.Scene {
     this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
     if (this.rapT > 0 || this.powT > 0) { if ((this.auraT2 -= dt) <= 0) { this.auraT2 = 0.12; const c = this.powT > 0 ? 0xffd23f : 0x3ff3ff, sp = this.add.rectangle(p.x + Phaser.Math.Between(-7, 7), p.y - Phaser.Math.Between(4, 30), 1, 3, c).setDepth(10).setBlendMode(Phaser.BlendModes.ADD); this.tweens.add({ targets: sp, y: sp.y - 14, alpha: 0, duration: 400, onComplete: () => sp.destroy() }); } }
     { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);
-      cam.setFollowOffset(-this.lookX, 30 - this.lookY); } this.scam.update(dt); this.culler.update(); p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
+      cam.setFollowOffset(-this.lookX, 30 - this.lookY); } this.scam.update(dt); this.culler.update(); this.clite?.update(dt); p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
     for (const g of [this.egun, this.gun]) for (const sh of g.shots.getChildren() as any[]) if (sh.active && this.platSolid(sh.x, sh.y)) { if (g === this.gun) this.fx.spark(sh.x, sh.y); g.kill(sh); }
     this.enemies = this.enemies.filter(e => e.active);
     for (const e of this.enemies) { const near = Math.abs(e.x - p.x) < 560 && Math.abs(e.y - p.y) < 340; e.b.enable = near && !e.dead; if (near) e.tick(dt, p.x, p.y - 14); else e.b.setVelocity(0, 0); }
