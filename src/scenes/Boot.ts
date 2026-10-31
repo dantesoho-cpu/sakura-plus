@@ -4,14 +4,14 @@ import { makeCombatTextures } from '../systems/Textures';
 import { DECO_SIZE } from '../decoList';
 // src: sheet key, frames. Core cycles from player2 (generated + processed, tools/gen_frames.py)
 export const ANIMS: Record<string, { src: string; frames: number[]; rate: number; repeat: number }> = {
-  idle: { src: 'idle', frames: [0, 1], rate: 2, repeat: -1 }, run: { src: 'run8', frames: [0, 1, 2, 3, 4, 5, 6, 7], rate: 15, repeat: -1 },
+  idle: { src: 'idle6', frames: [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], rate: 7, repeat: -1 }, skid: { src: 'idle6', frames: [6], rate: 1, repeat: 0 }, run: { src: 'run8', frames: [0, 1, 2, 3, 4, 5, 6, 7], rate: 15, repeat: -1 },
   jump: { src: 'rise', frames: [0], rate: 1, repeat: 0 }, doublejump: { src: 'rise', frames: [0], rate: 1, repeat: 0 },
   fall: { src: 'fall2', frames: [0], rate: 1, repeat: -1 }, apex: { src: 'apex2', frames: [0], rate: 1, repeat: 0 },
   land: { src: 'land', frames: [0], rate: 1, repeat: 0 }, dash: { src: 'dash4', frames: [0, 1], rate: 16, repeat: 0 }, dashend: { src: 'dash4', frames: [2, 3], rate: 14, repeat: 0 }, dash_u: { src: 'dash8', frames: [0], rate: 1, repeat: 0 }, dash_ud: { src: 'dash8', frames: [1], rate: 1, repeat: 0 }, dash_dd: { src: 'dash8', frames: [2], rate: 1, repeat: 0 }, dash_d: { src: 'dash8', frames: [3], rate: 1, repeat: 0 },
   shoot: { src: 'shoot', frames: [1, 0], rate: 12, repeat: 0 }, runshoot: { src: 'runshoot', frames: [0], rate: 1, repeat: 0 }, hurt: { src: 'hurt2', frames: [0, 1], rate: 6, repeat: 0 }, win: { src: 'win', frames: [0], rate: 1, repeat: 0 }, sit: { src: 'sit', frames: [0], rate: 1, repeat: 0 }, wall: { src: 'wall', frames: [0], rate: 1, repeat: 0 },
   charge: { src: 'charge', frames: [0, 1, 2, 3, 4, 5], rate: 14, repeat: -1 }, beamfire: { src: 'fire', frames: [0, 1, 0, 1, 2], rate: 18, repeat: -1 },
 };
-const SHEETS = ['idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt', 'charge', 'fire', 'run8', 'rise', 'apex2', 'fall2', 'land', 'dash4', 'hurt2', 'win', 'sit', 'wall', 'dash8'];
+const SHEETS = ['idle6', 'idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt', 'charge', 'fire', 'run8', 'rise', 'apex2', 'fall2', 'land', 'dash4', 'hurt2', 'win', 'sit', 'wall', 'dash8'];
 export class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {

@@ -12,7 +12,7 @@ export class Fx {
   hitStop(ms: number) {
     this.stopUntil = Math.max(this.stopUntil, this.scene.time.now + ms);
     this.scene.physics.world.pause(); this.scene.anims.pauseAll();
-    this.scene.time.delayedCall(ms, () => this.tick());
+    this.scene.time.delayedCall(this.stopUntil - this.scene.time.now + 1, () => this.tick());
   }
   // ROOT CAUSE of "Sakura gets stuck": overlapping hit-stops could leave the physics world paused forever (the last timer fired a hair
   // before stopUntil and skipped the resume). tick() runs every frame and resumes whenever the stop window is over.

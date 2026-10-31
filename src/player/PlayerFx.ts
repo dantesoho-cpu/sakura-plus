@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
 // Dash / jet-boost light trail (additive pink ribbon) + cycling-spectrum afterimages + jet-boot ring pulses & heat shimmer.
 const SPECTRUM = [0x3ff3ff, 0xff4fd8, 0x9a6bff, 0xffd23f];
+// per-direction ribbon palettes [outer, mid] : horizontal pink, up cyan, diag-up violet-cyan, diag-down magenta-violet, down violet
+const DIRPAL: Record<string, [number, number]> = { h: [0xff3fb8, 0xff8fe0], u: [0x3fd8ff, 0x9ff3ff], ud: [0x8f6bff, 0x9fe8ff], dd: [0xff3fd8, 0xc08fff], d: [0x9a4bff, 0xd09fff] };
 export class PlayerFx {
-  g: Phaser.GameObjects.Graphics; edge: Phaser.GameObjects.Graphics; wasOn = false; pts: { x: number; y: number; a: number }[] = []; ghostT = 0; ci = 0; ringT = 0; ghosts = 0; starts = 0;
+  g: Phaser.GameObjects.Graphics; edge: Phaser.GameObjects.Graphics; wasOn = false; pts: { x: number; y: number; a: number }[] = []; ghostT = 0; ci = 0; ringT = 0; ghosts = 0; starts = 0; lines = 0; dirs: Record<string, number> = {};
   shimmer: Phaser.GameObjects.Particles.ParticleEmitter; flame: Phaser.GameObjects.Graphics; flameT = 0; jetOn = false; flames = 0; bursts = 0;
   constructor(public s: Phaser.Scene, public p: Phaser.Physics.Arcade.Sprite & { dashing: boolean; jetting: boolean }) {
     this.flame = s.add.graphics().setDepth(10.5).setBlendMode(Phaser.BlendModes.ADD); this.edge = s.add.graphics().setDepth(8.9); this.g = s.add.graphics().setDepth(9).setBlendMode(Phaser.BlendModes.ADD);
@@ -14,12 +16,17 @@ export class PlayerFx {
     if (on) this.pts.unshift({ x: p.x, y: cy, a: 1 });
     for (const q of this.pts) q.a -= dt * 3.2; this.pts = this.pts.filter(q => q.a > 0).slice(0, 22);
     if (on && !this.wasOn) { this.ghostT = 0; this.starts++; } this.wasOn = on;
+    const q: any = p, dd = p.dashing ? (q.dashDir || 'h') : 'h', pal = p.jetting && !p.dashing ? DIRPAL.u : DIRPAL[dd] || DIRPAL.h;
+    if (p.dashing) { this.dirs[dd] = (this.dirs[dd] || 0) + 1; const vx = q.dashVx || 0, vy = q.dashVy || 0, m = Math.hypot(vx, vy) || 1, ux = vx / m, uy = vy / m;
+      for (let i = 0; i < 2; i++) { const off = (Math.random() - 0.5) * 26, sx = p.x - ux * 14 - uy * off, sy = cy - uy * 14 + ux * off, L = 14 + Math.random() * 18;
+        const ln = this.s.add.rectangle(sx, sy, L, 1, Math.random() < 0.5 ? 0xffffff : pal[1], 0.85).setRotation(Math.atan2(uy, ux)).setDepth(8.8).setBlendMode(Phaser.BlendModes.ADD); this.lines++;
+        this.s.tweens.add({ targets: ln, x: sx - ux * 40, y: sy - uy * 40, scaleX: 0.2, alpha: 0, duration: 180, onComplete: () => ln.destroy() }); } }
     const g = this.g; g.clear(); const eg = this.edge; eg.clear();
     for (let i = 0; i < this.pts.length - 1; i++) {
       const a = this.pts[i], b = this.pts[i + 1], k = a.a * (1 - i / this.pts.length);
       eg.lineStyle(9 * k + 3, 0x2a0a40, 0.55 * k).lineBetween(a.x, a.y, b.x, b.y);
-      g.lineStyle(16 * k + 3, 0xff3fb8, 0.3 * k).lineBetween(a.x, a.y, b.x, b.y);
-      g.lineStyle(8 * k + 1, 0xff8fe0, 0.6 * k).lineBetween(a.x, a.y, b.x, b.y);
+      g.lineStyle(16 * k + 3, pal[0], 0.3 * k).lineBetween(a.x, a.y, b.x, b.y);
+      g.lineStyle(8 * k + 1, pal[1], 0.6 * k).lineBetween(a.x, a.y, b.x, b.y);
       g.lineStyle(3 * k + 0.5, 0xffffff, 0.9 * k).lineBetween(a.x, a.y, b.x, b.y);
     }
     if (on && (this.ghostT -= dt) <= 0) { this.ghostT = p.dashing ? 0.025 : 0.06; this.ghost(); }
@@ -59,6 +66,7 @@ export class PlayerFx {
     const parts = [mk(-1, 0), mk(1, 0), mk(0, -1), mk(0, 1)].map(o => o.setTintFill(0x1a0630));
     parts.push(mk(0, 0).setTintFill(c), mk(0, 0).setTint(0xffffff).setAlpha(0.35).setBlendMode(Phaser.BlendModes.ADD));
     const ct = this.s.add.container(Math.round(p.x), Math.round(p.y), parts).setDepth(9).setAlpha(0.8);
-    this.s.tweens.add({ targets: ct, alpha: 0, duration: 360, onComplete: () => ct.destroy() });
+    const q: any = p, m = Math.hypot(q.dashVx || 0, q.dashVy || 0) || 1, dx = p.dashing ? -(q.dashVx || 0) / m * 10 : 0, dy = p.dashing ? -(q.dashVy || 0) / m * 10 : 0;
+    this.s.tweens.add({ targets: ct, alpha: 0, x: ct.x + dx, y: ct.y + dy, duration: 360, onComplete: () => ct.destroy() });
   }
 }

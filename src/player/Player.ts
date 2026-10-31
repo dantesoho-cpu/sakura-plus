@@ -5,10 +5,10 @@ import { PlayerFx } from './PlayerFx';
 import { T, JET, FEEL } from '../tuning';
 export { T, JET };
 const CHARGE_WALK = 34; // charging slows Sakura to a walk (was: vx*=0.25 every frame -> effectively frozen while held)
-type State = 'idle' | 'run' | 'jump' | 'doublejump' | 'fall' | 'land' | 'dash' | 'dashend' | 'hurt';
+type State = 'skid' | 'idle' | 'run' | 'jump' | 'doublejump' | 'fall' | 'land' | 'dash' | 'dashend' | 'hurt';
 export const HP_MAX = 5, IFRAMES = 1.0, HURT_TIME = 0.3;
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  state_: State = 'idle'; facing = 1; coyoteT = 0; bufferT = 0; airJumps = 1; dashT = 0; dashCd = 0; canAirDash = true; landT = 0; dbg = { dashes: [] as {x0:number,x1:number,dur:number}[], jumps: 0, djumps: 0, coyoteJumps: 0, cur: null as any, lastDir: 'h', jetT: 0, wallJumps: 0, wallSlideT: 0 };
+  state_: State = 'idle'; facing = 1; coyoteT = 0; bufferT = 0; airJumps = 1; dashT = 0; dashCd = 0; canAirDash = true; landT = 0; dbg = { dashes: [] as {x0:number,x1:number,dur:number}[], jumps: 0, djumps: 0, coyoteJumps: 0, cur: null as any, lastDir: 'h', jetT: 0, wallJumps: 0, wallSlideT: 0, skids: 0 };
   jumpHeld = false; dashing = false; jumpPressed = false; dashPressed = false; keys: any; trail: Phaser.GameObjects.Particles.ParticleEmitter;
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'p_idle', 0); scene.add.existing(this); scene.physics.add.existing(this);
@@ -30,7 +30,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.pfx = new PlayerFx(scene, this as any);
   }
   hasJet = false; fuel = JET.fuel; jetting = false; jetFx!: Phaser.GameObjects.Particles.ParticleEmitter; jetPetals!: Phaser.GameObjects.Particles.ParticleEmitter;
-  locked = false; boostT = 0; dashVx = 0; dashVy = 0; dashDir = 'h'; dashBuf = 0; poseLock = false; dashCount = 0; pfx: PlayerFx; beam: any = null; holdT = 0;
+  locked = false; boostT = 0; skidT = 0; dashVx = 0; dashVy = 0; dashDir = 'h'; dashBuf = 0; poseLock = false; dashCount = 0; pfx: PlayerFx; beam: any = null; holdT = 0;
   hp = HP_MAX; iT = 0; sil = false; hurtT = 0; shootPressed = false; shootBuf = 0; shootAnimT = 0; gun: any = null; dbgHits = 0;
   /** hit shards: square palette pixels, gravity, no AA */
   shards(d: number) { const sc = this.scene; if (!sc.textures.exists('px2')) { const g = sc.add.graphics(); g.fillStyle(0xffffff).fillRect(0, 0, 2, 2); g.generateTexture('px2', 2, 2); g.destroy(); }
@@ -127,7 +127,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (onGround) {
       if (this.state_ === 'fall' || this.state_ === 'doublejump' || this.state_ === 'jump') { if (b.velocity.y >= 0) { const hard = this.lastVy > FEEL.land.dustMinVy; this.landT = T.landTime; this.setAnimState('land'); const q = hard ? FEEL.land.squashHard : FEEL.land.squashSoft; this.squash(q[0], q[1]); if (hard) this.dust(); } }
       if (this.landT > 0) { this.landT -= dt; if (dir && this.state_ !== 'dashend') this.landT = 0; }
-      if (this.landT <= 0) this.setAnimState(Math.abs(b.velocity.x) > 20 ? 'run' : 'idle');
+      this.skidT = Math.max(-1, this.skidT - dt);
+      if (this.landT <= 0 && turning && Math.abs(vx) > 110 && this.skidT <= -0.2) { this.skidT = 0.16; this.dbg.skids = (this.dbg.skids || 0) + 1; this.setAnimState('skid', true); this.dust(); }
+      if (this.skidT > 0) this.setFlipX(vx < 0);
+      else if (this.landT <= 0) this.setAnimState(Math.abs(b.velocity.x) > 20 ? 'run' : 'idle');
       if (this.state_ === 'run') this.anims.timeScale = Phaser.Math.Clamp(Math.abs(b.velocity.x) / T.maxRun, 0.5, 1.2);
       else this.anims.timeScale = 1;
       if (this.shootAnimT > 0) { this.shootAnimT -= dt; const want = this.state_ === 'run' ? 'runshoot' : 'shoot';

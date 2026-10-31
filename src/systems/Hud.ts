@@ -18,6 +18,9 @@ export class Hud {
     }
   }
   setHp(hp: number) { this.pips.forEach((p, i) => p.setTexture(i < hp ? 'pip' : 'pip_e')); }
+  gemT?: Phaser.GameObjects.Text;
+  setGems(n: number) { if (!this.gemT) this.gemT = this.scene.add.text(474, 18, '', { fontFamily: 'monospace', fontStyle: 'bold', fontSize: '10px', color: '#7fffd0', stroke: '#1a0f2e', strokeThickness: 3 }).setOrigin(1, 0).setScrollFactor(0).setDepth(100); this.gemT.setText(`SHARDS ${n}`); this.scene.tweens.add({ targets: this.gemT, scale: { from: 1.25, to: 1 }, duration: 160 }); }
+  setBossName(n: string) { this.bossLbl?.setText(n); }
   setMem(n: number) { this.flowers.setText(`MEMORIES ${n}/10`); }
   setTime(s: number) { this.timer?.setText(`TIME ${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`); }
   draw(fuel: number, boss: number) { // fuel 0..1 or -1 hidden; boss 0..1 or -1 hidden
