@@ -41,6 +41,10 @@ export class Env {
     // vent smoke (fx_13/fx_24) drifting near ground every so often
     for (let x = 600; x < WW; x += 700 + Math.floor(rnd() * 300)) { const o = sc.add.image(x, GY - 6, 'l2f_' + (rnd() < 0.5 ? '13' : '24')).setDepth(1.7).setAlpha(0.35).setScale(1.2); this.smoke.push({ o, x0: x, t: rnd() * 10 }); }
   }
+  arc(x: number, base: number, n: number) { const sc = this.s as Phaser.Scene; const ids = [27, 28, 29, 31, 32, 33, 16];
+    for (let i = 0; i < n; i++) { const id = ids[(Math.floor(x / 100) + i) % ids.length], gx = x + i * 22, gy = base - Math.sin((i / Math.max(1, n - 1)) * Math.PI) * 26;
+      const gl = sc.add.image(gx, gy, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(GEMC[id]).setScale(0.32).setAlpha(0.45).setDepth(7.9);
+      const im = sc.add.image(gx, gy, 'l2e_' + pad(id)).setDepth(8).setScale(0.62); this.gems.push({ im, gl, y0: gy, t: i * 0.5, c: GEMC[id] }); this.dbg.gems++; } }
   petal(x: number, y: number, vx = 0) { const sc = this.s as Phaser.Scene; const p = sc.add.rectangle(x, y, 3, 2, Math.random() < 0.5 ? 0xff9fd0 : 0xffd0e8).setDepth(9).setAngle(Math.random() * 90);
     this.petals.push({ o: p, vx: vx + (Math.random() - 0.5) * 30, vy: 10 + Math.random() * 20, t: 0, w: Math.random() * 6 }); this.dbg.petals++; }
   update(dt: number) {

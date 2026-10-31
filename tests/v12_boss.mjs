@@ -3,7 +3,7 @@ const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsaf
 const errs = []; p.on('pageerror', e => errs.push(e.message)); fs.mkdirSync('audit/v12/boss', { recursive: true });
 await p.goto((process.env.URL || 'http://127.0.0.1:4181/sakura-plus/') + '?lvl=2'); await p.waitForFunction(() => !!(window.__lvl && window.__lvl.boss && window.__lvl.player && window.__game), null, { timeout: 60000, polling: 250 }); await p.waitForTimeout(800);
 await p.evaluate(() => { const g = window.__game; g.loop.sleep(); window.__T = performance.now(); window.__step = n => { for (let i = 0; i < n; i++) { window.__T += 16.67; g.step(window.__T, 16.67); } }; const L = window.__lvl; L.player.hp = 1e9; L.player.damage = () => false; });
-await p.evaluate(() => { window.__lvl.player.body.reset(4020, 430); window.__step(30); });
+await p.evaluate(() => { window.__lvl.player.body.reset((window.__lvl.AX0 || 3960) + 60, 430); window.__step(30); });
 const s0 = await p.evaluate(() => { const L = window.__lvl; return { arena: L.arena, st: L.boss.st, alpha: L.boss.alpha }; });
 await p.screenshot({ path: 'audit/v12/boss/01_intro.png' });
 await p.evaluate(() => window.__step(90)); await p.screenshot({ path: 'audit/v12/boss/02_awake.png' });
