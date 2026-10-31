@@ -1,3 +1,5 @@
+import { SpeedCam } from '../systems/SpeedCam';
+import { Cull } from '../systems/Cull';
 import { audio } from '../audio/Audio';
 import { GIANT_DECKS } from './giantDecks';
 import { WaspBomber, Sentry, ShieldTrooper } from '../entities/Kurogen2';
@@ -40,6 +42,7 @@ export const SLOPES: Record<string, number> = { '/': 0, '\\': 1, u: 2, U: 3, n: 
 export const slopeH = (f: number, c: number) => [15 - c, c, 16 - (c + 1) / 2, 8 - (c + 1) / 2, c / 2, 8 + c / 2][f];
 const ARENA = { x0: 404, x1: 470 };
 export class Level1 extends Phaser.Scene {
+  scam!: SpeedCam; culler!: Cull;
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; giants: [number, number, string][] = []; treeTops: [number, number, number][] = []; hud!: Hud; toast!: Toast; bg!: Parallax;
   solid!: Phaser.Tilemaps.TilemapLayer; oneway!: Phaser.Tilemaps.TilemapLayer; enemyGroup!: Phaser.Physics.Arcade.Group;
   pk!: Pickups; cannon!: Cannon; powT = 0; rapT = 0; auraT2 = 0;
@@ -233,7 +236,7 @@ export class Level1 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.jetPick, () => this.pickJet());
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
     this.toast = new Toast(this); this.petals = new Petals(this);
-    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
+    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     cam.fadeIn(400);
     // boss wiring
     this.boss.target = () => [this.player.x, this.player.y - 18];
@@ -553,7 +556,7 @@ export class Level1 extends Phaser.Scene {
     this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
     if (this.rapT > 0 || this.powT > 0) { if ((this.auraT2 -= dt) <= 0) { this.auraT2 = 0.12; const c = this.powT > 0 ? 0xffd23f : 0x3ff3ff, sp = this.add.rectangle(p.x + Phaser.Math.Between(-7, 7), p.y - Phaser.Math.Between(4, 30), 1, 3, c).setDepth(10).setBlendMode(Phaser.BlendModes.ADD); this.tweens.add({ targets: sp, y: sp.y - 14, alpha: 0, duration: 400, onComplete: () => sp.destroy() }); } }
     { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);
-      cam.setFollowOffset(-this.lookX, 30 - this.lookY); } p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
+      cam.setFollowOffset(-this.lookX, 30 - this.lookY); } this.scam.update(dt); this.culler.update(); p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
     for (const g of [this.egun, this.gun]) for (const sh of g.shots.getChildren() as any[]) if (sh.active && this.platSolid(sh.x, sh.y)) { if (g === this.gun) this.fx.spark(sh.x, sh.y); g.kill(sh); }
     this.enemies = this.enemies.filter(e => e.active);
     for (const e of this.enemies) { const near = Math.abs(e.x - p.x) < 560 && Math.abs(e.y - p.y) < 340; e.b.enable = near && !e.dead; if (near) e.tick(dt, p.x, p.y - 14); else e.b.setVelocity(0, 0); }

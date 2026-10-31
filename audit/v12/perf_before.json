@@ -1,0 +1,1 @@
+{"TAG":"before","res":{"Level2":{"frames":631,"avgFps":51.7,"p95ms":33.4,"p99ms":33.5,"over20ms":74,"objs":1843,"phaserFps":56,"x":334,"errs":[]},"Level1":{"frames":461,"avgFps":36.7,"p95ms":33.4,"p99ms":66.7,"over20ms":251,"objs":1237,"phaserFps":40,"x":1982,"errs":[]}}}

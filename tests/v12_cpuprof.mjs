@@ -1,0 +1,12 @@
+import { chromium } from 'playwright'; import fs from 'fs';
+const L = process.env.L || 'Level1'; const b = await chromium.launch({ args: ['--use-gl=angle', '--enable-unsafe-swiftshader'] });
+const p = await b.newPage({ viewport: { width: 960, height: 540 } }); await p.goto((process.env.URL || 'http://127.0.0.1:4181/sakura-plus/')); await p.waitForTimeout(2500);
+await p.evaluate(L => { const g = window.__game; g.scene.getScenes(true).forEach(s => g.scene.stop(s.scene.key)); g.scene.start(L); }, L); await p.waitForTimeout(3000);
+const c = await p.context().newCDPSession(p); await c.send('Profiler.enable'); await c.send('Profiler.start');
+await p.keyboard.down('ArrowRight'); for (let i = 0; i < 8; i++) { await p.keyboard.press('Shift'); await p.waitForTimeout(600); await p.keyboard.press('Space'); await p.waitForTimeout(400); } await p.keyboard.up('ArrowRight');
+const { profile } = await c.send('Profiler.stop'); const self = {}; const dt = profile.timeDeltas; const idx = {}; profile.nodes.forEach(n => idx[n.id] = n);
+profile.samples.forEach((s, i) => { const n = idx[s], f = n.callFrame, k = `${f.functionName || '(anon)'} ${f.url.split('/').pop()}:${f.lineNumber}`; self[k] = (self[k] || 0) + (dt[i] || 0); });
+const par = {}; profile.nodes.forEach(n => (n.children || []).forEach(ch => par[ch] = n.id)); const hot = {};
+profile.samples.forEach((s, i) => { const n = idx[s]; if (!['drawImage', 'save', 'stroke', 'fillText', 'restore'].includes(n.callFrame.functionName)) return; let k = [], q = par[s]; for (let d = 0; d < 4 && q; d++, q = par[q]) { const f = idx[q].callFrame; k.push((f.functionName || 'anon') + ':' + f.lineNumber + ':' + f.columnNumber); } k = n.callFrame.functionName + ' <- ' + k.join(' <- '); hot[k] = (hot[k] || 0) + (dt[i] || 0); });
+console.log(Object.entries(hot).sort((a, b) => b[1] - a[1]).slice(0, 8).map(x => (x[1] / 1000).toFixed(0) + 'ms ' + x[0]).join('\n'));
+const tot = Object.values(self).reduce((a, x) => a + x, 0); console.log(Object.entries(self).sort((a, b) => b[1] - a[1]).slice(0, 25).map(([k, v]) => (v / tot * 100).toFixed(1) + '% ' + k).join('\n')); await b.close();

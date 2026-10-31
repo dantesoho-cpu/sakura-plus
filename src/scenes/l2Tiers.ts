@@ -36,7 +36,7 @@ export class Tiers {
         const im = sc.add.image(x, y - 1, 'l2p_' + k).setOrigin(0, 0).setDepth(2); if (ww < w) im.setCrop(0, 0, ww, im.height); x += ww; }
       s.addRect(x0 + 2, y, x1 - x0 - 4, 10, true); this.dbg.runs++;
       for (let px = x0 + 60; px < x1 - 40; px += 200 + Math.floor(rnd() * 80)) { const h = below - y - 20; if (h < 40) continue; const id = ['09', '20', '29'][Math.floor(rnd() * 3)];
-        sc.add.tileSprite(px, y + 18, id === '09' ? 51 : 40, h, 'l2t_' + id).setOrigin(0.5, 0).setDepth(0.9).setTint(0x5a50a0).setAlpha(0.85); }
+        sc.add.tileSprite(px, y + 18, id === '09' ? 51 : 40, h, 'l2t_' + id).setOrigin(0.5, 0).setDepth(0.9).setTint(0x4a4490).setAlpha(1); }
       // edge neon trims
       for (const ex of [x0 + 4, x1 - 4]) { const g = sc.add.image(ex, y + 4, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(ri % 2 ? 0xff4fd8 : 0x3ff3ff).setScale(0.3).setAlpha(0.6).setDepth(2.1); s.neon.push({ o: g, base: 0.55, t: rnd() * 9 }); } });
     for (const [k, x, sy] of CURVES) { const P: any = (PROF as any)[k]; const y0 = k === 'overhang' ? sy - P.top[Math.floor(P.w / 2)] : sy - P.h + 2;

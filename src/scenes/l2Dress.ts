@@ -18,7 +18,7 @@ export class Dress {
     const glow = (x: number, y: number, c: number, sc_: number, a: number, d: number) => sc.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(c).setScale(sc_).setAlpha(a).setDepth(d);
     // 1) far-street silhouettes: a dim mid-parallax row of sheet tiles (scroll 0.82) between the city bg and the play layer
     for (let x = -40, i = 0; x < X1 * 0.82 + 600; x += 46 + Math.floor(rnd() * 70), i++) { const id = FAR[Math.floor(rnd() * FAR.length)];
-      const o = sc.add.image(x, GY - 6 - Math.floor(rnd() * 26), 'l2t_' + pad(id)).setOrigin(0.5, 1).setDepth(0.4 + rnd() * 0.2).setTint(0x4a4488).setAlpha(0.72).setScrollFactor(0.82, 1).setScale(0.7 + rnd() * 0.25).setFlipX(rnd() < 0.4);
+      const o = sc.add.image(x, GY - 6 - Math.floor(rnd() * 26), 'l2t_' + pad(id)).setOrigin(0.5, 1).setDepth(0.4 + rnd() * 0.2).setTint(0x3c3878).setAlpha(1).setScrollFactor(0.82, 1).setScale(0.7 + rnd() * 0.25).setFlipX(rnd() < 0.4);
       this.far.push({ o, x0: x }); this.dbg.far++; }
     // 2) holo billboards hovering over the street, bobbing; shots glitch them
     for (let x = 180, i = 0; x < X1 - 80; x += 260 + Math.floor(rnd() * 160), i++) { const id = ADS[i % ADS.length], c = ADC[i % ADC.length], y = GY - 122 - Math.floor(rnd() * 34);
