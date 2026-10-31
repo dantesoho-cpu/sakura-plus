@@ -11,7 +11,7 @@ export const ANIMS: Record<string, { src: string; frames: number[]; rate: number
   shoot: { src: 'shoot', frames: [1, 0], rate: 12, repeat: 0 }, runshoot: { src: 'runshoot', frames: [0], rate: 1, repeat: 0 }, hurt: { src: 'hurt2', frames: [0, 1], rate: 6, repeat: 0 }, win: { src: 'win', frames: [0], rate: 1, repeat: 0 }, sit: { src: 'sit', frames: [0], rate: 1, repeat: 0 }, wall: { src: 'wall', frames: [0], rate: 1, repeat: 0 },
   charge: { src: 'charge', frames: [0, 1, 2, 3, 4, 5], rate: 14, repeat: -1 }, beamfire: { src: 'fire', frames: [0, 1, 0, 1, 2], rate: 18, repeat: -1 },
 };
-const SHEETS = ['idle6', 'idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt', 'charge', 'fire', 'run8', 'rise', 'apex2', 'fall2', 'land', 'dash4', 'hurt2', 'win', 'sit', 'wall', 'dash8'];
+const SHEETS = ['idle6', 'idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt', 'charge', 'fire', 'run8', 'rise', 'apex2', 'fall2', 'land', 'dash4', 'hurt2', 'win', 'sit', 'wall', 'dash8', 'fall2b', 'riseb'];
 export class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {
@@ -53,6 +53,9 @@ export class Boot extends Phaser.Scene {
   create() {
     for (const [k, a] of Object.entries(ANIMS))
       this.anims.create({ key: k, frames: this.anims.generateFrameNumbers('p_' + a.src, { frames: a.frames }), frameRate: a.rate, repeat: a.repeat });
+    // hair-flutter loops derived from Sakura's own fall2/rise frames (tools/sak_flutter.py)
+    this.anims.remove('fall'); this.anims.create({ key: 'fall', frames: [{ key: 'p_fall2', frame: 0 }, { key: 'p_fall2b', frame: 0 }], frameRate: 7, repeat: -1 });
+    this.anims.remove('doublejump'); this.anims.create({ key: 'doublejump', frames: [{ key: 'p_rise', frame: 0 }, { key: 'p_riseb', frame: 0 }], frameRate: 10, repeat: -1 });
     // generated test tiles (16x16): pink-capped stone + plain stone, petal particle
     makeCombatTextures(this);
     for (const i of [0, 1, 2]) this.anims.create({ key: 'wf_basin' + i, frames: this.anims.generateFrameNumbers('wf_basin' + i, {}), frameRate: 6, repeat: -1 });

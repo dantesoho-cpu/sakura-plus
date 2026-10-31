@@ -90,7 +90,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.bufferT > 0) {
       if (onGround || this.coyoteT > 0) { this.dbg.jumps++; audio.sfx('jump'); if (!onGround) this.dbg.coyoteJumps++; b.setVelocityY(-T.jumpVel); this.bufferT = 0; this.coyoteT = 0; this.setAnimState('jump', true); this.squash(0.85, 1.15); }
       else if (wallDir && (this.wallSliding || dir === wallDir)) { b.setVelocity(-wallDir * T.maxRun * 1.15, -T.jumpVel * 0.92); this.wjT = 0.16; this.facing = -wallDir; this.bufferT = 0; this.wallSliding = false; this.dbg.wallJumps = (this.dbg.wallJumps || 0) + 1; audio.sfx('jump'); this.setAnimState('jump', true); this.squash(0.85, 1.15); }
-      else if (this.airJumps > 0) { b.setVelocityY(-T.doubleJumpVel); this.airJumps--; this.dbg.djumps++; audio.sfx('djump'); this.bufferT = 0; this.setAnimState('doublejump', true); this.burst(); this.squash(0.8, 1.2); }
+      else if (this.airJumps > 0) { b.setVelocityY(-T.doubleJumpVel); this.airJumps--; this.dbg.djumps++; audio.sfx('djump'); this.bufferT = 0; this.setAnimState('doublejump', true); this.spin(); this.burst(); this.squash(0.8, 1.2); }
     }
     // gravity: variable height + heavier fall
     let g = T.gravity; if (b.velocity.y > 0) g *= T.fallGravityMult; if (this.jumpHeld && Math.abs(b.velocity.y) < T.apexBand && !this.jetting) g *= T.apexGravMult;
@@ -145,6 +145,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
   squash(sx: number, sy: number) { this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 140, ease: 'Quad.out' }); }
+  /** double-jump flip: one forward somersault of her rise pose (origin stays at the feet line only while grounded, so air-only) */
+  spins = 0; spinTw: Phaser.Tweens.Tween | null = null; spin() { const sc = this.scene; this.spins++; this.spinTw?.stop(); const d = this.facing; this.spinTw = sc.tweens.addCounter({ from: 0, to: 1, duration: 360, ease: 'Cubic.easeOut', onUpdate: tw => { const b = this.body as Phaser.Physics.Arcade.Body; if (b.blocked.down || this.hurtT > 0) { tw.stop(); this.setAngle(0); return; } this.setAngle(d * 360 * (tw.getValue() as number)); }, onComplete: () => this.setAngle(0), onStop: () => this.setAngle(0) }); }
   burst() { this.trail.explode(10); }
   lastVy = 0; wjT = 0; wallSliding = false; wsFx = 0; wasWall = false;
   dust() { const s = this.scene; for (let i = 0; i < 6; i++) { const d = i < 3 ? -1 : 1; const p = pooledImage(s, this.x + d * (3 + Math.random() * 4), this.y - 2, 'glow').setTint(0xe8dcc8).setAlpha(0.8).setScale(0.35).setDepth(this.depth - 0.1);

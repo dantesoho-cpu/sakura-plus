@@ -10,6 +10,7 @@ import { Pickups, type PK } from '../systems/Pickups';
 import { Cannon } from '../systems/Cannon';
 import { Env, preloadEnv } from './l2Env';
 import { Interact, preloadInteract } from './l2Interact';
+import { NkScout, NkMine, NkLancer, nk2Load, nk2Anims } from '../entities/NeoKyo2';
 import { Extra } from './l2Extra';
 import { Dress, preloadDress } from './l2Dress';
 import { Tiers, TOP, TIER_FLOWERS, TIER_GEMS, TIER_FOES } from './l2Tiers';
@@ -57,6 +58,7 @@ export class Level2 extends Phaser.Scene {
     this.load.image('l2r_ground', `${A}rg/ground.png`); for (const k of Object.keys(RG)) this.load.image('l2r_' + k, `${A}rg/${k}.png`);
     for (const [k] of SIGNS) this.load.image('l2_' + k, `${A}tiles/${k}.png`);
     for (const [u, n] of Object.entries(NK_FRAMES)) for (let i = 0; i < n; i++) this.load.image(`nk_${u}_${i}`, `${A}en/${u}_${i}.png`);
+    nk2Load(this, A);
     for (const k of ['orb', 'tracer', 'bolt', 'mortar', 'disk', 'wave']) this.load.image('nk_s_' + k, `${A}en/s_${k}.png`);
     for (let i = 0; i < 4; i++) this.load.image('l2_boss_0' + i, `${A}boss/boss_0${i}.png`);
     for (const k of ['veh_01', 'veh_02', 'veh_03', 'veh_04', 'veh_06', 'veh_07', 'veh_09', 'veh_10', 'veh_13']) this.load.image('l2_' + k, `${A}veh/${k}.png`);
@@ -113,9 +115,9 @@ export class Level2 extends Phaser.Scene {
     this.physics.add.collider(this.player, this.solids); this.physics.add.collider(this.player, this.ones);
     this.physics.add.overlap(this.player, this.flowers, (_p, f: any) => this.collect(f));
     this.physics.add.collider(this.gun.shots, this.solids, (s: any) => { this.fx.spark(s.x, s.y); this.gun.kill(s); });
-    nkAnims(this); this.enemyGroup = this.physics.add.group({ allowGravity: false });
-    for (const [k, x, y] of FOES) { const C: any = { drone: NkDrone, sentry: NkSentry, assault: NkAssault, shield: NkShield, heavy: NkHeavy }[k]; const e: Enemy = new C(this, x, k === 'drone' ? y : y - 1, this.fx, this.egun);
-      this.enemies.push(e); this.enemyGroup.add(e); e.b.setAllowGravity(false); if (k !== 'drone') { e.b.setMaxVelocityY?.(600); }
+    nkAnims(this); nk2Anims(this); this.enemyGroup = this.physics.add.group({ allowGravity: false });
+    for (const [k, x, y] of FOES) { const C: any = { drone: NkDrone, sentry: NkSentry, assault: NkAssault, shield: NkShield, heavy: NkHeavy, scout: NkScout, mine: NkMine, lancer: NkLancer }[k]; const e: Enemy = new C(this, x, k === 'drone' || k === 'mine' ? y : y - 1, this.fx, this.egun);
+      this.enemies.push(e); this.enemyGroup.add(e); e.b.setAllowGravity(false); if (k !== 'drone' && k !== 'mine') { e.b.setMaxVelocityY?.(600); }
       e.on('destroyed', (z: Enemy) => { this.kills++; if (this.kills % 4 === 0 || this.player.hp <= 2 && Math.random() < 0.5) this.pk.add(this.kills % 12 === 0 ? 'power' : 'heart', z.x, z.y - 10, true); }); }
     this.boss = new Kaiju(this, (AX0 + AX1) / 2 - 40, 330, this.fx, this.egun, GY); this.enemies.push(this.boss); this.enemyGroup.add(this.boss); this.boss.b.setAllowGravity(false);
     this.boss.escorts = () => this.enemies.filter(e => e.kind === 'escort' && e.active && !e.dead).length;

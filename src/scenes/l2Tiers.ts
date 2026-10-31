@@ -20,7 +20,10 @@ export const TIER_FLOWERS: [number, number][] = [[700, MID - 20], [1800, MID - 2
 export const TIER_GEMS: [number, number, number][] = [[800, MID - 40, 5], [1600, MID - 40, 4], [2500, MID - 40, 5], [3500, MID - 40, 5], [1300, UP - 60, 4], [1650, UP - 40, 5], [2450, UP - 40, 5], [3400, UP - 40, 5], [3800, UP - 40, 4], [4700, SKY - 40, 6], [4850, SKY - 60, 5], [4400, 400, 5], [4900, 400, 5]];
 export const TIER_FOES: [string, number, number][] = [['assault', 900, MID], ['drone', 1100, MID - 90], ['shield', 1700, MID], ['assault', 2000, MID], ['heavy', 2700, MID], ['sentry', 3000, MID], ['assault', 3600, MID], ['drone', 3800, MID - 90],
   ['assault', 1500, UP], ['drone', 1700, UP - 90], ['sentry', 2500, UP], ['assault', 2800, UP], ['shield', 3500, UP], ['drone', 3900, UP - 100], ['heavy', 4800, SKY], ['drone', 4700, SKY - 80],
-  ['assault', 4400, 440], ['shield', 4700, 440], ['drone', 4950, 330]];
+  ['assault', 4400, 440], ['shield', 4700, 440], ['drone', 4950, 330],
+  // sheet-robot variety per tier: scouts low/rooftop, mines on skyways/spire, lancers on skyway/rooftop
+  ['scout', 1150, 440], ['scout', 2550, 440], ['scout', 3700, 440], ['mine', 1300, MID - 70], ['lancer', 2450, MID], ['mine', 3250, MID - 70],
+  ['scout', 1760, UP], ['mine', 2400, UP - 70], ['lancer', 3700, UP], ['mine', 4850, SKY - 70]];
 // curved / sloped sheet-style pieces: [key, left x, surface y (bottom for ground pieces, top for 'overhang')]; walkable via fine one-way step strips following the art's top silhouette
 export const CURVES: [string, number, number][] = [['qramp', 990, 440], ['arch', 1960, 440], ['hill', 3870, 440], ['pipe', 2960, 440], ['slope', 3560, 440], ['overhang', 2160, MID], ['hill', 4700, 440]];
 const DECKS = ['deck_glass_12', 'bridge_16', 'deck_neon_12', 'deck_vent_12'];

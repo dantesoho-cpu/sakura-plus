@@ -17,7 +17,7 @@ export function nkAnims(s: Phaser.Scene) {
 }
 type L2 = { groundAt(x: number, y: number): number; player: any; fx: Fx };
 /** walker base: gravity, edge/wall-aware patrol, face Sakura when she's in sight, step bob (visual only) */
-abstract class Walker extends Enemy {
+export abstract class Walker extends Enemy {
   minX: number; maxX: number; speed = 26; dir = 1; sight = 200; bobA = 1; stepT = 0;
   constructor(s: Phaser.Scene, x: number, y: number, u: string, hp: number, fx: Fx, public gun: Blaster, bw: number, bh: number, range = 70) {
     super(s, x, y, `nk_${u}_0`, hp, fx); this.setOrigin(0.5, 1); this.b.setSize(bw, bh).setOffset((this.width - bw) / 2, this.height - bh); this.minX = x - range; this.maxX = x + range; this.play(`nk_${u}_walk`); this.u = u;
