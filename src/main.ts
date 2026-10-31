@@ -8,6 +8,7 @@ import { Level2 } from './scenes/Level2';
 import { Pause } from './scenes/Pause';
 import { Victory } from './scenes/Victory';
 import { setupTouch } from './systems/Touch';
+import { setupPad } from './systems/Pad';
 export const W = 480, H = 270;
 const game = new Phaser.Game({
   type: Phaser.AUTO, parent: 'game', width: W, height: H, pixelArt: true, roundPixels: true,
@@ -17,5 +18,5 @@ const game = new Phaser.Game({
   fps: { target: 60, smoothStep: true },
   scene: [Boot, TestRoom, Title, Intro, Level1, Level2, Pause, Victory],
 });
-setupTouch();
+setupTouch(); setupPad();
 (window as any).__game = game;
