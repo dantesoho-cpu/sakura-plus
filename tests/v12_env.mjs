@@ -1,7 +1,7 @@
 import { chromium } from 'playwright'; import fs from 'fs';
 const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] }); const p = await b.newPage({ viewport: { width: 960, height: 540 } });
 const errs = []; p.on('pageerror', e => errs.push(e.message)); fs.mkdirSync('audit/v12/env', { recursive: true });
-await p.goto((process.env.URL || 'http://127.0.0.1:4181/sakura-plus/') + '?lvl=2'); await p.waitForTimeout(3500);
+await p.goto((process.env.URL || 'http://127.0.0.1:4181/sakura-plus/') + '?lvl=2'); await p.waitForFunction(() => window.__lvl && window.__lvl.env && window.__lvl.player && window.__game, null, { timeout: 60000, polling: 250 }); await p.waitForTimeout(800);
 await p.evaluate(() => { const g = window.__game; g.loop.sleep(); window.__T = performance.now(); window.__step = n => { for (let i = 0; i < n; i++) { window.__T += 16.67; g.step(window.__T, 16.67); } }; const L = window.__lvl; L.player.hp = 1e9; L.enemies.forEach(e => { e.setActive(false).setVisible(false); e.dead = true; e.body && (e.body.enable = false); }); });
 const g0 = await p.evaluate(() => { const e = window.__lvl.env; const g = e.gems[0]; return { n: e.gems.length, x: g.im.x, y: g.y0, d: { ...e.dbg } }; });
 // walk/run through first gem arc

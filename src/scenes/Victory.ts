@@ -6,7 +6,7 @@ import { Petals } from '../systems/Petals';
 export class Victory extends Phaser.Scene {
   bg!: Parallax; petals!: Petals; t = 0; prompt!: Phaser.GameObjects.Text;
   constructor() { super('Victory'); }
-  create(d: { time: number; got: number; kills: number; deaths: number }) {
+  create(d: { time: number; got: number; kills: number; deaths: number; ch?: number; gems?: number }) {
     this.bg = new Parallax(this); this.petals = new Petals(this); this.t = 0;
     // blossom road from tileset2: cap row + varied fill blocks, scrolls with the camera
     for (let i = 0; i < 64; i++) { this.add.image(i * 16, 238, 'tiles', 1).setOrigin(0, 0).setDepth(30);
@@ -22,13 +22,13 @@ export class Victory extends Phaser.Scene {
       } });
     } });
     const st = { fontFamily: 'monospace', fontStyle: 'bold', fontSize: '16px', color: '#ffd23f', stroke: '#1a0f2e', strokeThickness: 4 };
-    const title = this.add.text(240, 60, 'CHAPTER 1 COMPLETE', st).setOrigin(0.5).setDepth(50).setAlpha(0);
+    const title = this.add.text(240, d.ch === 2 ? 44 : 60, `CHAPTER ${d.ch || 1} COMPLETE`, st).setOrigin(0.5).setDepth(50).setAlpha(0);
     const m = Math.floor(d.time / 60), s = String(Math.floor(d.time % 60)).padStart(2, '0');
-    const stats = this.add.text(240, 112, `TIME ${m}:${s}\nMEMORIES ${d.got}/10\nKUROGEN DOWNED ${d.kills}\nFALLS ${d.deaths}`, { ...st, fontSize: '10px', color: '#fff', align: 'center', lineSpacing: 4 }).setOrigin(0.5).setDepth(50).setAlpha(0);
-    this.prompt = this.add.text(240, 180, 'ENTER restart   ·   T title', { ...st, fontSize: '10px' }).setOrigin(0.5).setDepth(50).setAlpha(0);
+    const stats = this.add.text(240, d.ch === 2 ? 116 : 112, `TIME ${m}:${s}\nMEMORIES ${d.got}/10\n${d.ch === 2 ? `SHARDS ${d.gems || 0}\nKAIJU UNIT DOWN\n` : ''}KUROGEN DOWNED ${d.kills}\nFALLS ${d.deaths}`, { ...st, fontSize: '10px', color: '#fff', align: 'center', lineSpacing: 4 }).setOrigin(0.5).setDepth(50).setAlpha(0);
+    this.prompt = this.add.text(240, d.ch === 2 ? 200 : 180, 'ENTER restart   ·   T title', { ...st, fontSize: '10px' }).setOrigin(0.5).setDepth(50).setAlpha(0);
     this.tweens.add({ targets: title, alpha: 1, duration: 800, delay: 600 }); this.tweens.add({ targets: stats, alpha: 1, duration: 800, delay: 1400 });
     this.time.delayedCall(2200, () => { this.ready = true;
-      this.input.keyboard!.once('keydown-ENTER', () => this.scene.start('Level1')); this.input.keyboard!.once('keydown-T', () => this.scene.start('Title')); this.input.once('pointerdown', () => this.scene.start('Level1')); });
+      this.input.keyboard!.once('keydown-ENTER', () => this.scene.start(d.ch === 2 ? 'Level2' : 'Level1')); this.input.keyboard!.once('keydown-T', () => this.scene.start('Title')); this.input.once('pointerdown', () => this.scene.start(d.ch === 2 ? 'Level2' : 'Level1')); });
     (window as any).__victory = { ...d };
     this.cameras.main.fadeIn(600, 255, 230, 240);
   }

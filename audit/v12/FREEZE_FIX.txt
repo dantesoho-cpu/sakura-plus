@@ -1,0 +1,4 @@
+Fix commit: 1d17475 (publish 1dba814), deployed 2026-10-31 MST
+Error: no JS exception. Level2.update never called this.fx.tick(), unlike Level1 and TestRoom. Fx.hitStop (on enemy kill or hit) pauses physics and anims, and resuming relies on a delayed timer that can fire just before stopUntil. Its tick() saw now<stopUntil and did nothing. In L1 the per-frame tick resumes it; in L2 nothing did, so the world stayed paused (Sakura and enemies frozen).
+Fix: Level2.update calls fx.tick() every frame; the hitStop resume timer is scheduled at stopUntil-now+1.
+Regression: tests/v12_freeze2.mjs (desktop + iPhone 13 landscape, 4 kill/move/shoot/dash rounds each, asserts not paused, moved, no errors). Reproduced before the fix on live (fail=2); passes after the fix locally (3x) and on live.
