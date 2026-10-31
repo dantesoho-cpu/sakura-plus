@@ -1,5 +1,5 @@
 import { SpeedCam } from '../systems/SpeedCam';
-import { CanvasLite } from '../systems/CanvasLite';
+import { CanvasLite, bakeTiles } from '../systems/CanvasLite';
 import { Cull } from '../systems/Cull';
 import { audio } from '../audio/Audio';
 import { GIANT_DECKS } from './giantDecks';
@@ -66,7 +66,7 @@ export class Level1 extends Phaser.Scene {
     this.falls.push(front); this.falls2.push({ t: back, v: 45 }, { t: hi, v: 120 });
     const bot = y + h - 6, cx = x + w / 2, d = big ? -5.7 : behind ? 10.9 : 4;
     if (lipFoam) this.add.image(cx, y + 2, 'glow').setTint(0xbfe8ff).setAlpha(0.7).setScale((w + 10) / 32, 8 / 32).setDepth(d);   // lip foam (springs use their rock lip instead)
-    const foam = this.add.image(cx, bot + 2, 'glow').setAlpha(big ? 0 : 0.95) /* big fall drops behind the pit vista: no floating foam bar */.setScale(w * 1.7 / 32, (big ? 20 : 13) / 32).setDepth(d); /* soft-edged foam (solid ellipse read as a hard white bar) */ this.tweens.add({ targets: foam, scaleX: 1.12, scaleY: 0.85, yoyo: true, repeat: -1, duration: 420, ease: 'Sine.inOut' });
+    const foam = this.add.image(cx, bot + 2, 'glow').setAlpha(0.95).setScale(w * 1.7 / 32, (big ? 20 : 13) / 32).setDepth(d); /* soft-edged foam (solid ellipse read as a hard white bar) */ this.tweens.add({ targets: foam, scaleX: 1.12, scaleY: 0.85, yoyo: true, repeat: -1, duration: 420, ease: 'Sine.inOut' });
     this.add.particles(0, 0, 'glow', { x: { min: x - 6, max: x + w + 6 }, y: big ? { min: bot - 24, max: bot + 4 } : bot, speedY: { min: -14, max: -30 }, speedX: { min: -12, max: 12 }, scale: { start: big ? 0.9 : 0.5, end: big ? 1.8 : 1.1 }, alpha: { start: big ? 0.1 : 0.28, end: 0 }, tint: 0xe8f8ff, lifespan: 1600, frequency: big ? 60 : 160 }).setDepth(d + 0.1);
     this.add.particles(0, 0, 'pip', { x: { min: x, max: x + w }, y: bot, speedY: { min: -60, max: -120 }, speedX: { min: -50, max: 50 }, gravityY: 300, scale: { min: 0.3, max: 0.6 }, tint: [0xffffff, 0xbff0ff], lifespan: 700, frequency: big ? 40 : 110 }).setDepth(d + 0.2);
     this.add.particles(0, 0, 'spark', { x: { min: x, max: x + w }, y: { min: y, max: y + h }, scale: { start: 0.5, end: 0 }, alpha: { start: 0.9, end: 0 }, lifespan: 500, frequency: big ? 90 : 300, blendMode: 'ADD' }).setDepth(d + 0.3);
@@ -162,7 +162,7 @@ export class Level1 extends Phaser.Scene {
       const rune = this.add.image(cx, T + 24 * 2, 'glow').setTint(0x7ad9ff).setBlendMode(Phaser.BlendModes.ADD).setScale(1.4).setDepth(-2.9).setAlpha(0.3);
       this.tweens.add({ targets: rune, alpha: 0.9, scale: 2, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut' }); }
     // setpiece: the great gorge falls pouring from under the T2 shelf, behind the long gorge bridge (row 62)
-    this.waterfall(152 * TS - 56, 39 * TS, 112, 49 * TS + 10, true);
+    this.waterfall(152 * TS - 56, 39 * TS, 112, (MH - 4) * TS + 10 - 39 * TS, true); /* falls into the pit pool */
     this.add.image(152 * TS, 37 * TS + 4, 'pr_wf_lip2').setOrigin(0.5, 0.2).setDepth(-5.5);
     // ledge-edge springs: every waterfall pours from a mossy outcrop under a ledge lip and lands in an animated stone basin
     { const cands: [number, number, number][] = []; const used: number[] = [];
@@ -239,7 +239,7 @@ export class Level1 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.jetPick, () => this.pickJet());
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
     this.toast = new Toast(this); this.petals = new Petals(this);
-    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); this.time.delayedCall(0, () => { const P: any = this.player; this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
+    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); this.time.delayedCall(0, () => { const P: any = this.player; bakeTiles(this, [this.solid, this.oneway], 2); this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     cam.fadeIn(400);
     // boss wiring
     this.boss.target = () => [this.player.x, this.player.y - 18];
@@ -549,6 +549,7 @@ export class Level1 extends Phaser.Scene {
     this.cameras.main.setBounds(ARENA.x0 * TS, top - 40, (ARENA.x1 - ARENA.x0) * TS, LEVEL1.length * TS - top + 40);
     this.boss.awake = true; this.toast.show('KUROGEN ENFORCER — "Kael Veyron sends his regards."', '#ff8a8a'); this.fx.shake(300, 0.006);
   }
+  auraPool: Phaser.GameObjects.Rectangle[] = [];
   lookX = 0; lookY = 0;
   update(_t: number, dms: number) {
     const dt = Math.min(dms, 50) / 1000; this.petals.update(dt); this.bg.update(dt);
@@ -569,7 +570,7 @@ export class Level1 extends Phaser.Scene {
       if (beh) this.sil.setTexture(p.texture.key, p.frame.name).setPosition(p.x, p.y).setOrigin(p.originX, p.originY).setFlipX(p.flipX).setScale(p.scaleX, p.scaleY).setRotation(p.rotation); }
     this.cannon.update(dt);
     this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
-    if (this.rapT > 0 || this.powT > 0) { if ((this.auraT2 -= dt) <= 0) { this.auraT2 = 0.12; const c = this.powT > 0 ? 0xffd23f : 0x3ff3ff, sp = this.add.rectangle(p.x + Phaser.Math.Between(-7, 7), p.y - Phaser.Math.Between(4, 30), 1, 3, c).setDepth(10).setBlendMode(Phaser.BlendModes.ADD); this.tweens.add({ targets: sp, y: sp.y - 14, alpha: 0, duration: 400, onComplete: () => sp.destroy() }); } }
+    if (this.rapT > 0 || this.powT > 0) { if ((this.auraT2 -= dt) <= 0) { this.auraT2 = 0.12; const c = this.powT > 0 ? 0xffd23f : 0x3ff3ff, sp = (this.auraPool.pop() || this.add.rectangle(0, 0, 1, 3, c).setDepth(10).setBlendMode(Phaser.BlendModes.ADD)).setPosition(p.x + Phaser.Math.Between(-7, 7), p.y - Phaser.Math.Between(4, 30)).setFillStyle(c).setAlpha(1).setVisible(true); this.tweens.add({ targets: sp, y: sp.y - 14, alpha: 0, duration: 400, onComplete: () => { sp.setVisible(false); this.auraPool.push(sp); } }); } }
     { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);
       cam.setFollowOffset(-this.lookX, 30 - this.lookY); } this.scam.update(dt); this.culler.update(); this.clite?.update(dt); p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
     for (const g of [this.egun, this.gun]) for (const sh of g.shots.getChildren() as any[]) if (sh.active && this.platSolid(sh.x, sh.y)) { if (g === this.gun) this.fx.spark(sh.x, sh.y); g.kill(sh); }
