@@ -41,6 +41,14 @@ export const GEN: Record<string, Gen> = {
     return soft(Math.sin(TAU * a + 3 * Math.sin(TAU * a * 0.51)) + n * 0.6) * env(t, 0.01, 0.35, 1.4) * 0.26; }); },
   elaser: sr => { let a = 0; return mk(0.6, sr, (t, k) => { a += (180 + 40 * Math.sin(TAU * t * 30)) / sr; return soft(Math.sin(TAU * a) * 2 + Math.sin(TAU * a * 3.01) * 0.6) * env(t, 0.05, 0.55, 1) * 0.18; }); },
   ehit: sr => { const bp = svf(); let a = 0; return mk(0.09, sr, (t, k) => { a += (1800 - 1200 * k) / sr; return soft(bp(rnd(), 0.3, 0.3).b * 1.2 + Math.sin(TAU * a) * 0.5) * env(t, 0.001, 0.089, 2) * 0.3; }); },
+  // MEGA CANNON: rising dual-FM whine over a growing sub rumble with crackle
+  cannon_charge: sr => { let a = 0, b = 0, s = 0; const l = lp(); return mk(1.05, sr, (t, k) => { a += (180 * Math.pow(12, k)) / sr; b += (183 * Math.pow(12, k) * 1.5) / sr; s += (38 + 30 * k) / sr;
+    return soft((Math.sin(TAU * a + Math.sin(TAU * b) * (1 + 3 * k)) * 0.5 + Math.sin(TAU * s) * 1.2 * k + l(rnd(), 0.08) * 1.5 * k * k) * (0.6 + 0.4 * Math.sin(TAU * t * (6 + 30 * k)))) * env(t, 0.05, 1.0, 0.2) * 0.4; }); },
+  // MEGA CANNON blast: hard crack, massive noise burst, sub drop 90->22Hz, FM laser roar, long rumbling tail
+  cannon_blast: sr => { const l = lp(), l2 = lp(), bp = svf(); let s = 0, a = 0, c = 0; return mk(2.6, sr, (t, k) => { s += (90 * Math.pow(0.25, Math.min(1, t / 1.2))) / sr; a += (900 * Math.pow(0.2, k)) / sr; c += (450 * Math.pow(0.2, k)) / sr;
+    const crack = bp(rnd(), 0.5, 0.3).h * env(t, 0.0005, 0.06, 2) * 2;
+    const roar = Math.sin(TAU * a + 3 * Math.sin(TAU * c)) * env(t, 0.01, 1.2, 1.5) * 0.6;
+    return soft(crack + l(rnd(), 0.2 * (1 - k) + 0.01) * 3 * env(t, 0.001, 1.5, 1.2) + l2(rnd(), 0.003) * 9 * env(t, 0.01, 2.4, 1) + Math.sin(TAU * s) * 1.6 * env(t, 0.003, 2.0, 1.2) + roar) * env(t, 0.0005, 2.58, 1.1) * 0.55; }); },
   explode: sr => { const l = lp(), l2 = lp(); let s = 0; return mk(0.8, sr, (t, k) => { s += (70 * Math.pow(0.4, k)) / sr; const c = 0.25 * Math.pow(1 - k, 2) + 0.01;
     return soft(l(rnd(), c) * 2.2 + l2(rnd(), 0.004) * 6 * env(t, 0, 0.6) + Math.sin(TAU * s) * env(t, 0.002, 0.5, 1.5)) * env(t, 0.002, 0.79, 1.3) * 0.42; }); },
   hurt: sr => { let a = 0; const bp = svf(); return mk(0.32, sr, (t, k) => { a += (520 * Math.pow(0.3, k)) / sr; return soft(Math.sin(TAU * a + 4 * Math.sin(TAU * t * 38)) + bp(rnd(), 0.1, 0.4).b * env(t, 0, 0.1)) * env(t, 0.002, 0.31, 1.5) * 0.34; }); },

@@ -8,13 +8,13 @@ const CHARGE_WALK = 34; // charging slows Sakura to a walk (was: vx*=0.25 every 
 type State = 'idle' | 'run' | 'jump' | 'doublejump' | 'fall' | 'land' | 'dash' | 'dashend' | 'hurt';
 export const HP_MAX = 5, IFRAMES = 1.0, HURT_TIME = 0.3;
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  state_: State = 'idle'; facing = 1; coyoteT = 0; bufferT = 0; airJumps = 1; dashT = 0; dashCd = 0; canAirDash = true; landT = 0; dbg = { dashes: [] as {x0:number,x1:number,dur:number}[], jumps: 0, djumps: 0, coyoteJumps: 0, cur: null as any, jetT: 0, wallJumps: 0, wallSlideT: 0 };
+  state_: State = 'idle'; facing = 1; coyoteT = 0; bufferT = 0; airJumps = 1; dashT = 0; dashCd = 0; canAirDash = true; landT = 0; dbg = { dashes: [] as {x0:number,x1:number,dur:number}[], jumps: 0, djumps: 0, coyoteJumps: 0, cur: null as any, lastDir: 'h', jetT: 0, wallJumps: 0, wallSlideT: 0 };
   jumpHeld = false; dashing = false; jumpPressed = false; dashPressed = false; keys: any; trail: Phaser.GameObjects.Particles.ParticleEmitter;
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'p_idle', 0); scene.add.existing(this); scene.physics.add.existing(this);
     this.setOrigin(0.5, 1); const b = this.body as Phaser.Physics.Arcade.Body;
     b.setSize(10, 28).setOffset(27, 15); b.setMaxVelocityY(T.maxFall);
-    this.keys = scene.input.keyboard!.addKeys({ left: 'LEFT', right: 'RIGHT', a: 'A', d: 'D', jump: 'SPACE', dash: 'SHIFT', j: 'J', x: 'X' });
+    this.keys = scene.input.keyboard!.addKeys({ left: 'LEFT', right: 'RIGHT', a: 'A', d: 'D', jump: 'SPACE', dash: 'SHIFT', j: 'J', x: 'X', up: 'UP', w: 'W', down: 'DOWN', s: 'S' });
     scene.input.keyboard!.on('keydown-J', (e: KeyboardEvent) => { if (!e.repeat) this.shootPressed = true; });
     scene.input.keyboard!.on('keydown-X', (e: KeyboardEvent) => { if (!e.repeat) this.shootPressed = true; });
     this.trail = scene.add.particles(0, 0, 'petal', { lifespan: 450, speed: { min: 10, max: 40 }, angle: { min: 0, max: 360 }, rotate: { min: 0, max: 360 },
@@ -30,7 +30,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.pfx = new PlayerFx(scene, this as any);
   }
   hasJet = false; fuel = JET.fuel; jetting = false; jetFx!: Phaser.GameObjects.Particles.ParticleEmitter; jetPetals!: Phaser.GameObjects.Particles.ParticleEmitter;
-  dashBuf = 0; poseLock = false; dashCount = 0; pfx: PlayerFx; beam: any = null; holdT = 0;
+  locked = false; boostT = 0; dashVx = 0; dashVy = 0; dashDir = 'h'; dashBuf = 0; poseLock = false; dashCount = 0; pfx: PlayerFx; beam: any = null; holdT = 0;
   hp = HP_MAX; iT = 0; sil = false; hurtT = 0; shootPressed = false; shootBuf = 0; shootAnimT = 0; gun: any = null; dbgHits = 0;
   /** hit shards: square palette pixels, gravity, no AA */
   shards(d: number) { const sc = this.scene; if (!sc.textures.exists('px2')) { const g = sc.add.graphics(); g.fillStyle(0xffffff).fillRect(0, 0, 2, 2); g.generateTexture('px2', 2, 2); g.destroy(); }
@@ -52,7 +52,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     audio.stopLoops(); if (this.beam) this.beam.cancel(); if (this.poseLock) { this.poseLock = false; this.anims.timeScale = 1; this.play(this.state_, true); }
   }
   update(dt: number) {
-    const k = this.keys, b = this.body_, onGround = b.blocked.down; if (!onGround) this.lastVy = b.velocity.y;
+    const k = this.keys, b = this.body_, onGround = b.blocked.down; if (!onGround) this.lastVy = b.velocity.y; if (this.locked) { this.setFlipX(this.facing < 0); this.jumpPressed = this.dashPressed = this.shootPressed = false; return; }
     if (touch.jumpP) { this.jumpPressed = true; touch.jumpP = false; } if (touch.dashP) { this.dashPressed = true; touch.dashP = false; } if (touch.shootP) { this.shootPressed = true; touch.shootP = false; }
     const dir = (k.right.isDown || k.d.isDown || touch.right ? 1 : 0) - (k.left.isDown || k.a.isDown || touch.left ? 1 : 0);
     if (this.iT > 0) { this.iT -= dt; const on = this.iT > 0 && this.iT < IFRAMES - FEEL.hurt.flashMs / 1000 && Math.floor(this.iT * 16) % 2 === 1; /* hi-bit i-frames: hard flicker to a solid plum silhouette, no translucency */
@@ -68,16 +68,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.dashCd -= dt;
     // dash
     if (dashP && this.dashCd <= 0 && this.dashT <= 0 && (onGround || this.canAirDash)) {
-      this.dashBuf = 0; audio.sfx('dash'); if (dir) this.facing = dir; this.dashing = true; this.dashCount++; this.dashT = T.dashTime; this.dashCd = T.dashCooldown + T.dashTime; if (!onGround) this.canAirDash = false;
+      this.dashBuf = 0; audio.sfx('dash'); if (dir) this.facing = dir; { const vy = (k.down.isDown || k.s.isDown || touch.down ? 1 : 0) - (k.up.isDown || k.w.isDown || touch.up ? 1 : 0); let dy = onGround && vy > 0 ? 0 : vy, dx = dir; if (!dx && !dy) dx = this.facing; const n = dx && dy ? Math.SQRT1_2 * 0.92 : (dy ? 0.85 : 1); this.dashVx = dx * T.dashSpeed * n; this.dashVy = dy * T.dashSpeed * n; this.dashDir = !dy ? 'h' : !dx ? (dy < 0 ? 'u' : 'd') : (dy < 0 ? 'ud' : 'dd'); this.dbg.lastDir = this.dashDir; if (dy < 0 && onGround) b.y -= 2; } this.dashing = true; this.dashCount++; this.dashT = T.dashTime; this.dashCd = T.dashCooldown + T.dashTime; if (!onGround) this.canAirDash = false;
       this.dbg.cur = { x0: this.x, t: 0 }; this.trail.start(); this.scene.cameras.main.shake(FEEL.dashShake[0], FEEL.dashShake[1]);
     }
     if (this.dashing && this.dashT <= 0) { // end dash one frame after the last dash-velocity frame was integrated
-      this.dashing = false; b.setVelocityX(this.facing * T.dashSpeed * T.dashEndCarry); if (onGround) { this.landT = 0.14; this.setAnimState('dashend'); } if (this.dbg.cur) { this.dbg.dashes.push({ x0: this.dbg.cur.x0, x1: this.x, dur: this.dbg.cur.t }); this.dbg.cur = null; }
+      this.dashing = false; b.setVelocity(this.dashVx * T.dashEndCarry, this.dashVy < 0 ? this.dashVy * 0.45 : b.velocity.y); if (onGround) { this.landT = 0.14; this.setAnimState('dashend'); } if (this.dbg.cur) { this.dbg.dashes.push({ x0: this.dbg.cur.x0, x1: this.x, dur: this.dbg.cur.t }); this.dbg.cur = null; }
       b.setVelocityX(this.facing * T.maxRun); this.trail.stop();
     }
     if (this.dashing) {
       if (this.bufferT > 0 && (onGround || this.coyoteT > 0)) { this.dashT = 0; this.dashing = false; this.dbg.cur = null; this.trail.stop(); }
-      else { b.setVelocity(this.facing * T.dashSpeed, 0); this.dashT -= dt; if (this.dbg.cur) this.dbg.cur.t += dt; this.setFlipX(this.facing < 0); this.setAnimState('dash'); return; }
+      else { b.setVelocity(this.dashVx, this.dashVy); this.dashT -= dt; if (this.dbg.cur) this.dbg.cur.t += dt; this.setFlipX(this.facing < 0); this.setAnimState('dash'); if (this.dashDir !== 'h') { const key = 'dash_' + this.dashDir; if (this.anims.currentAnim?.key !== key) this.play(key, true); } return; }
     }
     // horizontal
     this.wjT -= dt; const wallDir = !onGround ? (b.blocked.left ? -1 : b.blocked.right ? 1 : 0) : 0;
@@ -94,7 +94,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // gravity: variable height + heavier fall
     let g = T.gravity; if (b.velocity.y > 0) g *= T.fallGravityMult; if (this.jumpHeld && Math.abs(b.velocity.y) < T.apexBand && !this.jetting) g *= T.apexGravMult;
     b.setVelocityY(b.velocity.y + ((this.scene as any).onSlope && b.velocity.y >= 0 ? 0 : g) * dt);
-    if (!this.jumpHeld && b.velocity.y < 0) b.setVelocityY(b.velocity.y * Math.pow(T.jumpCutMult, dt * 20));
+    if (this.boostT > 0) this.boostT -= dt; else if (!this.jumpHeld && b.velocity.y < 0) b.setVelocityY(b.velocity.y * Math.pow(T.jumpCutMult, dt * 20));
     // wall slide: airborne, falling, pushing into a wall -> slow capped descent, refresh air dash
     this.wallSliding = !!wallDir && dir === wallDir && b.velocity.y > 0 && !this.dashing;
     if (this.wallSliding) { if (b.velocity.y > 95) b.setVelocityY(95); this.canAirDash = true; this.dbg.wallSlideT = (this.dbg.wallSlideT || 0) + dt; this.wsFx -= dt; if (this.wsFx <= 0) { this.wsFx = 0.08; const s = this.scene, q = s.add.image(this.x + wallDir * 6, this.y - 8, 'glow').setTint(0xe8dcc8).setAlpha(0.7).setScale(0.25).setDepth(this.depth - 0.1); s.tweens.add({ targets: q, y: q.y - 6, x: q.x - wallDir * 5, alpha: 0, duration: 240, onComplete: () => q.destroy() }); } }

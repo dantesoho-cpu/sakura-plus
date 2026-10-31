@@ -6,6 +6,7 @@ import Phaser from 'phaser';
 import { Beam } from '../weapons/Beam';
 import { Player, HP_MAX, JET } from '../player/Player';
 import { Pickups, POWER_T, type PK } from '../systems/Pickups';
+import { Cannon } from '../systems/Cannon';
 import { Fx } from '../systems/Fx';
 import { Blaster } from '../weapons/Blaster';
 import { Enemy } from '../entities/Enemy';
@@ -41,7 +42,7 @@ const ARENA = { x0: 404, x1: 470 };
 export class Level1 extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; giants: [number, number, string][] = []; treeTops: [number, number, number][] = []; hud!: Hud; toast!: Toast; bg!: Parallax;
   solid!: Phaser.Tilemaps.TilemapLayer; oneway!: Phaser.Tilemaps.TilemapLayer; enemyGroup!: Phaser.Physics.Arcade.Group;
-  pk!: Pickups; powT = 0; rapT = 0; auraT2 = 0;
+  pk!: Pickups; cannon!: Cannon; powT = 0; rapT = 0; auraT2 = 0;
   flowers!: Phaser.Physics.Arcade.StaticGroup; got = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 0, y: 0 }; safe = { x: 0, y: 0 };
   boss!: Enforcer; bossDead = false; arena = false; walls!: Phaser.Physics.Arcade.StaticGroup; gate!: Phaser.Physics.Arcade.Image; gateFx!: Phaser.GameObjects.TileSprite;
   gateOpen = false; ending = false; shrineX = 0; shrineLit = false; jetPick!: Phaser.Physics.Arcade.Image; carX = 0; car!: Car;
@@ -214,7 +215,8 @@ export class Level1 extends Phaser.Scene {
     this.animateProps();
     // --- player + colliders ---
     this.physics.world.setBounds(0, 0, worldW, worldH + 400);
-    this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun;
+    this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun; this.cannon = new Cannon(this, this.player, () => [...new Set([...this.enemies, ...(this.boss ? [this.boss] : [])])], () => this.egun.shots.getChildren().forEach((o: any) => { if (o.active) this.egun.kill(o); }));
+    for (const cx of [this.spawn.x + 900, this.spawn.x + 4200]) { for (let dx = 0; dx < 400; dx += 16) { const g = this.groundAt(cx + dx, 0), g2 = this.groundAt(cx + dx + 24, 0), g3 = this.groundAt(cx + dx - 24, 0); if (g > 0 && g === g2 && g === g3) { this.pk.add('cannon', cx + dx, g - 8); break; } } }
     this.player.beam = new Beam(this, this.fx, () => this.enemyGroup.getChildren() as any, (x, y) => !!this.solid.getTileAtWorldXY(x, y)?.collides); this.player.beam.owner = this.player; this.safe = { ...this.spawn };
     this.physics.add.collider(this.player, this.solid); this.physics.add.collider(this.player, this.oneway); this.physics.add.collider(this.player, deckL);
     this.physics.world.on('worldstep', () => { this.slopeSnap(); this.botPlats(); });
@@ -481,7 +483,7 @@ export class Level1 extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, LEVEL1[0].length * TS, LEVEL1.length * TS); this.toast.show('The Enforcer falls. The torii path is clear.', '#ffd23f');
     if (this.got >= 10) this.openGate();
   }
-  take(k: PK) { const p = this.player;
+  take(k: PK) { const p = this.player; if (k === 'cannon') { this.cannon.give(); this.toast.show('MEGA CANNON — press C', '#ff9a3f'); return true; }
     if (k === 'heart') { if (p.hp >= HP_MAX) return false; p.hp = Math.min(HP_MAX, p.hp + 1); this.hud.setHp(p.hp); this.toast.show('+1 HP', '#ff8fb8'); return true; }
     if (k === 'rapid') { this.rapT = POWER_T; this.toast.show('RAPID FIRE  12s', '#7fe9ff'); return true; }
     this.powT = POWER_T; this.toast.show('OVERDRIVE  2x damage + fast charge  12s', '#ffd23f'); return true; }
@@ -547,6 +549,7 @@ export class Level1 extends Phaser.Scene {
       if (!this.sil) this.sil = this.add.sprite(0, 0, p.texture.key).setDepth(10.8).setTintFill(0x101a30).setAlpha(0.74).setVisible(false);
       this.behindNow = beh; this.sil.setVisible(beh && p.visible);
       if (beh) this.sil.setTexture(p.texture.key, p.frame.name).setPosition(p.x, p.y).setOrigin(p.originX, p.originY).setFlipX(p.flipX).setScale(p.scaleX, p.scaleY).setRotation(p.rotation); }
+    this.cannon.update(dt);
     this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
     if (this.rapT > 0 || this.powT > 0) { if ((this.auraT2 -= dt) <= 0) { this.auraT2 = 0.12; const c = this.powT > 0 ? 0xffd23f : 0x3ff3ff, sp = this.add.rectangle(p.x + Phaser.Math.Between(-7, 7), p.y - Phaser.Math.Between(4, 30), 1, 3, c).setDepth(10).setBlendMode(Phaser.BlendModes.ADD); this.tweens.add({ targets: sp, y: sp.y - 14, alpha: 0, duration: 400, onComplete: () => sp.destroy() }); } }
     { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);

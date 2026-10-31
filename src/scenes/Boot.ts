@@ -7,11 +7,11 @@ export const ANIMS: Record<string, { src: string; frames: number[]; rate: number
   idle: { src: 'idle', frames: [0, 1], rate: 2, repeat: -1 }, run: { src: 'run8', frames: [0, 1, 2, 3, 4, 5, 6, 7], rate: 15, repeat: -1 },
   jump: { src: 'rise', frames: [0], rate: 1, repeat: 0 }, doublejump: { src: 'rise', frames: [0], rate: 1, repeat: 0 },
   fall: { src: 'fall2', frames: [0], rate: 1, repeat: -1 }, apex: { src: 'apex2', frames: [0], rate: 1, repeat: 0 },
-  land: { src: 'land', frames: [0], rate: 1, repeat: 0 }, dash: { src: 'dash4', frames: [0, 1], rate: 16, repeat: 0 }, dashend: { src: 'dash4', frames: [2, 3], rate: 14, repeat: 0 },
+  land: { src: 'land', frames: [0], rate: 1, repeat: 0 }, dash: { src: 'dash4', frames: [0, 1], rate: 16, repeat: 0 }, dashend: { src: 'dash4', frames: [2, 3], rate: 14, repeat: 0 }, dash_u: { src: 'dash8', frames: [0], rate: 1, repeat: 0 }, dash_ud: { src: 'dash8', frames: [1], rate: 1, repeat: 0 }, dash_dd: { src: 'dash8', frames: [2], rate: 1, repeat: 0 }, dash_d: { src: 'dash8', frames: [3], rate: 1, repeat: 0 },
   shoot: { src: 'shoot', frames: [1, 0], rate: 12, repeat: 0 }, runshoot: { src: 'runshoot', frames: [0], rate: 1, repeat: 0 }, hurt: { src: 'hurt2', frames: [0, 1], rate: 6, repeat: 0 }, win: { src: 'win', frames: [0], rate: 1, repeat: 0 }, sit: { src: 'sit', frames: [0], rate: 1, repeat: 0 }, wall: { src: 'wall', frames: [0], rate: 1, repeat: 0 },
   charge: { src: 'charge', frames: [0, 1, 2, 3, 4, 5], rate: 14, repeat: -1 }, beamfire: { src: 'fire', frames: [0, 1, 0, 1, 2], rate: 18, repeat: -1 },
 };
-const SHEETS = ['idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt', 'charge', 'fire', 'run8', 'rise', 'apex2', 'fall2', 'land', 'dash4', 'hurt2', 'win', 'sit', 'wall'];
+const SHEETS = ['idle', 'run', 'jump', 'apex', 'fall', 'dash', 'shoot', 'runshoot', 'hurt', 'charge', 'fire', 'run8', 'rise', 'apex2', 'fall2', 'land', 'dash4', 'hurt2', 'win', 'sit', 'wall', 'dash8'];
 export class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {
@@ -29,7 +29,7 @@ export class Boot extends Phaser.Scene {
     this.load.spritesheet('e_turret', 'assets/enemies/turret8.png', { frameWidth: 27, frameHeight: 30 });
     this.load.spritesheet('e_boom', 'assets/enemies/boom4.png', { frameWidth: 43, frameHeight: 32 });
     this.load.spritesheet('fx_boom', 'assets/fx/boom.png', { frameWidth: 50, frameHeight: 42 });
-    for (const k of ['shot', 'ebolt', 'flash', 'pip', 'pip_e', 'spark', 'spark2', 'petal', 'waterfall', 'shot1', 'shot2', 'shot3', 'eorb', 'eneedle', 'eplasma', 'pk_heart', 'pk_rapid', 'pk_power']) this.load.image(k, `assets/fx/${k}.png`);
+    for (const k of ['shot', 'ebolt', 'flash', 'pip', 'pip_e', 'spark', 'spark2', 'petal', 'waterfall', 'shot1', 'shot2', 'shot3', 'eorb', 'eneedle', 'eplasma', 'pk_heart', 'pk_rapid', 'pk_power', 'pk_cannon']) this.load.image(k, `assets/fx/${k}.png`);
     this.load.image('pr_torii_big', 'assets/props/torii.png'); this.load.image('pr_stone_gate', 'assets/props/stone_gate.png'); this.load.image('pr_lantern_stone', 'assets/props/lantern_stone.png'); this.load.image('pr_torii11', 'assets/props2/torii11.png');
     this.load.image('petal_soft', 'assets/fx/petal.png');
     for (let i = 0; i < 3; i++) this.load.image('cloud' + i, `assets/bg/cloud${i}.png`);

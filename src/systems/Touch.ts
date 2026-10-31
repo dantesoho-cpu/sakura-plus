@@ -1,7 +1,7 @@
 // DOM touch overlay: shared state read by Player. Shown only on touch devices.
-export const touch = { left: false, right: false, jump: false, dash: false, shoot: false, jumpP: false, dashP: false, shootP: false, respawnP: false };
+export const touch = { left: false, right: false, up: false, down: false, ax: 0, ay: 0, jump: false, dash: false, shoot: false, cannon: false, cannonP: false, jumpP: false, dashP: false, shootP: false, respawnP: false };
 export const isTouch = () => matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-type K = 'left' | 'right' | 'jump' | 'dash' | 'shoot';
+type K = 'left' | 'right' | 'jump' | 'dash' | 'shoot' | 'cannon';
 export function setupTouch() {
   const css = document.createElement('style');
   css.textContent = `
@@ -38,14 +38,15 @@ export function setupTouch() {
   st.appendChild(kn); tc.appendChild(st);
   let sid = -1;
   const mv = (e: PointerEvent) => { const r = st.getBoundingClientRect(), R = r.width / 2; let dx = e.clientX - r.left - R, dy = e.clientY - r.top - R; const d = Math.hypot(dx, dy), m = R * 0.62; if (d > m) { dx *= m / d; dy *= m / d; }
-    kn.style.transform = `translate(${dx}px,${dy}px)`; const ax = dx / m; touch.right = ax > 0.3; touch.left = ax < -0.3; kn.style.background = touch.left || touch.right ? 'rgba(255,95,176,.42)' : 'rgba(255,143,208,.20)'; };
-  const rel = (e: PointerEvent) => { if (e.pointerId !== sid) return; sid = -1; touch.left = touch.right = false; kn.style.transform = ''; kn.style.background = 'rgba(255,143,208,.20)'; };
+    kn.style.transform = `translate(${dx}px,${dy}px)`; const ax = dx / m, ay = dy / m; touch.ax = ax; touch.ay = ay; touch.right = ax > 0.3; touch.left = ax < -0.3; touch.up = ay < -0.45; touch.down = ay > 0.45; kn.style.background = touch.left || touch.right ? 'rgba(255,95,176,.42)' : 'rgba(255,143,208,.20)'; };
+  const rel = (e: PointerEvent) => { if (e.pointerId !== sid) return; sid = -1; touch.left = touch.right = touch.up = touch.down = false; touch.ax = touch.ay = 0; kn.style.transform = ''; kn.style.background = 'rgba(255,143,208,.20)'; };
   st.addEventListener('pointerdown', e => { e.preventDefault(); sid = e.pointerId; st.setPointerCapture?.(e.pointerId); mv(e); });
   st.addEventListener('pointermove', e => { if (e.pointerId === sid) { e.preventDefault(); mv(e); } });
   ['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, rel as any, true)); st.addEventListener('lostpointercapture', rel as any);
   const r = 'env(safe-area-inset-right,0px)';
   mk('shoot', 'SHOOT', 'ab', `right:calc(176px + ${r});bottom:calc(18px + ${sb})`);
   mk('dash', 'DASH', 'ab', `right:calc(96px + ${r});bottom:calc(66px + ${sb})`);
+  mk('cannon', 'CANNON', 'ab', `display:none;width:64px;height:64px;font-size:10px;color:#ffe08a;border-color:rgba(255,210,63,.6);background:rgba(255,120,40,.25);right:calc(100px + ${r});bottom:calc(152px + ${sb})`);
   mk('jump', 'JUMP', 'ab', `right:calc(16px + ${r});bottom:calc(18px + ${sb})`);
   // respawn-at-checkpoint button: small, very transparent, same style family as the pads; shown only in-level (all devices)
   const rs = document.createElement('div'); rs.id = 'rsp'; rs.className = 'tb'; rs.textContent = '⟲'; rs.title = 'Respawn at last checkpoint (R)';
