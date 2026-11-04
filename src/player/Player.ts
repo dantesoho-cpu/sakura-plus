@@ -147,6 +147,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       if (this.landT <= 0 && turning && Math.abs(vx) > 110 && this.skidT <= -0.2) { this.skidT = 0.16; this.dbg.skids = (this.dbg.skids || 0) + 1; this.setAnimState('skid', true); this.dust(); }
       if (this.skidT > 0) this.setFlipX(vx < 0);
       else if (this.landT <= 0) this.setAnimState(Math.abs(b.velocity.x) > 20 ? 'run' : 'idle');
+      // rest pose: after 5 s standing still she sits down (sheet 'sit' frame, crossfaded); any move/shot/jump breaks it
+      if (this.state_ === 'idle' && !dir && this.shootAnimT <= 0 && Math.abs(b.velocity.x) < 5) { this.restT += dt; if (this.restT > 5 && this.anims.currentAnim?.key !== 'sit') { this.blendFrom(); this.play('sit', true); (this.dbg as any).rests = ((this.dbg as any).rests || 0) + 1; } }
+      else if (this.restT) { const was = this.anims.currentAnim?.key === 'sit'; this.restT = 0; if (was && this.state_ === 'idle') { this.blendFrom(); this.play('idle', true); } }
       if (this.state_ === 'run') this.anims.timeScale = Phaser.Math.Clamp(Math.abs(b.velocity.x) / T.maxRun, 0.5, 1.2);
       else this.anims.timeScale = 1;
       if (this.shootAnimT > 0) { this.shootAnimT -= dt; const want = this.state_ === 'run' ? 'runshoot' : 'shoot';
@@ -159,6 +162,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       else if (this.state_ === 'run' || this.state_ === 'idle' || this.state_ === 'hurt' || this.state_ === 'land' || this.state_ === 'dash' || this.state_ === 'dashend') this.setAnimState(b.velocity.y < 0 ? 'jump' : 'fall');
     }
   }
+  restT = 0;
   squash(sx: number, sy: number) { this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 140, ease: 'Quad.out' }); }
   /** double-jump flip: one forward somersault of her rise pose (origin stays at the feet line only while grounded, so air-only) */
   spins = 0; spinTw: Phaser.Tweens.Tween | null = null; spin() { const sc = this.scene; this.spins++; this.spinTw?.stop(); const d = this.facing; this.spinTw = sc.tweens.addCounter({ from: 0, to: 1, duration: 360, ease: 'Cubic.easeOut', onUpdate: tw => { const b = this.body as Phaser.Physics.Arcade.Body; if (b.blocked.down || this.hurtT > 0) { tw.stop(); this.setAngle(0); return; } this.setAngle(d * 360 * (tw.getValue() as number)); }, onComplete: () => this.setAngle(0), onStop: () => this.setAngle(0) }); }

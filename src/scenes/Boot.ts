@@ -29,6 +29,7 @@ export class Boot extends Phaser.Scene {
     this.load.spritesheet('e_trooper', 'assets/enemies/trooper6.png', { frameWidth: 30, frameHeight: 32 });
     this.load.spritesheet('e_turret', 'assets/enemies/turret8.png', { frameWidth: 27, frameHeight: 30 });
     this.load.spritesheet('e_boom', 'assets/enemies/boom4.png', { frameWidth: 43, frameHeight: 32 });
+    for (const v of ['acid', 'plasma', 'ember']) this.load.spritesheet('e_boom_' + v, `assets/enemies/boom4_${v}.png`, { frameWidth: 43, frameHeight: 32 });
     this.load.spritesheet('fx_boom', 'assets/fx/boom.png', { frameWidth: 50, frameHeight: 42 });
     for (const k of ['shot', 'ebolt', 'flash', 'pip', 'pip_e', 'spark', 'spark2', 'petal', 'waterfall', 'shot1', 'shot2', 'shot3', 'eorb', 'eneedle', 'eplasma', 'pk_heart', 'pk_rapid', 'pk_power', 'pk_cannon']) this.load.image(k, `assets/fx/${k}.png`);
     this.load.image('pr_torii_big', 'assets/props/torii.png'); this.load.image('pr_stone_gate', 'assets/props/stone_gate.png'); this.load.image('pr_lantern_stone', 'assets/props/lantern_stone.png'); this.load.image('pr_torii11', 'assets/props2/torii11.png');

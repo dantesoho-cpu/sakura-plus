@@ -3,7 +3,7 @@ import { chromium } from 'playwright'; import fs from 'fs';
 const URL = process.env.URL || 'http://127.0.0.1:4181/sakura-plus/'; const D = 'audit/v12/iter17'; fs.mkdirSync(D, { recursive: true });
 const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] }); const p = await b.newPage({ viewport: { width: 960, height: 540 } }); const errs = []; p.on('pageerror', e => errs.push(e.message));
 const W = ms => p.waitForTimeout(ms), fails = [], out = {}; const act = k => p.evaluate(k => window.__game.scene.isActive(k), k);
-await p.goto(URL); await p.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 60000 }); await W(1200);
+await p.goto(URL); await p.waitForFunction(() => window.__game?.scene.isActive('Title') && window.__title?.sel !== undefined, null, { timeout: 60000 }); await W(1200);
 await p.screenshot({ path: `${D}/title.png` });
 await p.keyboard.press('ArrowDown'); await p.keyboard.press('ArrowDown'); await W(100); out.sel2 = await p.evaluate(() => window.__title.sel);
 await p.keyboard.press('Enter'); await W(400); await p.screenshot({ path: `${D}/title_controls.png` }); out.ctl = await p.evaluate(() => !!window.__title.ctl);

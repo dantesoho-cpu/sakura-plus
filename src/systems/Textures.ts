@@ -13,5 +13,5 @@ export function makeCombatTextures(s: Phaser.Scene) {
   mk('wasp_fly', 'e_wasp', [0, 1, 2, 3], 16); mk('wasp_drop', 'e_wasp', [4, 5], 12);
   mk('sentry_idle', 'e_sentry', [0, 1, 2, 3, 2, 1], 5); mk('sentry_charge', 'e_sentry', [4, 5], 14);
   mk('trooper_walk', 'e_trooper', [0, 1, 2, 3], 7); mk('trooper_idle', 'e_trooper', [4, 5], 3);
-  mk('e_destroy', 'e_boom', [0, 1, 2, 3], 10, 0); mk('fx_boom', 'fx_boom', [0, 1, 2, 3, 4], 16, 0);
+  mk('e_destroy', 'e_boom', [0, 1, 2, 3], 10, 0); for (const v of ['acid', 'plasma', 'ember']) mk('e_destroy_' + v, 'e_boom_' + v, [0, 1, 2, 3], 10, 0); mk('fx_boom', 'fx_boom', [0, 1, 2, 3, 4], 16, 0);
 }
