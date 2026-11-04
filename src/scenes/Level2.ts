@@ -168,7 +168,7 @@ export class Level2 extends Phaser.Scene {
   rapT = 0; powT = 0;
   respawn(full: boolean) { const p = this.player, b = p.body_;
     if (full) { this.deaths++; if (this.arena) { this.unlockArena(); this.boss.reset(); this.enemies.filter(e => e.kind === 'escort').forEach(e => e.active && e.destroy()); } p.hp = HP_MAX; this.hud.setHp(p.hp); this.cameras.main.flash(250, 255, 200, 230); p.setPosition(this.spawn.x, this.spawn.y); } else p.setPosition(this.safe.x, this.safe.y);
-    b.setVelocity(0, 0); p.iT = 1; }
+    b.setVelocity(0, 0); p.iT = 1; this.cameras.main.centerOn(p.x, p.y - 30); this.cameras.main.fadeIn(full ? 320 : 200, 255, 230, 240); p.burst(); (this as any).respawns = ((this as any).respawns || 0) + 1; }
   checkpoint() { if (this.ending) return; audio.sfx('respawn'); const p = this.player; p.resetInput(); p.hurtT = 0; p.dashing = false; p.dashT = 0;
     p.setPosition(this.spawn.x, this.spawn.y); p.body_.setVelocity(0, 0); p.iT = 1; this.cameras.main.flash(200, 255, 200, 230); this.toast.show('Back to the last checkpoint.', '#ffd6f0'); }
   update(_t: number, dms: number) { this.fx.tick();

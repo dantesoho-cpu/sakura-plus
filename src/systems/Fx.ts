@@ -21,7 +21,7 @@ export class Fx {
   spark(x: number, y: number) { this.sparks.explode(6, x, y); }
   explode(x: number, y: number, big = 1) {
     this.boom.explode(Math.round(22 * big), x, y);
-    const r = this.scene.add.sprite(x, y, 'fx_boom', 0).setDepth(21).setScale(big);
+    const r = this.scene.add.sprite(x, y, 'fx_boom', 0).setDepth(21).setScale(big * (0.88 + Math.random() * 0.28)).setFlipX(Math.random() < 0.5).setAngle((Math.random() - 0.5) * 40); // per-boom variation
     r.play('fx_boom'); r.once('animationcomplete', () => r.destroy());
     this.hitStop(70); this.shake(160, 0.006 * big);
   }

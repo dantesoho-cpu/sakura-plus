@@ -522,7 +522,7 @@ export class Level1 extends Phaser.Scene {
     if (full) { this.deaths++; p.hp = HP_MAX; this.hud.setHp(p.hp); this.cameras.main.flash(250, 255, 200, 230);
       if (this.arena) { this.arena = false; this.walls.clear(true, true); this.boss.reset(); this.hud.draw(-1, -1); this.cameras.main.setBounds(0, 0, LEVEL1[0].length * TS, LEVEL1.length * TS); }
       p.setPosition(this.spawn.x, this.spawn.y); } else p.setPosition(this.safe.x, this.safe.y);
-    b.setVelocity(0, 0); p.iT = 1;
+    b.setVelocity(0, 0); p.iT = 1; this.cameras.main.centerOn(p.x, p.y - 30); this.cameras.main.fadeIn(full ? 320 : 200, 255, 230, 240); p.burst(); (this as any).respawns = ((this as any).respawns || 0) + 1;
   }
   /** manual "respawn at last checkpoint" (HUD button / R / Backspace / Pause menu). No HP cost. */
   checkpoint() {

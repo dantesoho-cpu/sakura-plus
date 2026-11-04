@@ -17,4 +17,13 @@ for (const lvl of ['Level1', 'Level2']) { await start(lvl);
   const ts = await p.evaluate(async () => { const P = window.__lvl.player; P.iT = 9; return null; });
   await p.keyboard.down('ArrowRight'); await W(150); const slow = await p.evaluate(() => window.__lvl.player.anims.timeScale); await W(700); const fast = await p.evaluate(() => [window.__lvl.player.anims.timeScale, window.__lvl.player.state_]); await p.keyboard.up('ArrowRight');
   out[lvl].stride = [slow, fast]; if (!(fast[0] >= slow)) fails.push(lvl + ' stride ' + JSON.stringify([slow, fast])); }
+// round 2: respawn transition (camera snaps + fade, no sweep) and kill-chain feedback
+for (const lvl of ['Level1', 'Level2']) { await start(lvl);
+  await p.evaluate(() => { const L = window.__lvl, P = L.player; P.body.reset(P.x + 1500, P.y - 40); }); await W(1500);
+  const rs = await p.evaluate(() => { const L = window.__lvl, P = L.player; L.respawn(false); const c = L.cameras.main; return { fade: c.fadeEffect.isRunning, n: L.respawns }; }); await W(60);
+  const cd = await p.evaluate(() => { const L = window.__lvl, P = L.player, c = L.cameras.main; return Math.round(Math.abs(c.midPoint.x - P.x)); }); await p.screenshot({ path: `${D}/${lvl}_respawn.png` });
+  if (!rs.fade || rs.n !== 1 || cd > 200) fails.push(lvl + ' respawn ' + JSON.stringify({ rs, cd }));
+  const ch = await p.evaluate(() => { const L = window.__lvl, P = L.player, es = L.enemies.filter(e => e.active && !e.dead && e.kind !== 'boss').slice(0, 3); if (es.length < 3) return null; L.cameras.main.centerOn(es[0].x, es[0].y);
+    es.forEach((e, i) => { e.setPosition(es[0].x + i * 40, es[0].y); e.die(); }); return L.__chain.n; }); await W(80); await p.screenshot({ path: `${D}/${lvl}_chain.png` });
+  out[lvl + '_r2'] = { rs, cd, ch }; if (!(ch >= 2)) fails.push(lvl + ' chain ' + ch); }
 console.log(JSON.stringify({ ...out, errs, fails, result: fails.length || errs.length ? 'FAIL' : 'PASS' })); await b.close();

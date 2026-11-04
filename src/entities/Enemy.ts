@@ -47,7 +47,7 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
   punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: ms, ease: 'Quad.out' }); }
   die() {
-    this.dead = true; audio.sfx('explode'); this.aura.destroy(); this.tele.destroy(); this.debris(); this.fx.explode(this.x, this.y - this.height / 2, this.kind === 'turret' ? 1.3 : 1);
+    this.dead = true; { const S: any = this.scene, now = S.time.now; S.__chain = S.__chain && now - S.__chain.t < 2000 ? { n: S.__chain.n + 1, t: now } : { n: 0, t: now }; audio.sfx('explode', { rate: 1 + 0.07 * Math.min(6, S.__chain.n) }); if (S.__chain.n >= 2) { const r = S.add.circle(this.x, this.y - this.height / 2, 6).setStrokeStyle(3, 0xffd23f).setDepth(12).setBlendMode(Phaser.BlendModes.ADD); S.tweens.add({ targets: r, radius: 30 + 6 * Math.min(6, S.__chain.n), alpha: 0, duration: 320, onComplete: () => r.destroy() }); } } this.aura.destroy(); this.tele.destroy(); this.debris(); this.fx.explode(this.x, this.y - this.height / 2, this.kind === 'turret' ? 1.3 : 1);
     this.b.enable = false; this.clearTint(); this.setAngle(0);
     const d = this.scene.add.sprite(this.x, this.y, 'e_boom', 0).setOrigin(0.5, 1).setDepth(9).setFlipX(this.flipX); d.play('e_destroy');
     const sc = this.scene; d.once('animationcomplete', () => sc.tweens.add({ targets: d, alpha: 0, duration: 200, onComplete: () => d.destroy() })); this.emit('destroyed', this); this.destroy();
