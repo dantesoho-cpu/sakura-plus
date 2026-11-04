@@ -131,7 +131,7 @@ export class NkHeavy extends Walker {
       this.flash(mx, my, 0xff9040); audio.sfx('eshot', { rate: 0.55 }); this.punch(1.06, 0.92, 220); }
     if (this.hitT <= 0) this.walk(dt, px, py, this.fireT < 0.6);
     // stomp: footfall on each walk-frame change
-    const fr = this.anims.currentFrame?.index ?? 0; if (this.anims.currentAnim?.key === 'nk_heavy_walk' && fr !== this.lastStep && this.b.velocity.x !== 0) { this.lastStep = fr; audio.sfx('ehit', { rate: 0.4, vol: 0.35 });
+    const fr = this.anims.currentFrame?.index ?? 0; if (this.anims.currentAnim?.key.startsWith('nk_heavy_walk') && fr !== this.lastStep && this.b.velocity.x !== 0) { this.lastStep = fr; audio.sfx('ehit', { rate: 0.4, vol: 0.35 });
       if (Math.abs(this.L.player.x - this.x) < 240) this.scene.cameras.main.shake(60, 0.0015); }
   }
 }

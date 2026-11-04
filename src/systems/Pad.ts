@@ -34,6 +34,9 @@ function poll() {
   }
   if (P(9)) inLevel() ? key(27, 'Escape') : key(13, 'Enter');
   if (P(0) && !inLevel()) key(13, 'Enter');
+  // menus (Title / Level select): stick + d-pad step the highlight, Circle backs out
+  if (!inLevel()) { if (u && !held.u) key(38, 'ArrowUp'); if (d && !held.d) key(40, 'ArrowDown'); if (l && !held.l) key(37, 'ArrowLeft'); if (r && !held.r) key(39, 'ArrowRight'); if (P(1)) key(27, 'Escape'); }
+  held = { l, r, u, d };
   if (P(17)) toggleFullscreen();
   if (pad.used) document.getElementById('tc')?.classList.remove('on');
   prev = now; requestAnimationFrame(poll);

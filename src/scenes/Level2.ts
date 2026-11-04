@@ -59,7 +59,7 @@ export class Level2 extends Phaser.Scene {
     for (const k of Object.keys(PL)) this.load.image('l2p_' + k, `${A}plat/${k}.png`);
     this.load.image('l2r_ground', `${A}rg/ground.png`); for (const k of Object.keys(RG)) this.load.image('l2r_' + k, `${A}rg/${k}.png`);
     for (const [k] of SIGNS) this.load.image('l2_' + k, `${A}tiles/${k}.png`);
-    for (const [u, n] of Object.entries(NK_FRAMES)) for (let i = 0; i < n; i++) this.load.image(`nk_${u}_${i}`, `${A}en/${u}_${i}.png`);
+    for (const [u, n] of Object.entries(NK_FRAMES)) for (let i = 0; i < n; i++) { this.load.image(`nk_${u}_${i}`, `${A}en/${u}_${i}.png`); this.load.image(`nk_${u}_${i}_v`, `${A}en/${u}_${i}_v.png`); }
     nk2Load(this, A);
     for (const k of ['orb', 'tracer', 'bolt', 'mortar', 'disk', 'wave']) this.load.image('nk_s_' + k, `${A}en/s_${k}.png`);
     for (let i = 0; i < 4; i++) this.load.image('l2_boss_0' + i, `${A}boss/boss_0${i}.png`); for (const k of ['roar', 'tuck', 'charge']) this.load.image('l2_kp_' + k, `${A}boss/kpose_${k}.png`);

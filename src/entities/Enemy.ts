@@ -9,6 +9,7 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, tex, 0); scene.add.existing(this); scene.physics.add.existing(this); this.hp = hp; this.setDepth(8);
     this.aura = scene.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff2a3a).setDepth(9).setAlpha(0.4);
     this.tele = scene.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff3050).setDepth(9).setVisible(false);
+    scene.time.delayedCall(0, () => { if (this.active && !this.eliteChk) this.checkElite(); }); // after the subclass set its texture + anim
   }
   aura: Phaser.GameObjects.Image; tele: Phaser.GameObjects.Image; teleT = 0; eyeY = 0.55; eyeX = 0;
   /** Attack telegraph: blinking red warning glow + ring for `sec` seconds. */
@@ -50,6 +51,10 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.dead = true; { const S: any = this.scene, now = S.time.now; S.__chain = S.__chain && now - S.__chain.t < 2000 ? { n: S.__chain.n + 1, t: now } : { n: 0, t: now }; audio.sfx('explode', { rate: 1 + 0.07 * Math.min(6, S.__chain.n) }); if (S.__chain.n >= 2) { const r = S.add.circle(this.x, this.y - this.height / 2, 6).setStrokeStyle(3, 0xffd23f).setDepth(12).setBlendMode(Phaser.BlendModes.ADD); S.tweens.add({ targets: r, radius: 30 + 6 * Math.min(6, S.__chain.n), alpha: 0, duration: 320, onComplete: () => r.destroy() }); } } this.aura.destroy(); this.tele.destroy(); this.debris(); this.fx.explode(this.x, this.y - this.height / 2, this.kind === 'turret' ? 1.3 : 1);
     this.b.enable = false; this.clearTint(); this.setAngle(0);
     const d = this.scene.add.sprite(this.x, this.y, 'e_boom', 0).setOrigin(0.5, 1).setDepth(9).setFlipX(this.flipX); d.play('e_destroy');
+    if (this.elite) { const sc0 = this.scene, cx = this.x, cy = this.y - this.height / 2; d.setTint(0xe0b0ff); (sc0 as any).__eliteBursts = ((sc0 as any).__eliteBursts || 0) + 1;
+      const g = sc0.add.image(cx, cy, 'glow').setTint(0xb04aff).setBlendMode(Phaser.BlendModes.ADD).setDepth(11).setScale(1.5); sc0.tweens.add({ targets: g, scale: 5, alpha: 0, duration: 380, ease: 'Quad.out', onComplete: () => g.destroy() });
+      for (let i = 0; i < 8; i++) { const a2 = i / 8 * Math.PI * 2 + Math.random() * 0.4, sp = sc0.add.image(cx, cy, 'spark2').setTint(i % 2 ? 0xd890ff : 0xffd23f).setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setAngle(a2 * 57.3);
+        sc0.tweens.add({ targets: sp, x: cx + Math.cos(a2) * (36 + Math.random() * 24), y: cy + Math.sin(a2) * (30 + Math.random() * 20), alpha: 0, scale: 0.3, duration: 420 + Math.random() * 160, ease: 'Quad.out', onComplete: () => sp.destroy() }); } }
     const sc = this.scene; d.once('animationcomplete', () => sc.tweens.add({ targets: d, alpha: 0, duration: 200, onComplete: () => d.destroy() })); this.emit('destroyed', this); this.destroy();
   }
   /** Hi-bit destruction: white flash, shockwave rings, tumbling hull debris, smoke puffs. */
@@ -66,7 +71,18 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
     for (let i = 0; i < 4; i++) { const p = s.add.image(cx + (Math.random() - 0.5) * 14, cy, 'glow').setTint(0x403a50).setAlpha(0.7).setScale(0.5).setDepth(10);
       s.tweens.add({ targets: p, y: cy - 20 - Math.random() * 14, scale: 1.4, alpha: 0, duration: 700 + i * 120, delay: 80 + i * 40, onComplete: () => p.destroy() }); }
   }
+  /** Elite: ~30% of drones/bots/wasps/sentries/troopers (seeded by spawn x) wear the regenerated violet sheet, +1 hp, violet aura. */
+  elite = false; eliteChk = false;
+  checkElite() { this.eliteChk = true; const k = this.texture.key; if (this.kind === 'boss' || !this.scene.textures.exists(k + '_v')) return; const h = ((Math.round(this.x) * 2654435761) >>> 0) % 10; if (h >= 3) return;
+    this.elite = true; this.hp += 1; this.setTexture(k + '_v', this.frame.name); this.aura.setTint(0xb04aff); const S: any = this.scene; S.__elites = (S.__elites || 0) + 1;
+    const cur = this.anims.currentAnim?.key; if (cur) this.play(cur, true); }
+  /** variant anim on demand: same timing, every frame swapped to its regenerated `_v` texture (works for sheets and per-frame images) */
+  static variantAnim(sc: Phaser.Scene, key: string) { const A = sc.anims; if (A.exists(key + '_v')) return true; const an = A.get(key); if (!an) return false;
+    const fr = an.frames.map(f => ({ key: f.textureKey + '_v', frame: f.textureFrame })); if (!fr.every(f => sc.textures.exists(f.key))) return false;
+    A.create({ key: key + '_v', frames: fr, frameRate: an.frameRate, repeat: an.repeat, yoyo: an.yoyo }); return true; }
+  play(key: any, ignoreIfPlaying?: boolean) { if (this.elite && typeof key === 'string' && Enemy.variantAnim(this.scene, key)) key = key + '_v'; return super.play(key, ignoreIfPlaying); }
   tick(dt: number, _px: number, _py: number) {
+    if (!this.eliteChk) this.checkElite();
     this.t += dt; if (this.wob) { this.wobT += dt; this.wob *= Math.pow(0.004, dt); if (Math.abs(this.wob) < 0.5) this.wob = 0; } if (this.hitT > 0) this.hitT -= dt; if (this.flashT > 0 && (this.flashT -= dt) <= 0) this.clearTint();
     const ex = this.x + (this.flipX ? -this.eyeX : this.eyeX), ey = this.y - this.height * this.eyeY;
     if (this.kind === 'boss') this.aura.setVisible(false);

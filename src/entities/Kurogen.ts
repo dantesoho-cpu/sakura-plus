@@ -59,7 +59,7 @@ export class Turret extends Enemy {
   tick(dt: number, px: number, py: number) {
     super.tick(dt, px, py); if (this.dead) return;
     const inRange = Math.abs(px - this.x) < 200 && Math.abs(py - this.y) < 60; this.face(Math.sign(px - this.x));
-    if (inRange) { this.fireT -= dt; if (this.fireT < 0.35) { if (!this.anims.currentAnim || this.anims.currentAnim.key !== 'turret_attack') { this.play('turret_attack'); this.telegraph(0.35); } }
+    if (inRange) { this.fireT -= dt; if (this.fireT < 0.35) { if (!this.anims.currentAnim || !this.anims.currentAnim.key.startsWith('turret_attack')) { this.play('turret_attack'); this.telegraph(0.35); } }
       if (this.fireT <= 0) { this.fireT = 1.4; const d = px > this.x ? 1 : -1; this.gun.fireVel(this.x + d * 18, this.y - 22, d * 150, 0, { tex: 'eorb', trail: 0xff5f2f, spin: 9, pulse: true, life: 3 }); audio.sfx('eshot'); this.punch(1.2, 0.85, 180); this.fx.spark(this.x + d * 18, this.y - 22); }
       else if (this.fireT < 1.0) this.play('turret_idle', true);
     } else { this.fireT = Math.max(this.fireT, 0.6); this.play('turret_idle', true); }

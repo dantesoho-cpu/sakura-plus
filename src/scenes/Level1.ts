@@ -119,7 +119,7 @@ export class Level1 extends Phaser.Scene {
         if (!u) f = !l ? 6 : !r ? 7 : (x % 2 ? 3 : 2);
         else if (!S(x, y - 2) && !l && d) f = 22; else if (!S(x, y - 2) && !r && d) f = 23;
         else if (!l) f = d ? 4 : 18; else if (!r) f = d ? 5 : 19; else if (!d) f = 10;
-        else if (!S(x, y - 2) && d) f = (x % 2 ? 21 : 20);
+        else if (!S(x, y - 2) && d) { const q = ((x * 2246822519 + y * 3266489917) >>> 0) % 9; f = q < 3 ? 20 : q < 6 ? 21 : q < 8 ? (x % 2 ? 1 : 0) : (x % 2 ? 21 : 20); }
         else if (!S(x + 1, y - 1)) f = 8; else if (!S(x - 1, y - 1)) f = 9; else f = this.fillTile(x, y); }
       else if (c === '=') o = at(x - 1, y) !== '=' ? 6 : at(x + 1, y) !== '=' ? 7 : (x % 2 ? 3 : 2);
       else if (c === 'H') o = -2;
@@ -129,6 +129,8 @@ export class Level1 extends Phaser.Scene {
     const mk = (data: number[][], depth: number) => { const map = this.make.tilemap({ data, tileWidth: TS, tileHeight: TS });
       const ts = map.addTilesetImage('tiles', 'tiles', TS, TS, 0, 0)!; return map.createLayer(0, ts, 0, 0)!.setDepth(depth); };
     this.solid = mk(sd, 2); this.solid.setCollisionByExclusion([-1]);
+    // strip variety: seeded mirror of cap / under-cap / base tiles so long ledges stop reading as a stamped pattern
+    { let n = 0; this.solid.forEachTile(t => { if ([2, 3, 10, 20, 21, 0, 1].includes(t.index) && ((t.x * 2654435761 + t.y * 40503) >>> 0) % 3 === 0) { t.flipX = true; n++; } }); (this as any).stripFlips = n; }
     // ground directly under a slope tile is handled by the slope probe (avoids corner snags on the slope seam)
     this.solid.forEachTile(t => { if (t.index >= 0 && at(t.x, t.y - 1) in SLOPES) t.setCollision(false, false, false, false); });
     this.oneway = mk(od, 2); this.oneway.setCollisionByExclusion([-1]);

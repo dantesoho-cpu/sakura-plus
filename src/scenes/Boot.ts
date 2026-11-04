@@ -22,6 +22,7 @@ export class Boot extends Phaser.Scene {
     this.load.spritesheet('tiles', 'assets/tiles/tileset2.png', { frameWidth: 16, frameHeight: 16 });
     for (const k of ['torii', 'lantern', 'shrine', 'tree', 'tree2', 'bridge', 'flower', 'car']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     this.load.spritesheet('e_drone', 'assets/enemies/drone8.png', { frameWidth: 37, frameHeight: 24 });
+    for (const [k, f, w, h] of [['drone', 'drone8', 37, 24], ['bot', 'bot8', 23, 32], ['wasp', 'wasp6', 34, 22], ['sentry', 'sentry6', 30, 34], ['trooper', 'trooper6', 30, 32]] as [string, string, number, number][]) this.load.spritesheet('e_' + k + '_v', `assets/enemies/${f}_v.png`, { frameWidth: w, frameHeight: h });
     this.load.spritesheet('e_bot', 'assets/enemies/bot8.png', { frameWidth: 23, frameHeight: 32 });
     this.load.spritesheet('e_wasp', 'assets/enemies/wasp6.png', { frameWidth: 34, frameHeight: 22 });
     this.load.spritesheet('e_sentry', 'assets/enemies/sentry6.png', { frameWidth: 30, frameHeight: 34 });

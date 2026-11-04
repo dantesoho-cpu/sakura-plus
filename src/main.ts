@@ -1,3 +1,4 @@
+import { LevelSelect } from './scenes/LevelSelect';
 import Phaser from 'phaser';
 import { Boot } from './scenes/Boot';
 import { TestRoom } from './scenes/TestRoom';
@@ -16,7 +17,7 @@ const game = new Phaser.Game({
   physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   fps: { target: 60, smoothStep: true },
-  scene: [Boot, TestRoom, Title, Intro, Level1, Level2, Pause, Victory],
+  scene: [Boot, TestRoom, Title, LevelSelect, Intro, Level1, Level2, Pause, Victory],
 });
 setupTouch(); setupPad();
 (window as any).__game = game;

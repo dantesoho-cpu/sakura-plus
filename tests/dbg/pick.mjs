@@ -1,0 +1,10 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] }); const p = await b.newPage({ viewport: { width: 960, height: 540 } });
+await p.goto('http://127.0.0.1:4181/sakura-plus/'); await p.waitForTimeout(2500);
+await p.evaluate(() => { const g = window.__game; g.scene.getScenes(true).forEach(s => g.scene.stop(s.scene.key)); g.scene.start('Level1'); });
+await p.waitForFunction(() => window.__lvl?.player?.body, null, { timeout: 60000 }); await p.waitForTimeout(1500);
+await p.evaluate(() => { const L = window.__lvl; L.player.damage = () => false; L.player.body.reset(300 + 6 * (7680 - 600) / 7, 100); }); await p.waitForTimeout(2200);
+console.log(JSON.stringify(await p.evaluate(() => { const L = window.__lvl, P = L.player, out = {};
+  for (const dy of [12, 30, 50]) { const x = P.x + 60, y = P.y + dy; out[dy] = L.children.list.filter(o => o.visible && o.getBounds && o.type !== 'Container' && o.getBounds().contains(x, y)).map(o => o.type + ':' + (o.texture?.key || '') + ':' + (o.frame?.name ?? '') + '@' + o.depth).slice(0, 12);
+    const t = L.solid.getTileAtWorldXY(x, y); out['t' + dy] = t ? t.index : null; } return out; })));
+await b.close();

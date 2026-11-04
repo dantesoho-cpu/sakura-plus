@@ -10,7 +10,7 @@ import type { Blaster } from '../weapons/Blaster';
 //  lancer (enemy_13/15/16) tall blade trooper: telegraphs, then charges -> skyways + rooftops
 export const NK2: Record<string, number[]> = { scout: [21, 22, 23], mine: [5, 6, 12], lancer: [13, 15, 16] };
 const pad = (n: number) => String(n).padStart(2, '0');
-export function nk2Load(s: Phaser.Scene, A: string) { for (const [u, ids] of Object.entries(NK2)) ids.forEach((id, i) => s.load.image(`nk_${u}_${i}`, `${A}enemy/enemy_${pad(id)}.png`)); }
+export function nk2Load(s: Phaser.Scene, A: string) { for (const [u, ids] of Object.entries(NK2)) ids.forEach((id, i) => { s.load.image(`nk_${u}_${i}`, `${A}enemy/enemy_${pad(id)}.png`); s.load.image(`nk_${u}_${i}_v`, `${A}enemy/enemy_${pad(id)}_v.png`); }); }
 export function nk2Anims(s: Phaser.Scene) {
   const A = s.anims, f = (u: string, ix: number[]) => ix.map(i => ({ key: `nk_${u}_${i}` })); if (A.exists('nk_scout_walk')) return;
   A.create({ key: 'nk_scout_walk', frames: f('scout', [0, 1, 0, 2]), frameRate: 10, repeat: -1 });

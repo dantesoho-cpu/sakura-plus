@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { saveBest } from './LevelSelect';
 import { Car } from '../systems/Car';
 import { Parallax } from '../systems/Parallax';
 import { Petals } from '../systems/Petals';
@@ -29,7 +30,7 @@ export class Victory extends Phaser.Scene {
     this.tweens.add({ targets: title, alpha: 1, duration: 800, delay: 600 }); this.tweens.add({ targets: stats, alpha: 1, duration: 800, delay: 1400 });
     this.time.delayedCall(2200, () => { this.ready = true;
       this.input.keyboard!.once('keydown-ENTER', () => this.scene.start(d.ch === 2 ? 'Level2' : 'Level1')); this.input.keyboard!.once('keydown-T', () => this.scene.start('Title')); this.input.once('pointerdown', () => this.scene.start(d.ch === 2 ? 'Level2' : 'Level1')); });
-    (window as any).__victory = { ...d };
+    saveBest(d.ch || 1, d.time, d.got); (window as any).__victory = { ...d };
     this.cameras.main.fadeIn(600, 255, 230, 240);
   }
   ready = false; car!: Car; sak!: Phaser.GameObjects.Sprite; driving = false; lt = 0;
