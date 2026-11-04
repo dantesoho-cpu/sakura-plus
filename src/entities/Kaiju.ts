@@ -13,7 +13,7 @@ export class Kaiju extends Enemy {
   halo: Phaser.GameObjects.Image; core: Phaser.GameObjects.Image; ghosts: Phaser.GameObjects.Image[] = []; ghT = 0; las: Phaser.GameObjects.Graphics; lasA = 0; lasD = 1;
   summon: (k: number, x: number, y: number) => void = () => {}; escorts = () => 0; groundY: number; onDead: () => void = () => {};
   get dbgPoses() { return this.poses; }
-  dbg = { attacks: {} as Record<string, number>, slams: 0, summons: 0, phase2: false, fx: 0 };
+  dbg = { attacks: {} as Record<string, number>, slams: 0, summons: 0, phase2: false, fx: 0 } as any;
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx, public gun: Blaster, gy: number) {
     super(s, x, y, 'l2_boss_00', KAIJU_HP, fx); this.hx = x; this.hy = y; this.groundY = gy; this.setOrigin(0.5, 0.5).setDepth(7.5).setScale(1.3); this.baseSX = 1.3;
     this.b.setAllowGravity(false); this.b.setSize(64, 56).setOffset(27, 26); this.eyeY = 0; this.aura.setVisible(false);
@@ -27,25 +27,32 @@ export class Kaiju extends Enemy {
   /** sheet-derived poses (tools/kaiju_poses.py): roar = wings up, tuck = wings folded (dive), charge = core lit (telegraph/laser) */
   roarT = 0; pose = 'base'; poses: Record<string, number> = {};
   setPose(k: string) { if (k === this.pose) return; const key = k === 'base' ? 'l2_boss_00' : 'l2_kp_' + k; if (!this.scene.textures.exists(key)) return; this.pose = k; this.poses[k] = (this.poses[k] || 0) + 1; this.setTexture(key); this.halo.setTexture(key); }
+  /** phase-2 transition: 0.5s slow-mo, white-pink flash, invulnerable 1.4s overload (roar pose, core flare, sheet fx shockwaves, debris sparks), arena pulse */
+  p2T = 0; phaseShift() { const s: any = this.scene, cam = s.cameras.main; this.st = 'intro'; this.stT = 1.4; this.p2T = 1.4; this.las.clear(); this.b.setVelocity(0, 0); this.dbg.p2shift = (this.dbg.p2shift || 0) + 1;
+    cam.flash(220, 255, 220, 245, true); cam.zoomTo(1.12, 260, 'Quad.easeOut', true); s.physics.world.timeScale = 2.5; s.tweens.timeScale = 0.4; s.time.timeScale = 0.4; this.dbg.slow = true;
+    window.setTimeout(() => { if (!s.sys?.isActive()) return; s.physics.world.timeScale = 1; s.tweens.timeScale = 1; s.time.timeScale = 1; this.dbg.slow = false; cam.zoomTo(1, 420, 'Quad.easeInOut', true); }, 520);
+    for (let i = 0; i < 4; i++) s.time.delayedCall(i * 90, () => { this.fxc([10, 9, 25, 26][i], this.x, this.y, 0.5, 4 + i, 600, 12, i * 45); const r = s.add.circle(this.x, this.y, 12).setStrokeStyle(4 - i * 0.5, i % 2 ? 0xffffff : 0xff3a6a).setDepth(12).setBlendMode(Phaser.BlendModes.ADD); s.tweens.add({ targets: r, radius: 220, alpha: 0, duration: 650, onComplete: () => r.destroy() }); });
+    for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2, sp = s.add.image(this.x, this.y, 'spark').setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setTint(i % 2 ? 0xff4fd8 : 0xffd23f); s.tweens.add({ targets: sp, x: this.x + Math.cos(a) * 120, y: this.y + Math.sin(a) * 90, alpha: 0, scale: 0.3, duration: 700, ease: 'Cubic.out', onComplete: () => sp.destroy() }); }
+    const P = s.player; if (P && Math.abs(P.x - this.x) < 140) P.body_?.setVelocity(Math.sign(P.x - this.x || 1) * 220, -180); }
   get p2() { return this.hp <= this.maxHp / 2; }
   knock() {}
   punch(sx: number, sy: number, ms = 140) { if (this.st === 'dying') return; this.scene.tweens.killTweensOf(this); this.setScale(1.3 * sx, 1.3 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.3, scaleY: 1.3, duration: ms, ease: 'Quad.out' }); }
   hit(dmg: number, dir: number) { if (!this.awake || this.st === 'dying' || this.st === 'intro' || this.dead) return;
     audio.sfx('ehit', { rate: 0.7 }); this.hp -= dmg; this.flashT = 0.06; this.setTintFill(0xffffff); this.fx.spark(this.x - dir * 20, this.y); if (Math.random() < 0.5) this.fxc(2, this.x - dir * 24 + Phaser.Math.Between(-10, 10), this.y + Phaser.Math.Between(-20, 20), 0.4, 0.9, 200);
-    if (!this.dbg.phase2 && this.p2) { this.dbg.phase2 = true; this.fx.shake(400, 0.01); this.roar(); (this.scene as any).toast?.show('KAIJU UNIT — CORE OVERLOAD', '#ff4fd8'); }
+    if (!this.dbg.phase2 && this.p2) { this.dbg.phase2 = true; this.fx.shake(400, 0.01); this.roar(); (this.scene as any).toast?.show('KAIJU UNIT — CORE OVERLOAD', '#ff4fd8'); this.phaseShift(); }
     if (this.hp <= 0) this.die(); }
   wake() { if (this.st !== 'sleep') return; this.st = 'intro'; this.stT = 1.6; const s = this.scene; this.y = this.hy - 160;
     s.tweens.add({ targets: this, alpha: 1, y: this.hy, duration: 1500, ease: 'Back.out' }); this.roar(); }
   roar() { const s = this.scene; this.roarT = 0.6; audio.sfx('bossw', { rate: 0.6 }); this.fx.shake(500, 0.008); this.fxc(10, this.x, this.y, 0.8, 5, 700); this.fxc(9, this.x, this.y, 0.6, 3.5, 560);
     for (let i = 0; i < 3; i++) { const r = s.add.circle(this.x, this.y, 10).setStrokeStyle(3, i % 2 ? 0x3ff3ff : 0xff4fd8).setDepth(12).setBlendMode(Phaser.BlendModes.ADD);
       s.tweens.add({ targets: r, radius: 160, alpha: 0, duration: 700, delay: i * 160, onComplete: () => r.destroy() }); } }
-  reset() { this.setPose('base'); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false; this.setAlpha(0); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.clearTint(); this.las.clear(); this.dbg.phase2 = false; }
+  reset() { { const s: any = this.scene; s.physics.world.timeScale = 1; s.tweens.timeScale = 1; s.time.timeScale = 1; this.p2T = 0; } this.setPose('base'); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false; this.setAlpha(0); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.clearTint(); this.las.clear(); this.dbg.phase2 = false; }
   tick(dt: number, px: number, py: number) {
     this.t += dt; if (this.flashT > 0 && (this.flashT -= dt) <= 0) this.clearTint();
     // layered animation (runs in every state)
     const pulse = 0.5 + 0.5 * Math.sin(this.t * (this.p2 ? 9 : 5));
     this.halo.setPosition(this.x, this.y).setFlipX(this.flipX).setScale(this.scaleX * (1.04 + 0.04 * pulse), this.scaleY * (1.04 + 0.04 * pulse)).setAlpha(this.alpha * (0.15 + 0.25 * pulse)).setAngle(this.angle);
-    this.core.setPosition(this.x, this.y + 2).setScale(0.7 + 0.5 * pulse + (this.st === 'tele' ? 0.6 : 0)).setAlpha(this.alpha * (0.5 + 0.4 * pulse)).setTint(this.p2 ? 0xff3a6a : 0xd060ff);
+    this.p2T = Math.max(0, this.p2T - dt); this.core.setPosition(this.x, this.y + 2).setScale(0.7 + 0.5 * pulse + this.p2T * 1.4 + (this.st === 'tele' ? 0.6 : 0)).setAlpha(this.alpha * (0.5 + 0.4 * pulse)).setTint(this.p2 ? 0xff3a6a : 0xd060ff);
     if (this.st !== 'sleep') { this.roarT -= dt; this.setPose(this.st === 'dying' ? 'roar' : this.st === 'dive' || (this.st === 'tele' && this.next === 'dive') ? 'tuck' : this.st === 'tele' || this.st === 'laser' ? 'charge' : this.roarT > 0 || this.st === 'intro' ? 'roar' : 'base'); }
     if (this.st === 'sleep' || this.st === 'dying') return;
     if (!this.awake && this.st !== 'intro') return;

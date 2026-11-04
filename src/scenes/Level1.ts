@@ -25,6 +25,7 @@ import { DECO, DECO_SIZE } from '../decoList';
 import { PLAT } from './platPieces';
 import { FEEL } from '../tuning';
 import { L1Extra } from './l1Extra';
+import { Ambient } from '../systems/Ambient';
 // Akari Valley Zone (chapter 1: 2023). Tilemap layers (GPU-culled) for solids + one-way ledges; decor culled manually.
 export const TS = 16;
 export const MEMORIES = [
@@ -44,7 +45,7 @@ export const SLOPES: Record<string, number> = { '/': 0, '\\': 1, u: 2, U: 3, n: 
 export const slopeH = (f: number, c: number) => [15 - c, c, 16 - (c + 1) / 2, 8 - (c + 1) / 2, c / 2, 8 + c / 2][f];
 const ARENA = { x0: 404, x1: 470 };
 export class Level1 extends Phaser.Scene {
-  extra!: L1Extra;
+  extra!: L1Extra; amb!: Ambient;
   scam!: SpeedCam; culler!: Cull; clite!: CanvasLite;
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; giants: [number, number, string][] = []; treeTops: [number, number, number][] = []; hud!: Hud; toast!: Toast; bg!: Parallax;
   solid!: Phaser.Tilemaps.TilemapLayer; oneway!: Phaser.Tilemaps.TilemapLayer; enemyGroup!: Phaser.Physics.Arcade.Group;
@@ -240,7 +241,7 @@ export class Level1 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.flowers, (_p, f: any) => this.collect(f));
     this.physics.add.overlap(this.player, this.jetPick, () => this.pickJet());
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
-    this.toast = new Toast(this); this.petals = new Petals(this); this.extra = new L1Extra(this, this.spawn.x + 260, (ARENA.x0 - 8) * TS); (window as any).__extra1 = this.extra;
+    this.toast = new Toast(this); this.petals = new Petals(this); this.extra = new L1Extra(this, this.spawn.x + 260, (ARENA.x0 - 8) * TS); (window as any).__extra1 = this.extra; this.amb = new Ambient(this, 'l1', -88.5); (window as any).__amb = this.amb;
     const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); this.time.delayedCall(0, () => { const P: any = this.player; bakeTiles(this, [this.solid, this.oneway], 2); this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     cam.fadeIn(400);
     // boss wiring
@@ -570,7 +571,7 @@ export class Level1 extends Phaser.Scene {
       if (!this.sil) this.sil = this.add.sprite(0, 0, p.texture.key).setDepth(10.8).setTintFill(0x101a30).setAlpha(0.74).setVisible(false);
       this.behindNow = beh; this.sil.setVisible(beh && p.visible);
       if (beh) this.sil.setTexture(p.texture.key, p.frame.name).setPosition(p.x, p.y).setOrigin(p.originX, p.originY).setFlipX(p.flipX).setScale(p.scaleX, p.scaleY).setRotation(p.rotation); }
-    this.cannon.update(dt); this.extra.update(dt);
+    this.cannon.update(dt); this.extra.update(dt); this.amb.update(dt);
     this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
     if (this.rapT > 0 || this.powT > 0) { if ((this.auraT2 -= dt) <= 0) { this.auraT2 = 0.12; const c = this.powT > 0 ? 0xffd23f : 0x3ff3ff, sp = (this.auraPool.pop() || this.add.rectangle(0, 0, 1, 3, c).setDepth(10).setBlendMode(Phaser.BlendModes.ADD)).setPosition(p.x + Phaser.Math.Between(-7, 7), p.y - Phaser.Math.Between(4, 30)).setFillStyle(c).setAlpha(1).setVisible(true); this.tweens.add({ targets: sp, y: sp.y - 14, alpha: 0, duration: 400, onComplete: () => { sp.setVisible(false); this.auraPool.push(sp); } }); } }
     { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);

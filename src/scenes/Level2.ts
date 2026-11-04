@@ -1,3 +1,4 @@
+import { Ambient } from '../systems/Ambient';
 import { SpeedCam } from '../systems/SpeedCam';
 import { CanvasLite } from '../systems/CanvasLite';
 import { Cull } from '../systems/Cull';
@@ -40,6 +41,7 @@ const FLOWERS: [number, number][] = [...TIER_FLOWERS];
 const FOES: [string, number, number][] = [['assault', 520, GY], ['drone', 700, 330], ['sentry', 828, 392], ['assault', 1040, GY], ['drone', 1300, 300], ['assault', 1620, GY], ['shield', 1780, GY],
   ['drone', 2000, 300], ['assault', 2300, GY], ['heavy', 2420, GY], ['drone', 2700, 300], ['shield', 2820, GY], ['assault', 3350, GY], ['drone', 3400, 320], ['heavy', 3520, GY], ...TIER_FOES];
 export class Level2 extends Phaser.Scene {
+  amb!: Ambient; groundVar = 0;
   scam!: SpeedCam; culler!: Cull; clite!: CanvasLite;
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; ia!: Interact; extra!: Extra; env!: Env; dress!: Dress;
   solids!: Phaser.Physics.Arcade.StaticGroup; ones!: Phaser.Physics.Arcade.StaticGroup; flowers!: Phaser.Physics.Arcade.StaticGroup;
@@ -89,7 +91,7 @@ export class Level2 extends Phaser.Scene {
     BG.forEach(([k, y], i) => { const t = this.textures.get(k).getSourceImage(); this.bg.push(this.add.tileSprite(0, y, 480, t.height, k).setOrigin(0, 0).setScrollFactor(0).setDepth(-15 + i)); });
     this.bg[3].setTint(0xb4b0d0); this.bg[4].setTint(0x9c98c0); this.add.rectangle(240, 135, 480, 270, 0x1c1650, 0.16).setScrollFactor(0).setDepth(-10.5);
     this.solids = this.physics.add.staticGroup(); this.ones = this.physics.add.staticGroup(); this.flowers = this.physics.add.staticGroup();
-    for (const [a, b] of GROUND) { for (let x = a; x < b; x += 140) this.add.image(x, GY - 1, "l2r_ground").setOrigin(0, 0).setDepth(2).setCrop(0, 0, Math.min(140, b - x), 96); this.addRect(a, GY, b - a, WH - GY + 60, false); }
+    for (const [a, b] of GROUND) { for (let x = a, j = 0; x < b; x += 140, j++) { const w = Math.min(140, b - x), h = ((x * 2654435761) >>> 0) % 7; const im = this.add.image(x, GY - 1, "l2r_ground").setOrigin(0, 0).setDepth(2).setCrop(0, 0, w, 96); if (w === 140 && (h & 1)) im.setFlipX(true); im.setTint([0xffffff, 0xf2eeff, 0xe6e2fa, 0xfff4fb][h % 4]); this.groundVar = (this.groundVar || 0) + 1; } this.addRect(a, GY, b - a, WH - GY + 60, false); }
     // signs behind platforms, flickering neon: base glow + random dropouts
     for (const [k, x, by, c] of SIGNS) { const im = this.add.image(x, by, 'l2_' + k).setOrigin(0.5, 1).setDepth(1);
       const gl = this.add.image(x, by - im.height / 2, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(c).setScale(Math.max(im.width, im.height) / 60).setAlpha(0.35).setDepth(1.1);
@@ -110,7 +112,7 @@ export class Level2 extends Phaser.Scene {
     for (const [x, y] of FLOWERS) { const f = this.flowers.create(x, y, 'petal') as any; f.setScale(2).setDepth(6); f.refreshBody(); this.tweens.add({ targets: f, y: y - 4, yoyo: true, repeat: -1, duration: 900 + Math.random() * 400, ease: 'Sine.inOut' });
       this.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff8fd0).setScale(0.3).setAlpha(0.4).setDepth(5.9); }
     this.pk = new Pickups(this, (x, y) => this.groundAt(x, y)); this.pk.add('heart', 2330, 330); this.pk.add('rapid', 1770, 250); this.pk.add('power', 3080, 236);
-    this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun; this.player.hasJet = true; this.cannon = new Cannon(this, this.player, () => this.enemies, () => this.egun.shots.getChildren().forEach((o: any) => { if (o.active) this.egun.kill(o); })); this.pk.add('cannon', 1140, GY - 8); this.pk.add('cannon', 2900, GY - 8); this.ia = new Interact(this, GY, LW); this.env = new Env(this, GY, LW); this.extra = new Extra(this, GY, LW); (window as any).__extra = this.extra; this.tiers.bind(); this.dress = new Dress(this, GY, LW, PLATS); for (const [x, y, n] of TIER_GEMS) this.env.arc(x, y, n); this.cannon.onBlast = () => { const wv = this.cameras.main.worldView; for (const b of this.ia.brk) if (b.im.active && b.im.x > wv.x && b.im.x < wv.right) this.ia.shatter(b); };
+    this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun; this.player.hasJet = true; this.cannon = new Cannon(this, this.player, () => this.enemies, () => this.egun.shots.getChildren().forEach((o: any) => { if (o.active) this.egun.kill(o); })); this.pk.add('cannon', 1140, GY - 8); this.pk.add('cannon', 2900, GY - 8); this.ia = new Interact(this, GY, LW); this.env = new Env(this, GY, LW); this.extra = new Extra(this, GY, LW); (window as any).__extra = this.extra; this.amb = new Ambient(this, 'l2', -13.5); (window as any).__amb = this.amb; this.tiers.bind(); this.dress = new Dress(this, GY, LW, PLATS); for (const [x, y, n] of TIER_GEMS) this.env.arc(x, y, n); this.cannon.onBlast = () => { const wv = this.cameras.main.worldView; for (const b of this.ia.brk) if (b.im.active && b.im.x > wv.x && b.im.x < wv.right) this.ia.shatter(b); };
     this.player.beam = new Beam(this, this.fx, () => this.enemies, (x, y) => !!this.solid.getTileAtWorldXY(x, y)); this.player.beam.owner = this.player; this.safe = { ...this.spawn };
     this.physics.add.collider(this.player, this.solids); this.physics.add.collider(this.player, this.ones);
     this.physics.add.overlap(this.player, this.flowers, (_p, f: any) => this.collect(f));
@@ -185,7 +187,7 @@ export class Level2 extends Phaser.Scene {
     for (const n of this.neon) { n.t += dt; let a = n.base * (0.85 + 0.15 * Math.sin(n.t * 6));
       if (n.flick) { const ph = n.t % 4.3; if ((ph > 3.6 && ph < 3.7) || (ph > 3.78 && ph < 3.85)) a = 0.04; n.im.setAlpha(a < 0.1 ? 0.55 : 1); }
       n.o.setAlpha(a); }
-    this.cannon.update(dt); this.ia.update(dt); this.env.update(dt); this.dress.update(dt); this.extra.update(dt); this.tiers.update(dt);
+    this.amb.update(dt); this.cannon.update(dt); this.ia.update(dt); this.env.update(dt); this.dress.update(dt); this.extra.update(dt); this.tiers.update(dt);
     this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
     { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);
       cam.setFollowOffset(-this.lookX, 30 - this.lookY); } this.scam.update(dt); this.culler.update(); this.clite?.update(dt);

@@ -166,5 +166,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   lastVy = 0; rollT = 0; hang: { ty: number; d: number } | null = null; hangCd = 0; wjT = 0; wallSliding = false; wsFx = 0; wasWall = false;
   dust() { const s = this.scene; for (let i = 0; i < 6; i++) { const d = i < 3 ? -1 : 1; const p = pooledImage(s, this.x + d * (3 + Math.random() * 4), this.y - 2, 'glow').setTint(0xe8dcc8).setAlpha(0.8).setScale(0.35).setDepth(this.depth - 0.1);
     s.tweens.add({ targets: p, x: p.x + d * (14 + Math.random() * 14), y: p.y - 4 - Math.random() * 5, alpha: 0, scale: 0.12, duration: 260 + Math.random() * 120, ease: 'Quad.out', onComplete: () => releaseImage(s, p) }); } }
-  setAnimState(s: State, force = false) { if (this.state_ === s && !force) return; this.state_ = s; this.play(s, true); }
+  /** animation blend: when the pose changes, the outgoing frame of her own art lingers as a fading under-layer (~80ms crossfade) so pose swaps don't pop */
+  blends = 0; blendFrom() { if (!this.visible || this.hurtT > 0 || !this.frame) return; const sc = this.scene; const g = sc.add.image(this.x, this.y, this.texture.key, this.frame.name).setOrigin(this.originX, this.originY).setFlipX(this.flipX).setScale(this.scaleX, this.scaleY).setAngle(this.angle).setAlpha(0.55).setDepth(this.depth - 0.02);
+    this.blends++; sc.tweens.add({ targets: g, alpha: 0, duration: 80, onUpdate: () => g.setPosition(this.x, this.y), onComplete: () => g.destroy() }); }
+  setAnimState(s: State, force = false) { if (this.state_ === s && !force) return; if (this.state_ !== s) this.blendFrom(); this.state_ = s; this.play(s, true); }
 }
