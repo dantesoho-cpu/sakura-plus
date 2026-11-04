@@ -20,8 +20,18 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
   hit(dmg: number, dir: number) {
     if (this.dead) return; audio.sfx('ehit'); this.hp -= dmg; this.flashT = FEEL.ehit.flash; this.setTintFill(0xffffff);
     this.fx.spark(this.x - dir * 4, this.y - this.height / 2); this.knock(dir); this.hitT = 0.18; this.punch(0.8, 1.18, 160); this.jolt(dir);
-    if (this.hp <= 0) this.die(); else this.fx.hitStop(FEEL.ehit.stop);
+    this.impact(dir, dmg); this.dbgImpacts++;
+    if (this.hp <= 0) this.die(); else { this.fx.hitStop(FEEL.ehit.stop + Math.min(40, (dmg - 1) * 12)); if (dmg >= 3) this.scene.cameras.main.shake(90, 0.004); }
   }
+  /** layered hit feedback: additive sheet flash (random angle/scale so repeats vary) + a short directional streak + ring */
+  dbgImpacts = 0;
+  impact(dir: number, dmg: number) { const s = this.scene, cx = this.x - dir * 3, cy = this.y - this.height * 0.5; const keys = ['spark2', 'spark', 'flash', 'glow'].filter(k => s.textures.exists(k)); if (!keys.length) return;
+    const k = keys[(this.dbgImpacts + (Math.random() * 2 | 0)) % Math.min(2, keys.length)], sc = 0.5 + 0.18 * Math.min(4, dmg);
+    const im = s.add.image(cx, cy, k).setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setAngle(Math.random() * 360).setScale(sc * 0.5).setTint(dmg >= 3 ? 0xffd23f : 0xffffff);
+    s.tweens.add({ targets: im, scale: sc * (1.1 + Math.random() * 0.3), alpha: 0, angle: im.angle + dir * 60, duration: 110 + dmg * 20, ease: 'Cubic.out', onComplete: () => im.destroy() });
+    const st = s.add.rectangle(cx, cy, 2, 18 + dmg * 4, 0xffffff).setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setAngle(90 + (Math.random() - 0.5) * 50);
+    s.tweens.add({ targets: st, x: cx - dir * 20, scaleX: 0.2, alpha: 0, duration: 120, onComplete: () => st.destroy() });
+    if (dmg >= 2) { const r = s.add.circle(cx, cy, 4).setStrokeStyle(2, 0xff9af0).setDepth(12).setBlendMode(Phaser.BlendModes.ADD); s.tweens.add({ targets: r, radius: 18 + dmg * 3, alpha: 0, duration: 200, onComplete: () => r.destroy() }); } }
   /** hurt animation: drones spin-wobble, turrets recoil-shake (others: no-op besides flash/punch) */
   wob = 0; wobT = 0;
   jolt(dir: number) { if (this.dead || this.hp <= 0) return; const s = this.scene;

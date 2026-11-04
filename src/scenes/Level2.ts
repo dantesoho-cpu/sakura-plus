@@ -60,7 +60,7 @@ export class Level2 extends Phaser.Scene {
     for (const [u, n] of Object.entries(NK_FRAMES)) for (let i = 0; i < n; i++) this.load.image(`nk_${u}_${i}`, `${A}en/${u}_${i}.png`);
     nk2Load(this, A);
     for (const k of ['orb', 'tracer', 'bolt', 'mortar', 'disk', 'wave']) this.load.image('nk_s_' + k, `${A}en/s_${k}.png`);
-    for (let i = 0; i < 4; i++) this.load.image('l2_boss_0' + i, `${A}boss/boss_0${i}.png`);
+    for (let i = 0; i < 4; i++) this.load.image('l2_boss_0' + i, `${A}boss/boss_0${i}.png`); for (const k of ['roar', 'tuck', 'charge']) this.load.image('l2_kp_' + k, `${A}boss/kpose_${k}.png`);
     for (const k of ['veh_01', 'veh_02', 'veh_03', 'veh_04', 'veh_06', 'veh_07', 'veh_09', 'veh_10', 'veh_13']) this.load.image('l2_' + k, `${A}veh/${k}.png`);
   }
   addRect(x: number, y: number, w: number, h: number, one: boolean) {
@@ -138,7 +138,7 @@ export class Level2 extends Phaser.Scene {
     this.physics.add.collider(this.egun.shots, this.solids, (s: any) => { this.fx.spark(s.x, s.y); this.egun.kill(s); });
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
     this.toast = new Toast(this);
-    const cam = this.cameras.main; cam.setBounds(0, TOP, WW, WH - TOP); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); this.time.delayedCall(0, () => { const P: any = this.player; this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
+    const cam = this.cameras.main; cam.setBounds(0, TOP, WW, WH - TOP); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); this.time.delayedCall(0, () => { const P: any = this.player; this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true); cam.fadeIn(450);
     const kb = this.input.keyboard!;
     const pause = () => { if (this.ending) return; audio.stopLoops(); audio.sfx('menu'); this.scene.launch('Pause', { lvl: 'Level2' }); this.scene.pause(); };
     kb.on('keydown-P', pause); kb.on('keydown-ESC', pause); kb.on('keydown-R', () => this.checkpoint()); kb.on('keydown-BACKSPACE', () => this.checkpoint());

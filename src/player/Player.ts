@@ -9,7 +9,7 @@ const CHARGE_WALK = 34; // charging slows Sakura to a walk (was: vx*=0.25 every 
 type State = 'skid' | 'idle' | 'run' | 'jump' | 'doublejump' | 'fall' | 'land' | 'dash' | 'dashend' | 'hurt';
 export const HP_MAX = 5, IFRAMES = 1.0, HURT_TIME = 0.3;
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  state_: State = 'idle'; facing = 1; coyoteT = 0; bufferT = 0; airJumps = 1; dashT = 0; dashCd = 0; canAirDash = true; landT = 0; dbg = { dashes: [] as {x0:number,x1:number,dur:number}[], jumps: 0, djumps: 0, coyoteJumps: 0, cur: null as any, lastDir: 'h', jetT: 0, wallJumps: 0, wallSlideT: 0, skids: 0 };
+  state_: State = 'idle'; facing = 1; coyoteT = 0; bufferT = 0; airJumps = 1; dashT = 0; dashCd = 0; canAirDash = true; landT = 0; dbg = { dashes: [] as {x0:number,x1:number,dur:number}[], jumps: 0, djumps: 0, coyoteJumps: 0, cur: null as any, lastDir: 'h', jetT: 0, wallJumps: 0, wallSlideT: 0, skids: 0, grabs: 0, climbs: 0, rolls: 0, hangT: 0 };
   jumpHeld = false; dashing = false; jumpPressed = false; dashPressed = false; keys: any; trail: Phaser.GameObjects.Particles.ParticleEmitter;
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'p_idle', 0); scene.add.existing(this); scene.physics.add.existing(this);
@@ -39,9 +39,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     e.explode(9); sc.time.delayedCall(600, () => e.destroy()); }
   damage(fromX: number, amt = 1): boolean {
     if (this.iT > 0 || this.hp <= 0) return false;
-    audio.sfx('hurt'); this.hp = Math.max(0, this.hp - amt); this.dbgHits++; this.iT = IFRAMES; this.hurtT = HURT_TIME; this.dashing = false; this.dashT = 0; this.trail.stop(); this.jetting = false; this.jetFx.stop(); this.jetPetals.stop();
+    audio.sfx('hurt'); this.hp = Math.max(0, this.hp - amt); this.dbgHits++; this.iT = IFRAMES; this.hurtT = HURT_TIME; this.dashing = false; this.dashT = 0; if (this.hang) { this.hang = null; this.body_.setAllowGravity(true); } this.rollT = 0; this.trail.stop(); this.jetting = false; this.jetFx.stop(); this.jetPetals.stop();
     const d = this.x < fromX ? -1 : 1; this.body_.setVelocity(d * FEEL.hurt.knockX, -FEEL.hurt.knockY); this.setTintFill(0xffffff); this.scene.time.delayedCall(FEEL.hurt.flashMs, () => this.clearTint()); this.facing = -d;
-    this.shards(d); this.setAnimState('hurt', true); this.emit('hurt', this.hp); return true;
+    this.shards(d); this.scene.cameras.main.flash(90, 255, 90, 150, true); this.setAnimState('hurt', true); this.emit('hurt', this.hp); return true;
   }
   get body_() { return this.body as Phaser.Physics.Arcade.Body; }
   /** clears every held input + charge/pose state (used on blur, pause/resume, respawn, and by the stuck watchdog) */
@@ -80,6 +80,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       if (this.bufferT > 0 && (onGround || this.coyoteT > 0)) { this.dashT = 0; this.dashing = false; this.dbg.cur = null; this.trail.stop(); }
       else { b.setVelocity(this.dashVx, this.dashVy); this.dashT -= dt; if (this.dbg.cur) this.dbg.cur.t += dt; this.setFlipX(this.facing < 0); this.setAnimState('dash'); if (this.dashDir !== 'h') { const key = 'dash_' + this.dashDir; if (this.anims.currentAnim?.key !== key) this.play(key, true); } return; }
     }
+    // ledge grab: falling into a wall whose top lip is at hand height -> hang (ledgeh frame); jump/up climbs over, down/away drops
+    if (this.hang) { b.setVelocity(0, 0); b.setAllowGravity(false); this.setFlipX(this.hang.d < 0); this.dbg.hangT = (this.dbg.hangT || 0) + dt;
+      const up = k.up.isDown || k.w.isDown || touch.up, dn = k.down.isDown || k.s.isDown || touch.down;
+      if (this.bufferT > 0 || up) { const h = this.hang; this.hang = null; this.bufferT = 0; this.play('climb', true); this.dbg.climbs = (this.dbg.climbs || 0) + 1; audio.sfx('jump', { rate: 1.3, vol: 0.5 }); this.locked = true;
+        this.scene.tweens.add({ targets: this, y: h.ty, x: this.x + h.d * 12, duration: 170, ease: 'Quad.out', onComplete: () => { this.locked = false; b.setAllowGravity(true); b.reset(this.x, this.y); b.setVelocity(h.d * 60, 0); this.landT = 0.08; this.setAnimState('land', true); } }); return; }
+      if (dn || (dir && dir !== this.hang.d)) { this.hang = null; this.hangCd = 0.35; b.setAllowGravity(true); this.setAnimState('fall', true); }
+      return; }
+    this.hangCd -= dt;
+    { const wd = !onGround ? (b.blocked.left ? -1 : b.blocked.right ? 1 : 0) : 0; const so = (this.scene as any).solid;
+      if (wd && dir === wd && b.velocity.y >= 0 && this.hangCd <= 0 && so && !this.dashing) { const wx = wd > 0 ? b.right + 2 : b.left - 2, top = b.top;
+        const at = (y: number) => !!so.getTileAtWorldXY(wx, y)?.collides; let ty = -1; for (let y = top + 8; y >= top - 18; y--) if (at(y) && !at(y - 1)) { ty = y; break; }
+        if (ty > 0 && !at(ty - 20) && !so.getTileAtWorldXY(wx, ty - 36)?.collides) { this.hang = { ty, d: wd }; this.spinTw?.stop(); this.setAngle(0); this.y = ty + 46; b.reset(this.x, this.y); b.setVelocity(0, 0); b.setAllowGravity(false); this.airJumps = 1; this.canAirDash = true; this.dbg.grabs = (this.dbg.grabs || 0) + 1; this.play('ledge', true); this.state_ = 'fall'; return; } } }
     // horizontal
     this.wjT -= dt; const wallDir = !onGround ? (b.blocked.left ? -1 : b.blocked.right ? 1 : 0) : 0;
     const target = (this.wjT > 0 ? 0 : dir) * T.maxRun, accel = dir ? (onGround ? T.accelGround : T.accelAir) : (onGround ? T.decelGround : T.decelAir);
@@ -123,9 +135,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       else if (charging) { if (onGround) b.setVelocityX(Phaser.Math.Clamp(b.velocity.x, -CHARGE_WALK, CHARGE_WALK)); this.play('charge', true); this.anims.timeScale = this.beam.level === 2 ? 1.8 : this.beam.level === 1 ? 1.3 : 1; this.poseLock = true; }
       else if (this.poseLock) { this.poseLock = false; this.play(this.state_, true); }
     }
+    this.anims.timeScale = this.state_ === 'run' ? Phaser.Math.Clamp(Math.abs(b.velocity.x) / T.maxRun, 0.65, 1.15) : 1; // stride matches speed
     if (this.poseLock) return;
     // animation state
     if (onGround) {
+      if (this.rollT > 0) { this.rollT -= dt; b.setVelocityX(this.facing * Math.max(Math.abs(b.velocity.x), T.maxRun * 0.9)); if (this.rollT <= 0) this.setAnimState(dir ? 'run' : 'idle', true); return; }
+      if ((this.state_ === 'fall' || this.state_ === 'doublejump') && b.velocity.y >= 0 && this.lastVy >= T.maxFall * 0.92 && Math.abs(vx) > 100) { this.rollT = 0.24; this.dbg.rolls = (this.dbg.rolls || 0) + 1; this.state_ = 'land'; this.play('roll', true); this.dust(); audio.sfx('dash', { rate: 0.7, vol: 0.4 }); return; }
       if (this.state_ === 'fall' || this.state_ === 'doublejump' || this.state_ === 'jump') { if (b.velocity.y >= 0) { const hard = this.lastVy > FEEL.land.dustMinVy; this.landT = T.landTime; this.setAnimState('land'); const q = hard ? FEEL.land.squashHard : FEEL.land.squashSoft; this.squash(q[0], q[1]); if (hard) this.dust(); } }
       if (this.landT > 0) { this.landT -= dt; if (dir && this.state_ !== 'dashend') this.landT = 0; }
       this.skidT = Math.max(-1, this.skidT - dt);
@@ -148,7 +163,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   /** double-jump flip: one forward somersault of her rise pose (origin stays at the feet line only while grounded, so air-only) */
   spins = 0; spinTw: Phaser.Tweens.Tween | null = null; spin() { const sc = this.scene; this.spins++; this.spinTw?.stop(); const d = this.facing; this.spinTw = sc.tweens.addCounter({ from: 0, to: 1, duration: 360, ease: 'Cubic.easeOut', onUpdate: tw => { const b = this.body as Phaser.Physics.Arcade.Body; if (b.blocked.down || this.hurtT > 0) { tw.stop(); this.setAngle(0); return; } this.setAngle(d * 360 * (tw.getValue() as number)); }, onComplete: () => this.setAngle(0), onStop: () => this.setAngle(0) }); }
   burst() { this.trail.explode(10); }
-  lastVy = 0; wjT = 0; wallSliding = false; wsFx = 0; wasWall = false;
+  lastVy = 0; rollT = 0; hang: { ty: number; d: number } | null = null; hangCd = 0; wjT = 0; wallSliding = false; wsFx = 0; wasWall = false;
   dust() { const s = this.scene; for (let i = 0; i < 6; i++) { const d = i < 3 ? -1 : 1; const p = pooledImage(s, this.x + d * (3 + Math.random() * 4), this.y - 2, 'glow').setTint(0xe8dcc8).setAlpha(0.8).setScale(0.35).setDepth(this.depth - 0.1);
     s.tweens.add({ targets: p, x: p.x + d * (14 + Math.random() * 14), y: p.y - 4 - Math.random() * 5, alpha: 0, scale: 0.12, duration: 260 + Math.random() * 120, ease: 'Quad.out', onComplete: () => releaseImage(s, p) }); } }
   setAnimState(s: State, force = false) { if (this.state_ === s && !force) return; this.state_ = s; this.play(s, true); }
