@@ -620,7 +620,7 @@ export class Fortress extends Phaser.Scene {
     this.tweens.add({ targets: warn, alpha: { from: 0.2, to: 0.7 }, yoyo: true, repeat: 6, duration: 180 });
     audio.sfx('gate'); this.cameras.main.flash(320, 180, 100, 255); this.cameras.main.shake(280, 0.01);
     this.toast.show('The fortress awakens!', '#ff4fd8');
-    this.boss.wake();
+    this.boss.wake(); audio.sfx('bossw', { vol: 0.55 });
   }
   unlockArena() { this.walls.forEach(z => z.destroy()); this.walls = []; this.arenaFx.forEach(r => r.destroy()); this.arenaFx = []; this.arena = false; }
   win() {

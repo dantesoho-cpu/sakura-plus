@@ -20,6 +20,8 @@ const DEF: Record<string, P> = {
   gate: { w: 'sq', f0: 262, dur: 0.9, duty: 0.5, arp: [1, 1.5, 2, 2.5, 3, 4], arpT: 0.12, vol: 0.3 },
   respawn: { w: 'tri', f0: 900, f1: 300, dur: 0.3, arp: [1, 2], arpT: 0.05, vol: 0.45 },
   menu: { w: 'sq', f0: 880, dur: 0.05, duty: 0.5, vol: 0.25 },
+  whoosh: { w: 'noise', f0: 4200, f1: 400, dur: 0.28, vol: 0.38 },
+  confirm: { w: 'tri', f0: 660, dur: 0.18, arp: [1, 1.5, 2], arpT: 0.05, vol: 0.35 },
 };
 const LIMIT: Record<string, number> = { blaster1: 3, blaster2: 3, blaster3: 2, eshot: 3, eshot2: 2, elaser: 2, blaster: 4, ehit: 3, explode: 3 };
 class AudioMgr {

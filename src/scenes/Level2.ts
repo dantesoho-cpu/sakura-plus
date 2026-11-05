@@ -157,7 +157,7 @@ export class Level2 extends Phaser.Scene {
   }
   cpLamp!: Phaser.GameObjects.Image; tiers!: Tiers; AX0 = AX0; AX1 = AX1; boss!: Kaiju; arena = false; won = false; arenaFx!: Phaser.GameObjects.Rectangle; arenaFx2!: Phaser.GameObjects.Rectangle; walls: Phaser.GameObjects.Zone[] = []; gateCols: Phaser.GameObjects.Image[] = [];
   lockArena() { this.arena = true; for (const x of [AX0 - 8, AX1]) { const z = this.add.zone(x + 4, GY - 300, 8, 600); this.physics.add.existing(z, true); this.physics.add.collider(this.player, z); this.walls.push(z); }
-    this.cameras.main.setBounds(AX0 - 10, GY + 70 - 270, AX1 - AX0 + 20, 270); this.arenaFx.setFillStyle(0xff4fd8, 0.5); this.arenaFx2.setFillStyle(0xff4fd8, 0.5); this.hud.setBossName('KAIJU UNIT'); this.boss.wake(); audio.sfx('gate');
+    this.cameras.main.setBounds(AX0 - 10, GY + 70 - 270, AX1 - AX0 + 20, 270); this.arenaFx.setFillStyle(0xff4fd8, 0.5); this.arenaFx2.setFillStyle(0xff4fd8, 0.5); this.hud.setBossName('KAIJU UNIT'); this.boss.wake(); audio.sfx('gate'); audio.sfx('bossw', { vol: 0.55 });
     this.toast.show('KAIJU UNIT — Neo-Kyo grid guardian.', '#ff4fd8'); }
   unlockArena() { this.arena = false; for (const z of this.walls) z.destroy(); this.walls = []; this.cameras.main.setBounds(0, TOP, WW, WH - TOP); this.arenaFx.setFillStyle(0xff4fd8, 0); this.arenaFx2.setFillStyle(0xff4fd8, 0); this.gateCols.forEach(c => c.setAlpha(0)); this.hud.draw(-1, -1); }
   win() { if (this.won) return; this.won = true; this.unlockArena(); this.enemies.filter(e => e.kind === 'escort').forEach(e => e.active && !e.dead && e.die()); this.egun.shots.getChildren().forEach((o: any) => o.active && this.egun.kill(o));

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { audio } from '../audio/Audio';
 import { Car } from '../systems/Car';
 // Chapter 1 -> 2 cutscene: the valley fades to Neo-Kyo's skyline (Dante's nk_L1..L5 sheet layers), Sakura's car
 // cruises the elevated highway, traffic (sheet vehicles) streams past, title card, then Level2. ENTER/SPACE/click skips.
@@ -20,6 +21,7 @@ export class Transit extends Phaser.Scene {
     this.car = new Car(this, -80, 268, 1.3).setDepth(40).setScrollFactor(0); this.car.startTrail(40);
     this.tweens.add({ targets: this.car, x: 210, duration: 2200, ease: 'Cubic.out' });
     const st = { fontFamily: 'monospace', fontStyle: 'bold', fontSize: '10px', color: '#9af0ff', stroke: '#1a0f2e', strokeThickness: 4 };
+    { const pl = this.add.graphics().setDepth(49).setAlpha(0); pl.fillStyle(0x1a0f2e, 0.72).fillRoundedRect(120, 48, 240, 70, 8); pl.lineStyle(1, 0xff4fd8, 0.55).strokeRoundedRect(120, 48, 240, 70, 8); this.tweens.add({ targets: pl, alpha: 1, duration: 500, delay: 1000 }); }
     const c = this.add.text(240, 58, 'CHAPTER 2', st).setOrigin(0.5).setDepth(50).setAlpha(0);
     const n = this.add.text(240, 80, 'NEO-KYO', { ...st, fontSize: '24px', color: '#ff7ad9' }).setOrigin(0.5).setDepth(50).setAlpha(0).setScale(1.4);
     const sub = this.add.text(240, 104, 'the neon city never sleeps', { ...st, fontSize: '9px', color: '#fff' }).setOrigin(0.5).setDepth(50).setAlpha(0);
@@ -28,10 +30,10 @@ export class Transit extends Phaser.Scene {
     this.time.delayedCall(4600, () => this.tweens.add({ targets: this.car, x: 620, duration: 1200, ease: 'Quad.in' }));
     this.time.delayedCall(5400, () => this.go());
     this.time.delayedCall(400, () => { const K = this.input.keyboard!; K.once('keydown-ENTER', () => this.go()); K.once('keydown-SPACE', () => this.go()); this.input.once('pointerdown', () => this.go()); });
-    this.cameras.main.fadeIn(700, 10, 6, 32); (window as any).__transit = this;
+    audio.sfx('whoosh', { vol: 0.5 }); this.cameras.main.fadeIn(700, 10, 6, 32); (window as any).__transit = this;
   }
   dash!: Phaser.GameObjects.TileSprite;
-  go() { if (this.done) return; this.done = true; this.cameras.main.fadeOut(500, 10, 6, 32); this.time.delayedCall(520, () => this.scene.start('Level2')); }
+  go() { if (this.done) return; this.done = true; audio.sfx('whoosh', { rate: 0.9, vol: 0.45 }); this.cameras.main.fadeOut(500, 10, 6, 32); this.time.delayedCall(520, () => this.scene.start('Level2')); }
   update(_t: number, dms: number) { const dt = dms / 1000; this.t += dt; const v = 260;
     for (const l of this.L) l.tilePositionX += v * l.getData('s') * dt; this.dash.tilePositionX += v * dt * 1.2;
     if ((this.vt -= dt) <= 0) { this.vt = 0.7 + Math.random() * 0.8; const k = 'tr_v' + [2, 3, 4, 6][Math.floor(Math.random() * 4)];

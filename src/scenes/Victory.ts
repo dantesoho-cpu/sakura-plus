@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { audio } from '../audio/Audio';
 import { saveBest } from './LevelSelect';
 import { Car } from '../systems/Car';
 import { Parallax } from '../systems/Parallax';
@@ -23,15 +24,16 @@ export class Victory extends Phaser.Scene {
       } });
     } });
     const st = { fontFamily: 'monospace', fontStyle: 'bold', fontSize: '16px', color: '#ffd23f', stroke: '#1a0f2e', strokeThickness: 4 };
+    { const pl = this.add.graphics().setDepth(49).setAlpha(0).setScrollFactor(0); pl.fillStyle(0x1a0f2e, 0.7).fillRoundedRect(90, 36, 300, 180, 8); pl.lineStyle(2, 0xff7ac8, 0.55).strokeRoundedRect(90, 36, 300, 180, 8); this.tweens.add({ targets: pl, alpha: 1, duration: 700, delay: 500 }); }
     const title = this.add.text(240, (d.ch || 1) >= 2 ? 44 : 60, `CHAPTER ${d.ch || 1} COMPLETE`, st).setOrigin(0.5).setDepth(50).setAlpha(0);
     const m = Math.floor(d.time / 60), s = String(Math.floor(d.time % 60)).padStart(2, '0');
     const stats = this.add.text(240, (d.ch || 1) >= 2 ? 116 : 112, `TIME ${m}:${s}\nMEMORIES ${d.got}/10\n${(d.ch || 1) >= 2 ? `SHARDS ${d.gems || 0}\n${d.ch === 2 ? 'ABYSS WARDEN' : d.ch === 4 ? 'WINGED FORTRESS' : 'KAIJU UNIT'} DOWN\n` : ''}KUROGEN DOWNED ${d.kills}\nFALLS ${d.deaths}`, { ...st, fontSize: '10px', color: '#fff', align: 'center', lineSpacing: 4 }).setOrigin(0.5).setDepth(50).setAlpha(0);
     this.prompt = this.add.text(240, (d.ch || 1) >= 2 ? 200 : 180, d.ch === 4 ? 'ENTER title   ·   R replay' : d.ch === 3 ? 'ENTER continue to AIR FORTRESS   ·   R replay   ·   T title' : d.ch === 2 ? 'ENTER continue to NEO-KYO   ·   R replay   ·   T title' : 'ENTER continue to the SHRINE CAVE   ·   R replay   ·   T title', { ...st, fontSize: '10px' }).setOrigin(0.5).setDepth(50).setAlpha(0);
     this.tweens.add({ targets: title, alpha: 1, duration: 800, delay: 600 }); this.tweens.add({ targets: stats, alpha: 1, duration: 800, delay: 1400 });
     this.time.delayedCall(2200, () => { this.ready = true;
-      const nx = d.ch === 4 ? 'Title' : d.ch === 3 ? 'Fortress' : d.ch === 2 ? 'Transit' : 'Shrine', re = d.ch === 4 ? 'Fortress' : d.ch === 3 ? 'Level2' : d.ch === 2 ? 'Shrine' : 'Level1'; this.input.keyboard!.once('keydown-ENTER', () => this.scene.start(nx)); this.input.keyboard!.once('keydown-R', () => this.scene.start(re)); this.input.keyboard!.once('keydown-T', () => this.scene.start('Title')); this.input.once('pointerdown', () => this.scene.start(nx)); });
+      const nx = d.ch === 4 ? 'Title' : d.ch === 3 ? 'Fortress' : d.ch === 2 ? 'Transit' : 'Shrine', re = d.ch === 4 ? 'Fortress' : d.ch === 3 ? 'Level2' : d.ch === 2 ? 'Shrine' : 'Level1'; const go = (k: string) => { audio.sfx('confirm'); audio.sfx('whoosh', { vol: 0.4 }); this.cameras.main.fadeOut(320, 255, 230, 240); this.time.delayedCall(340, () => this.scene.start(k)); }; this.input.keyboard!.once('keydown-ENTER', () => go(nx)); this.input.keyboard!.once('keydown-R', () => go(re)); this.input.keyboard!.once('keydown-T', () => go('Title')); this.input.once('pointerdown', () => go(nx)); });
     saveBest(d.ch || 1, d.time, d.got); (window as any).__victory = { ...d };
-    this.cameras.main.fadeIn(600, 255, 230, 240);
+    audio.sfx('whoosh', { vol: 0.4 }); audio.sfx('confirm', { rate: 0.85, vol: 0.35 }); this.cameras.main.fadeIn(600, 255, 230, 240);
   }
   ready = false; car!: Car; sak!: Phaser.GameObjects.Sprite; driving = false; lt = 0;
   update(_t: number, dms: number) { const dt = dms / 1000; this.t += dt; this.cameras.main.scrollX += 30 * dt; this.bg.update(dt); this.petals.update(dt); if (this.ready) this.prompt.setAlpha(0.5 + 0.5 * Math.sin(this.t * 4));

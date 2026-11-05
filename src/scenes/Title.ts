@@ -41,7 +41,7 @@ export class Title extends Phaser.Scene {
     this.items.forEach((t, i) => { t.setColor(i === this.sel ? '#ffd23f' : '#c9b8e8').setScale(i === this.sel ? 1.12 : 1); }); this.cur.setPosition(this.items[this.sel].x - this.items[this.sel].width / 2 * 1.12 - 10, this.items[this.sel].y); }
   pick() { if (this.gone) return; if (this.ctl) { this.controls(); return; } const i = this.sel;
     if (i === 0) this.goto(Title.introOn() ? 'Intro' : 'Level1'); else if (i === 1) this.goto('LevelSelect'); else this.controls(); }
-  goto(k: string) { if (this.gone) return; this.gone = true; audio.sfx('menu'); this.cameras.main.fadeOut(300); this.time.delayedCall(320, () => this.scene.start(k)); }
+  goto(k: string) { if (this.gone) return; this.gone = true; audio.sfx('confirm'); audio.sfx('whoosh', { vol: 0.4 }); this.cameras.main.fadeOut(340, 26, 12, 40); this.time.delayedCall(360, () => this.scene.start(k)); }
   ctl?: Phaser.GameObjects.Container;
   controls() { if (this.ctl) { this.ctl.destroy(); this.ctl = undefined; return; } audio.sfx('menu');
     const st = { fontFamily: 'monospace', fontSize: '8px', color: '#fff', stroke: '#1a0f2e', strokeThickness: 2, lineSpacing: 3 };

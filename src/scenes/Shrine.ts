@@ -310,7 +310,7 @@ export class Shrine extends Phaser.Scene {
   gem(g: any) { if (!g.active || !g.body) return; this.gems += g.kind === 'i_gem_b' ? 3 : g.kind === 'i_gem_p' ? 1 : 1; audio.sfx('flower', { rate: 1.6, vol: 0.4 }); this.fx.spark(g.x, g.y);
     const r = this.add.image(g.x, g.y, 'sh_fx_ring').setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setScale(0.4); this.tweens.add({ targets: r, scale: 1.2, alpha: 0, duration: 280, onComplete: () => r.destroy() }); g.destroy(); }
   lockArena() { this.arena = true; for (const x of [AX0 - 8, AX1]) { const z = this.add.zone(x + 4, GA - 300, 8, 600); this.physics.add.existing(z, true); this.physics.add.collider(this.player, z); this.walls.push(z); }
-    this.cameras.main.setBounds(AX0 - 10, GA + 60 - 270, AX1 - AX0 + 20, 270); this.arenaFx.forEach(r => r.setFillStyle(0x6fe8ff, 0.5)); this.hud.setBossName('ABYSS WARDEN'); this.boss.wake(); audio.sfx('gate');
+    this.cameras.main.setBounds(AX0 - 10, GA + 60 - 270, AX1 - AX0 + 20, 270); this.arenaFx.forEach(r => r.setFillStyle(0x6fe8ff, 0.5)); this.hud.setBossName('ABYSS WARDEN'); this.boss.wake(); audio.sfx('gate'); audio.sfx('bossw', { vol: 0.55 });
     this.toast.show('ABYSS WARDEN — keeper of the sunken shrine.', '#6fe8ff'); }
   unlockArena() { this.arena = false; for (const z of this.walls) z.destroy(); this.walls = []; this.cameras.main.setBounds(0, TOP, WW, WH - TOP); this.arenaFx.forEach(r => r.setFillStyle(0x6fe8ff, 0)); this.hud.draw(-1, -1); }
   win() { if (this.won) return; this.won = true; this.unlockArena(); this.enemies.filter(e => (e as any).escort).forEach(e => e.active && !e.dead && e.die()); this.egun.shots.getChildren().forEach((o: any) => o.active && this.egun.kill(o));
