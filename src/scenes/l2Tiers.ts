@@ -51,11 +51,17 @@ export class Tiers {
       for (let i = 0, st = 3; i < P.w; i += st) { st = Math.abs((top[Math.min(i + 3, P.w - 1)] || 0) - (top[i] || 0)) > 3 ? 1 : 3; const t = top[i]; if (t < 0) continue; const tt = k === 'overhang' ? t : Math.min(t, sy); if (k !== 'overhang' && tt >= sy) continue; s.addRect(x + i, tt, st, 6, true); this.dbg.curveSteps++; } }
     // composed vignettes: every run gets authored scenes at fixed beats (not scatter) — a rest stop (lamp + bench planter + tree)
     // and a signage nook (lamp+banner, flanking planters); kept clear of towers/run ends so climbs and landings stay readable
-    const VIG: [number, number, number][][] = [[[-26, 0, 0.62], [0, 10, 0.7], [30, 11, 0.55]], [[-22, 18, 0.7], [0, 7, 0.62], [24, 15, 0.7]]];
+    // authored rest-stops / signage nooks / gear stacks — denser beats on long runs (keep clear of towers)
+    const VIG: [number, number, number][][] = [
+      [[-26, 0, 0.62], [0, 10, 0.7], [30, 11, 0.55]],
+      [[-22, 18, 0.7], [0, 7, 0.62], [24, 15, 0.7]],
+      [[-30, 2, 0.55], [-8, 14, 0.65], [18, 8, 0.6], [36, 19, 0.55]],  // lamp + crates + planter
+      [[-24, 16, 0.65], [0, 3, 0.7], [28, 12, 0.6]],  // banner + console
+    ];
     (this.dbg as any).vignettes = 0; const vg: any[] = []; (window as any).__vig = vg;
-    RUNS.forEach(([x0, x1, y], ri) => { const L = x1 - x0; const beats = L > 500 ? [0.3, 0.72] : [0.5];
+    RUNS.forEach(([x0, x1, y], ri) => { const L = x1 - x0; const beats = L > 700 ? [0.22, 0.48, 0.74] : L > 500 ? [0.28, 0.55, 0.78] : L > 320 ? [0.35, 0.7] : [0.5];
       beats.forEach((f, bi) => { let cx = Math.round(x0 + L * f); if (TOWERS.some(([tx]) => Math.abs(tx - cx) < 70)) cx += 90; if (cx < x0 + 50 || cx > x1 - 50) return;
-        for (const [dx, id, sc0] of VIG[(ri + bi) % 2]) { const im = sc.add.image(cx + dx, y + 1, 'l2e_' + String(id).padStart(2, '0')).setOrigin(0.5, 1).setDepth(1.95).setScale(sc0); if ((ri + bi) % 3 === 0) im.setFlipX(true); vg.push({ x: cx + dx, y, k: id }); }
+        for (const [dx, id, sc0] of VIG[(ri + bi) % VIG.length]) { const im = sc.add.image(cx + dx, y + 1, 'l2e_' + String(id).padStart(2, '0')).setOrigin(0.5, 1).setDepth(1.95).setScale(sc0); if ((ri + bi) % 3 === 0) im.setFlipX(true); vg.push({ x: cx + dx, y, k: id }); }
         const gl = sc.add.image(cx, y - 30, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint((ri + bi) % 2 ? 0xffb0f0 : 0x8ff6ff).setScale(0.55).setAlpha(0.35).setDepth(1.9); s.neon.push({ o: gl, base: 0.35, t: ri + bi });
         (this.dbg as any).vignettes++; }); });
     // climb towers: solid column (sheet pylon crop tiled), ledges alternating left/right every 64px — wall-jump or ledge-hop up

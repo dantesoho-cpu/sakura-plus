@@ -22,16 +22,16 @@ export class Interact {
     const pits: [number, number][] = []; let a = -1; for (let x = 0; x < WW; x += 8) { const g = solidAt(x); if (!g && a < 0) a = x; if (g && a >= 0) { pits.push([a, x]); a = -1; } }
     // prop dressing: back layer (depth 1.6) every ~70-130px, varied, some flipped, lit ones get a breathing glow
     const used: number[] = [];
-    for (let x = 160; x < WW - 120; x += 70 + Math.floor(rnd() * 60)) { if (!clear(x, 18)) continue; const id = DECOR[Math.floor(rnd() * DECOR.length)], k = 'l2pr_' + String(id).padStart(2, '0');
+    for (let x = 140; x < WW - 120; x += 55 + Math.floor(rnd() * 45)) { if (!clear(x, 18)) continue; const id = DECOR[Math.floor(rnd() * DECOR.length)], k = 'l2pr_' + String(id).padStart(2, '0');
       const im = s_.add.image(x, GY + 1, k).setOrigin(0.5, 1).setDepth(1.6).setFlipX(rnd() < 0.3); if (im.height > 90) im.setScale(0.8); used.push(x); this.dbg.decor++;
       if (GLOWC[id]) { const gl = s_.add.image(x, GY - im.displayHeight / 2, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(GLOWC[id]).setScale(Math.max(im.displayWidth, im.displayHeight) / 70).setAlpha(0.3).setDepth(1.55); this.glows.push({ o: gl, t: rnd() * 6, b: 0.3 }); } }
     // springs
-    let si = 0; for (const x of [520, 1100, 1700, 2300, 3000, 3500]) { let px = x; while (px < x + 200 && !clear(px, 26)) px += 8; if (!clear(px, 26)) continue; const id = 27 + (si++ % 3);
+    let si = 0; for (const x of [520, 1100, 1700, 2300, 2680, 3000, 3500]) { let px = x; while (px < x + 200 && !clear(px, 26)) px += 8; if (!clear(px, 26)) continue; const id = 27 + (si++ % 3);
       const im = s_.add.image(px, GY + 1, 'l2pr_' + id).setOrigin(0.5, 1).setDepth(5).setScale(0.55);
       const gl = s_.add.image(px, GY - 10, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(GLOWC[id]).setScale(0.45).setAlpha(0.4).setDepth(5.1);
       this.springs.push({ im, x: px, y: GY, cd: 0, c: GLOWC[id], gl }); }
     // breakables
-    for (const [x, id] of [[860, 16], [1250, 18], [1620, 17], [2240, 7], [2850, 16], [3150, 18], [3400, 17]] as [number, number][]) { let px = x; while (px < x + 200 && !clear(px, 20)) px += 8; if (!clear(px, 20)) continue;
+    for (const [x, id] of [[860, 16], [1250, 18], [1620, 17], [1980, 7], [2240, 7], [2550, 16], [2850, 16], [3050, 18], [3150, 18], [3400, 17]] as [number, number][]) { let px = x; while (px < x + 200 && !clear(px, 20)) px += 8; if (!clear(px, 20)) continue;
       const im = s_.add.image(px, GY + 1, 'l2pr_' + String(id).padStart(2, '0')).setOrigin(0.5, 1).setDepth(5.5); if (im.height > 60) im.setScale(0.7);
       this.brk.push({ im, hp: 3 }); }
     // moving / falling decks over pits

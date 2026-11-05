@@ -15,7 +15,7 @@ export class L1Extra {
         for (let i = 0; i < 3; i++) { const lx = x + i * 34; const im = sc.add.image(lx, g, 'pr_lantern2').setOrigin(0.5, 1).setDepth(4.6).setTint(0x6a6a7a);
           const gl = sc.add.image(lx, g - 22, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xffb050).setScale(0.3).setAlpha(0).setDepth(4.7);
           const l = { im, gl, x: lx, y: g, lit: 0, g: this.groups.length - 1, t: Math.random() * 6, ff: [] as Phaser.GameObjects.Image[] }; this.lans.push(l); G.n.push(l); this.dbg.lans++; }
-        x += 620; } else x += 24; }
+        x += 480; } else x += 24; }
   }
   light(l: Lan) { if (l.lit) return; l.lit = 1; this.dbg.lit++; const sc = this.s as Phaser.Scene; l.im.clearTint(); audio.sfx('flower', { rate: 1.2 + (this.dbg.lit % 3) * 0.15, vol: 0.45 }); this.s.fx?.spark(l.x, l.y - 22);
     sc.tweens.add({ targets: l.im, scaleY: 1.08, yoyo: true, duration: 120 });

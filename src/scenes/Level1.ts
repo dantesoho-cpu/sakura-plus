@@ -363,12 +363,12 @@ export class Level1 extends Phaser.Scene {
         { const sizes: [string, number][] = [['pr_ts0', 129], ['pr_ts1', 126], ['pr_ts2', 114], ['pr_ts3', 107], ['pr_ts0dk', 129], ['pr_ts1lt', 126], ['pr_ts2dk', 114], ['pr_ts3lt', 107], ['pr_ts_sap', 41], ['pr_ts_bush', 54], ['pr_ts_sap', 41]];
           let cxp = px + 10 + rnd() * 30; const end = px + run * TS - 10;
           while (cxp < end) { const room = end - cxp; const fits = sizes.filter(([, w]) => w * 0.8 <= room && (w < 128 || run >= 16));
-            if (!fits.length || rnd() < 0.3) { cxp += 40 + rnd() * 60; continue; }
+            if (!fits.length || rnd() < 0.18) { cxp += 36 + rnd() * 50; continue; }
             const [k, w] = fits[Math.floor(rnd() * fits.length)]; const tx = cxp + w * 0.4;
             const gc = Math.floor(tx / TS); if (!busy(gc, y) && !(y === 62 && ((gc > 188 && gc < 224) || (gc > 360 && gc < 392)))) (w > 70 && this.treeTops.push([tx, top + 3 - w * 0.75, w]), this.cull(this.add.image(tx, top + 3, k).setOrigin(0.5, 1).setDepth(w > 120 ? -14 : w > 70 ? -13 : -12).setFlipX(rnd() < 0.5)));
-            cxp += w * 0.8 + 30 + rnd() * 80; } }
+            cxp += w * 0.75 + 22 + rnd() * 60; } }
         // small ground props every 2-6 tiles
-        for (let cx = x + 1; cx < e - 1; cx += 2 + Math.floor(rnd() * 5)) { if (busy(cx, y)) continue;
+        for (let cx = x + 1; cx < e - 1; cx += 1 + Math.floor(rnd() * 4)) { if (busy(cx, y)) continue;
           const k = pick(DECO.ground, 40); if (!k) continue; const front = rnd() < 0.12 && DECO_SIZE[k][1] < 14;
           this.cull(this.add.image(cx * TS + 8, top + 2, this.dusk(cx, k)).setOrigin(0.5, 1).setDepth(front ? 11 : -4)); }
         x = e;
@@ -376,7 +376,7 @@ export class Level1 extends Phaser.Scene {
     }
     // landmarks & water pieces from the sheet near pits / waterfalls
     const lm = DECO.landmark; let li = 0;
-    for (let x = 6; x < M[0].length - 6; x += 37) { const y = this.surfaceBelow(x, 80, S); if (y > 0 && !busy(x, y)) this.cull(this.add.image(x * TS, y * TS + 2, this.dusk(x, lm[li++ % lm.length])).setOrigin(0.5, 1).setDepth(-7)); }
+    for (let x = 6; x < M[0].length - 6; x += 26) { const y = this.surfaceBelow(x, 80, S); if (y > 0 && !busy(x, y)) this.cull(this.add.image(x * TS, y * TS + 2, this.dusk(x, lm[li++ % lm.length])).setOrigin(0.5, 1).setDepth(-7)); }
     // (old: sheet water pieces stamped at each fall foot — replaced by fallUnit lips/basins)
   }
   // ---- second-gen pieces (regenerated in the sakuratileset style): ruins, pillars, walls, scaffolds, banners, lanterns, rocks, plants ----
@@ -465,7 +465,7 @@ export class Level1 extends Phaser.Scene {
       if (!(S(x, y) && !S(x, y - 1) && at(x, y - 1) === '.')) { x++; continue; }
       let e = x; while (S(e, y) && !S(e, y - 1)) e++; const run = e - x, top = y * TS;
       if (run >= 12 && rnd() < 0.45) { const k = draw('big', BIG, run * TS - 40); if (k >= 0) this.cull(this.add.image(x * TS + 20 + rnd() * (run * TS - 40 - W(k)) + W(k) / 2, top + 4, 'pp' + k).setOrigin(0.5, 1).setDepth(-15).setTint(0xd8d0e8)); }
-      if (run >= 5 && rnd() < 0.55) { const k = draw('mid', MID, run * TS - 16); const cx = Math.floor(x + 1 + rnd() * (run - 2)); if (k >= 0 && !busy(cx, y)) { const o = this.cull(this.add.image(cx * TS + 8, top + 2, 'pp' + k).setOrigin(0.5, 1).setDepth(-9)); if (k === 12) this.lanterns.push(o); } }
+      if (run >= 4 && rnd() < 0.7) { const k = draw('mid', MID, run * TS - 16); const cx = Math.floor(x + 1 + rnd() * (run - 2)); if (k >= 0 && !busy(cx, y)) { const o = this.cull(this.add.image(cx * TS + 8, top + 2, 'pp' + k).setOrigin(0.5, 1).setDepth(-9)); if (k === 12) this.lanterns.push(o); } }
       for (let cx = x + 1; cx < e - 1; cx += 3 + Math.floor(rnd() * 6)) { if (busy(cx, y)) continue; const plant = rnd() < 0.6;
         const k = plant ? draw('plant', PLANT, 60) : draw('small', SMALL, 70); if (k < 0) continue;
         const o = this.cull(this.add.image(cx * TS + 8, top + 2, 'pp' + k).setOrigin(0.5, 1).setDepth(plant && rnd() < 0.25 ? 11 : -5).setScale(plant ? 0.7 + rnd() * 0.3 : 0.8)); if (plant) this.sway.push(o); }
