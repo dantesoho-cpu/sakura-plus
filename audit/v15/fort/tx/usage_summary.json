@@ -1,0 +1,21 @@
+{
+  "total": 222,
+  "used": 222,
+  "placements": 432,
+  "by_kind": {
+    "plat": 49,
+    "decor": 83,
+    "slope": 17,
+    "set": 19,
+    "pillar": 50,
+    "banner": 3,
+    "stair": 1
+  },
+  "use_hist": {
+    "1": 108,
+    "2": 49,
+    "3": 40,
+    "4": 19,
+    "5": 6
+  }
+}
