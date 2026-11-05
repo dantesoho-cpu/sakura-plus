@@ -1,0 +1,2068 @@
+{
+ "meta": {
+  "sheet": 8,
+  "file": "sheet8_enemies2_turrets.png",
+  "mode": "hard",
+  "total": 98
+ },
+ "frames": {
+  "s8_000": {
+   "w": 44,
+   "h": 50,
+   "src": [
+    20,
+    22,
+    130,
+    148
+   ],
+   "native": [
+    110,
+    126
+   ],
+   "mode": "hard",
+   "top": 9,
+   "foot": 47,
+   "key": "s8_000",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_001": {
+   "w": 40,
+   "h": 45,
+   "src": [
+    160,
+    25,
+    259,
+    138
+   ],
+   "native": [
+    99,
+    113
+   ],
+   "mode": "hard",
+   "top": 7,
+   "foot": 43,
+   "key": "s8_001",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_002": {
+   "w": 55,
+   "h": 45,
+   "src": [
+    278,
+    26,
+    416,
+    138
+   ],
+   "native": [
+    138,
+    112
+   ],
+   "mode": "hard",
+   "top": 5,
+   "foot": 40,
+   "key": "s8_002",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_003": {
+   "w": 62,
+   "h": 47,
+   "src": [
+    433,
+    26,
+    589,
+    143
+   ],
+   "native": [
+    156,
+    117
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 40,
+   "key": "s8_003",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_004": {
+   "w": 37,
+   "h": 38,
+   "src": [
+    712,
+    36,
+    804,
+    132
+   ],
+   "native": [
+    92,
+    96
+   ],
+   "mode": "hard",
+   "top": 5,
+   "foot": 37,
+   "key": "s8_004",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_005": {
+   "w": 53,
+   "h": 54,
+   "src": [
+    971,
+    17,
+    1103,
+    153
+   ],
+   "native": [
+    132,
+    136
+   ],
+   "mode": "hard",
+   "top": 9,
+   "foot": 50,
+   "key": "s8_005",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_006": {
+   "w": 63,
+   "h": 59,
+   "src": [
+    1110,
+    17,
+    1268,
+    164
+   ],
+   "native": [
+    158,
+    147
+   ],
+   "mode": "hard",
+   "top": 9,
+   "foot": 50,
+   "key": "s8_006",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_007": {
+   "w": 54,
+   "h": 57,
+   "src": [
+    1274,
+    18,
+    1408,
+    161
+   ],
+   "native": [
+    134,
+    143
+   ],
+   "mode": "hard",
+   "top": 7,
+   "foot": 50,
+   "key": "s8_007",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_008": {
+   "w": 34,
+   "h": 55,
+   "src": [
+    1432,
+    18,
+    1516,
+    155
+   ],
+   "native": [
+    84,
+    137
+   ],
+   "mode": "hard",
+   "top": 8,
+   "foot": 50,
+   "key": "s8_008",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_009": {
+   "w": 35,
+   "h": 36,
+   "src": [
+    613,
+    52,
+    701,
+    141
+   ],
+   "native": [
+    88,
+    89
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 33,
+   "key": "s8_009",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_010": {
+   "w": 55,
+   "h": 38,
+   "src": [
+    822,
+    45,
+    959,
+    140
+   ],
+   "native": [
+    137,
+    95
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 31,
+   "key": "s8_010",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_011": {
+   "w": 51,
+   "h": 47,
+   "src": [
+    16,
+    162,
+    144,
+    280
+   ],
+   "native": [
+    128,
+    118
+   ],
+   "mode": "hard",
+   "top": 9,
+   "foot": 40,
+   "key": "s8_011",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_012": {
+   "w": 46,
+   "h": 50,
+   "src": [
+    176,
+    161,
+    290,
+    286
+   ],
+   "native": [
+    114,
+    125
+   ],
+   "mode": "hard",
+   "top": 13,
+   "foot": 46,
+   "key": "s8_012",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_013": {
+   "w": 50,
+   "h": 36,
+   "src": [
+    322,
+    185,
+    446,
+    274
+   ],
+   "native": [
+    124,
+    89
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 34,
+   "key": "s8_013",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_014": {
+   "w": 51,
+   "h": 35,
+   "src": [
+    459,
+    186,
+    587,
+    274
+   ],
+   "native": [
+    128,
+    88
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 32,
+   "key": "s8_014",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_015": {
+   "w": 46,
+   "h": 37,
+   "src": [
+    602,
+    177,
+    718,
+    269
+   ],
+   "native": [
+    116,
+    92
+   ],
+   "mode": "hard",
+   "top": 3,
+   "foot": 33,
+   "key": "s8_015",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_016": {
+   "w": 35,
+   "h": 45,
+   "src": [
+    739,
+    166,
+    827,
+    279
+   ],
+   "native": [
+    88,
+    113
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 42,
+   "key": "s8_016",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_017": {
+   "w": 49,
+   "h": 44,
+   "src": [
+    841,
+    164,
+    964,
+    273
+   ],
+   "native": [
+    123,
+    109
+   ],
+   "mode": "hard",
+   "top": 6,
+   "foot": 41,
+   "key": "s8_017",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_018": {
+   "w": 62,
+   "h": 40,
+   "src": [
+    970,
+    177,
+    1126,
+    276
+   ],
+   "native": [
+    156,
+    99
+   ],
+   "mode": "hard",
+   "top": 3,
+   "foot": 37,
+   "key": "s8_018",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_019": {
+   "w": 77,
+   "h": 41,
+   "src": [
+    1137,
+    176,
+    1329,
+    278
+   ],
+   "native": [
+    192,
+    102
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 37,
+   "key": "s8_019",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_020": {
+   "w": 66,
+   "h": 43,
+   "src": [
+    1341,
+    174,
+    1505,
+    281
+   ],
+   "native": [
+    164,
+    107
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 35,
+   "key": "s8_020",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_021": {
+   "w": 51,
+   "h": 56,
+   "src": [
+    10,
+    298,
+    138,
+    437
+   ],
+   "native": [
+    128,
+    139
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 54,
+   "key": "s8_021",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_022": {
+   "w": 42,
+   "h": 57,
+   "src": [
+    168,
+    299,
+    274,
+    442
+   ],
+   "native": [
+    106,
+    143
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 56,
+   "key": "s8_022",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_023": {
+   "w": 47,
+   "h": 60,
+   "src": [
+    298,
+    297,
+    416,
+    448
+   ],
+   "native": [
+    118,
+    151
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 59,
+   "key": "s8_023",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_024": {
+   "w": 64,
+   "h": 61,
+   "src": [
+    429,
+    300,
+    589,
+    452
+   ],
+   "native": [
+    160,
+    152
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 59,
+   "key": "s8_024",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_025": {
+   "w": 67,
+   "h": 66,
+   "src": [
+    610,
+    296,
+    778,
+    461
+   ],
+   "native": [
+    168,
+    165
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 65,
+   "key": "s8_025",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_026": {
+   "w": 102,
+   "h": 62,
+   "src": [
+    792,
+    302,
+    1048,
+    456
+   ],
+   "native": [
+    256,
+    154
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 61,
+   "key": "s8_026",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_027": {
+   "w": 48,
+   "h": 62,
+   "src": [
+    1052,
+    306,
+    1173,
+    461
+   ],
+   "native": [
+    121,
+    155
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 60,
+   "key": "s8_027",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_028": {
+   "w": 37,
+   "h": 66,
+   "src": [
+    1185,
+    301,
+    1278,
+    466
+   ],
+   "native": [
+    93,
+    165
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 61,
+   "key": "s8_028",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_029": {
+   "w": 52,
+   "h": 66,
+   "src": [
+    1267,
+    308,
+    1398,
+    472
+   ],
+   "native": [
+    131,
+    164
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 64,
+   "key": "s8_029",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_030": {
+   "w": 48,
+   "h": 64,
+   "src": [
+    1402,
+    307,
+    1522,
+    468
+   ],
+   "native": [
+    120,
+    161
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 61,
+   "key": "s8_030",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_031": {
+   "w": 46,
+   "h": 44,
+   "src": [
+    19,
+    465,
+    133,
+    574
+   ],
+   "native": [
+    114,
+    109
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 40,
+   "key": "s8_031",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_032": {
+   "w": 39,
+   "h": 37,
+   "src": [
+    163,
+    475,
+    261,
+    568
+   ],
+   "native": [
+    98,
+    93
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 35,
+   "key": "s8_032",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_033": {
+   "w": 38,
+   "h": 39,
+   "src": [
+    297,
+    466,
+    393,
+    563
+   ],
+   "native": [
+    96,
+    97
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 36,
+   "key": "s8_033",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_034": {
+   "w": 32,
+   "h": 42,
+   "src": [
+    625,
+    473,
+    706,
+    577
+   ],
+   "native": [
+    81,
+    104
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 40,
+   "key": "s8_034",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_035": {
+   "w": 33,
+   "h": 44,
+   "src": [
+    760,
+    473,
+    842,
+    583
+   ],
+   "native": [
+    82,
+    110
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 42,
+   "key": "s8_035",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_036": {
+   "w": 36,
+   "h": 42,
+   "src": [
+    864,
+    479,
+    953,
+    584
+   ],
+   "native": [
+    89,
+    105
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 38,
+   "key": "s8_036",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_037": {
+   "w": 28,
+   "h": 40,
+   "src": [
+    999,
+    479,
+    1068,
+    578
+   ],
+   "native": [
+    69,
+    99
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 39,
+   "key": "s8_037",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_038": {
+   "w": 35,
+   "h": 32,
+   "src": [
+    425,
+    487,
+    513,
+    566
+   ],
+   "native": [
+    88,
+    79
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 28,
+   "key": "s8_038",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_039": {
+   "w": 26,
+   "h": 31,
+   "src": [
+    533,
+    489,
+    599,
+    567
+   ],
+   "native": [
+    66,
+    78
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 30,
+   "key": "s8_039",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_040": {
+   "w": 39,
+   "h": 36,
+   "src": [
+    1099,
+    482,
+    1197,
+    573
+   ],
+   "native": [
+    98,
+    91
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 34,
+   "key": "s8_040",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_041": {
+   "w": 42,
+   "h": 38,
+   "src": [
+    1224,
+    481,
+    1328,
+    577
+   ],
+   "native": [
+    104,
+    96
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 35,
+   "key": "s8_041",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_042": {
+   "w": 34,
+   "h": 34,
+   "src": [
+    1350,
+    486,
+    1436,
+    572
+   ],
+   "native": [
+    86,
+    86
+   ],
+   "mode": "hard",
+   "top": 3,
+   "foot": 30,
+   "key": "s8_042",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_043": {
+   "w": 24,
+   "h": 25,
+   "src": [
+    1461,
+    507,
+    1521,
+    569
+   ],
+   "native": [
+    60,
+    62
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 22,
+   "key": "s8_043",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_044": {
+   "w": 59,
+   "h": 62,
+   "src": [
+    23,
+    591,
+    170,
+    745
+   ],
+   "native": [
+    147,
+    154
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 61,
+   "key": "s8_044",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_045": {
+   "w": 42,
+   "h": 59,
+   "src": [
+    198,
+    598,
+    303,
+    745
+   ],
+   "native": [
+    105,
+    147
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 58,
+   "key": "s8_045",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_046": {
+   "w": 40,
+   "h": 59,
+   "src": [
+    306,
+    598,
+    406,
+    745
+   ],
+   "native": [
+    100,
+    147
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 58,
+   "key": "s8_046",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_047": {
+   "w": 52,
+   "h": 63,
+   "src": [
+    420,
+    588,
+    549,
+    745
+   ],
+   "native": [
+    129,
+    157
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 62,
+   "key": "s8_047",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_048": {
+   "w": 60,
+   "h": 63,
+   "src": [
+    571,
+    588,
+    722,
+    745
+   ],
+   "native": [
+    151,
+    157
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 62,
+   "key": "s8_048",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_049": {
+   "w": 47,
+   "h": 62,
+   "src": [
+    726,
+    591,
+    843,
+    745
+   ],
+   "native": [
+    117,
+    154
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 61,
+   "key": "s8_049",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_050": {
+   "w": 38,
+   "h": 61,
+   "src": [
+    986,
+    592,
+    1081,
+    745
+   ],
+   "native": [
+    95,
+    153
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 60,
+   "key": "s8_050",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_051": {
+   "w": 49,
+   "h": 60,
+   "src": [
+    1095,
+    596,
+    1218,
+    745
+   ],
+   "native": [
+    123,
+    149
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 59,
+   "key": "s8_051",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_052": {
+   "w": 48,
+   "h": 54,
+   "src": [
+    849,
+    610,
+    968,
+    745
+   ],
+   "native": [
+    119,
+    135
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 53,
+   "key": "s8_052",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_053": {
+   "w": 51,
+   "h": 56,
+   "src": [
+    1236,
+    605,
+    1363,
+    745
+   ],
+   "native": [
+    127,
+    140
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 55,
+   "key": "s8_053",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_054": {
+   "w": 60,
+   "h": 36,
+   "src": [
+    1367,
+    608,
+    1517,
+    697
+   ],
+   "native": [
+    150,
+    89
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 35,
+   "key": "s8_054",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_055": {
+   "w": 8,
+   "h": 24,
+   "src": [
+    1387,
+    723,
+    1406,
+    782
+   ],
+   "native": [
+    19,
+    59
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 23,
+   "key": "s8_055",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_056": {
+   "w": 7,
+   "h": 24,
+   "src": [
+    1418,
+    723,
+    1436,
+    783
+   ],
+   "native": [
+    18,
+    60
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 23,
+   "key": "s8_056",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_057": {
+   "w": 7,
+   "h": 24,
+   "src": [
+    1447,
+    723,
+    1465,
+    783
+   ],
+   "native": [
+    18,
+    60
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 22,
+   "key": "s8_057",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_058": {
+   "w": 6,
+   "h": 11,
+   "src": [
+    1478,
+    755,
+    1494,
+    783
+   ],
+   "native": [
+    16,
+    28
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 10,
+   "key": "s8_058",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_059": {
+   "w": 6,
+   "h": 11,
+   "src": [
+    1479,
+    723,
+    1494,
+    750
+   ],
+   "native": [
+    15,
+    27
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 10,
+   "key": "s8_059",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_060": {
+   "w": 6,
+   "h": 24,
+   "src": [
+    1507,
+    723,
+    1522,
+    782
+   ],
+   "native": [
+    15,
+    59
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 23,
+   "key": "s8_060",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_061": {
+   "w": 128,
+   "h": 98,
+   "src": [
+    8,
+    763,
+    327,
+    1007
+   ],
+   "native": [
+    319,
+    244
+   ],
+   "mode": "hard",
+   "top": 4,
+   "foot": 94,
+   "key": "s8_061",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "mech"
+  },
+  "s8_062": {
+   "w": 96,
+   "h": 90,
+   "src": [
+    326,
+    780,
+    567,
+    1005
+   ],
+   "native": [
+    241,
+    225
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 71,
+   "key": "s8_062",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_063": {
+   "w": 103,
+   "h": 82,
+   "src": [
+    588,
+    792,
+    846,
+    996
+   ],
+   "native": [
+    258,
+    204
+   ],
+   "mode": "hard",
+   "top": 5,
+   "foot": 60,
+   "key": "s8_063",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_064": {
+   "w": 73,
+   "h": 92,
+   "src": [
+    809,
+    775,
+    991,
+    1005
+   ],
+   "native": [
+    182,
+    230
+   ],
+   "mode": "hard",
+   "top": 7,
+   "foot": 89,
+   "key": "s8_064",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_065": {
+   "w": 45,
+   "h": 51,
+   "src": [
+    1022,
+    780,
+    1135,
+    908
+   ],
+   "native": [
+    113,
+    128
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 50,
+   "key": "s8_065",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_066": {
+   "w": 38,
+   "h": 60,
+   "src": [
+    1140,
+    772,
+    1235,
+    923
+   ],
+   "native": [
+    95,
+    151
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 59,
+   "key": "s8_066",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_067": {
+   "w": 6,
+   "h": 38,
+   "src": [
+    1248,
+    776,
+    1263,
+    870
+   ],
+   "native": [
+    15,
+    94
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 37,
+   "key": "s8_067",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_068": {
+   "w": 6,
+   "h": 38,
+   "src": [
+    1272,
+    775,
+    1288,
+    871
+   ],
+   "native": [
+    16,
+    96
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 37,
+   "key": "s8_068",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_069": {
+   "w": 8,
+   "h": 29,
+   "src": [
+    1307,
+    779,
+    1328,
+    852
+   ],
+   "native": [
+    21,
+    73
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 27,
+   "key": "s8_069",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_070": {
+   "w": 12,
+   "h": 33,
+   "src": [
+    1340,
+    772,
+    1371,
+    855
+   ],
+   "native": [
+    31,
+    83
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 32,
+   "key": "s8_070",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_071": {
+   "w": 7,
+   "h": 22,
+   "src": [
+    1395,
+    797,
+    1412,
+    851
+   ],
+   "native": [
+    17,
+    54
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 20,
+   "key": "s8_071",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_072": {
+   "w": 6,
+   "h": 21,
+   "src": [
+    1422,
+    797,
+    1438,
+    850
+   ],
+   "native": [
+    16,
+    53
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 20,
+   "key": "s8_072",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_073": {
+   "w": 7,
+   "h": 21,
+   "src": [
+    1449,
+    797,
+    1466,
+    850
+   ],
+   "native": [
+    17,
+    53
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 19,
+   "key": "s8_073",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_074": {
+   "w": 7,
+   "h": 22,
+   "src": [
+    1478,
+    796,
+    1495,
+    850
+   ],
+   "native": [
+    17,
+    54
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 21,
+   "key": "s8_074",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_075": {
+   "w": 7,
+   "h": 21,
+   "src": [
+    1505,
+    796,
+    1523,
+    849
+   ],
+   "native": [
+    18,
+    53
+   ],
+   "mode": "hard",
+   "top": 2,
+   "foot": 19,
+   "key": "s8_075",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_076": {
+   "w": 6,
+   "h": 14,
+   "src": [
+    1248,
+    879,
+    1264,
+    913
+   ],
+   "native": [
+    16,
+    34
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 13,
+   "key": "s8_076",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_077": {
+   "w": 6,
+   "h": 14,
+   "src": [
+    1273,
+    879,
+    1289,
+    913
+   ],
+   "native": [
+    16,
+    34
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 13,
+   "key": "s8_077",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_078": {
+   "w": 8,
+   "h": 15,
+   "src": [
+    1298,
+    876,
+    1319,
+    913
+   ],
+   "native": [
+    21,
+    37
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 14,
+   "key": "s8_078",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_079": {
+   "w": 8,
+   "h": 16,
+   "src": [
+    1327,
+    875,
+    1347,
+    914
+   ],
+   "native": [
+    20,
+    39
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 14,
+   "key": "s8_079",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_080": {
+   "w": 9,
+   "h": 16,
+   "src": [
+    1357,
+    873,
+    1380,
+    914
+   ],
+   "native": [
+    23,
+    41
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 14,
+   "key": "s8_080",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_081": {
+   "w": 28,
+   "h": 31,
+   "src": [
+    1389,
+    871,
+    1459,
+    948
+   ],
+   "native": [
+    70,
+    77
+   ],
+   "mode": "hard",
+   "top": 3,
+   "foot": 28,
+   "key": "s8_081",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_082": {
+   "w": 11,
+   "h": 15,
+   "src": [
+    1466,
+    865,
+    1494,
+    903
+   ],
+   "native": [
+    28,
+    38
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 13,
+   "key": "s8_082",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_083": {
+   "w": 12,
+   "h": 15,
+   "src": [
+    1497,
+    865,
+    1526,
+    902
+   ],
+   "native": [
+    29,
+    37
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 14,
+   "key": "s8_083",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_084": {
+   "w": 11,
+   "h": 16,
+   "src": [
+    1465,
+    906,
+    1493,
+    946
+   ],
+   "native": [
+    28,
+    40
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 15,
+   "key": "s8_084",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_085": {
+   "w": 15,
+   "h": 18,
+   "src": [
+    1489,
+    900,
+    1526,
+    946
+   ],
+   "native": [
+    37,
+    46
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 17,
+   "key": "s8_085",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_086": {
+   "w": 22,
+   "h": 14,
+   "src": [
+    989,
+    925,
+    1045,
+    961
+   ],
+   "native": [
+    56,
+    36
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 13,
+   "key": "s8_086",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_087": {
+   "w": 32,
+   "h": 16,
+   "src": [
+    1052,
+    921,
+    1133,
+    961
+   ],
+   "native": [
+    81,
+    40
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 15,
+   "key": "s8_087",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_088": {
+   "w": 17,
+   "h": 34,
+   "src": [
+    1146,
+    924,
+    1188,
+    1010
+   ],
+   "native": [
+    42,
+    86
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 32,
+   "key": "s8_088",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_089": {
+   "w": 17,
+   "h": 34,
+   "src": [
+    1195,
+    924,
+    1238,
+    1010
+   ],
+   "native": [
+    43,
+    86
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 32,
+   "key": "s8_089",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_090": {
+   "w": 4,
+   "h": 33,
+   "src": [
+    1274,
+    923,
+    1284,
+    1005
+   ],
+   "native": [
+    10,
+    82
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 32,
+   "key": "s8_090",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_091": {
+   "w": 6,
+   "h": 33,
+   "src": [
+    1296,
+    923,
+    1311,
+    1005
+   ],
+   "native": [
+    15,
+    82
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 32,
+   "key": "s8_091",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_092": {
+   "w": 9,
+   "h": 33,
+   "src": [
+    1322,
+    923,
+    1345,
+    1006
+   ],
+   "native": [
+    23,
+    83
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 31,
+   "key": "s8_092",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_093": {
+   "w": 9,
+   "h": 34,
+   "src": [
+    1354,
+    922,
+    1376,
+    1006
+   ],
+   "native": [
+    22,
+    84
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 33,
+   "key": "s8_093",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  },
+  "s8_094": {
+   "w": 30,
+   "h": 24,
+   "src": [
+    1449,
+    953,
+    1525,
+    1013
+   ],
+   "native": [
+    76,
+    60
+   ],
+   "mode": "hard",
+   "top": 1,
+   "foot": 23,
+   "key": "s8_094",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "enemy"
+  },
+  "s8_095": {
+   "w": 22,
+   "h": 13,
+   "src": [
+    990,
+    972,
+    1046,
+    1005
+   ],
+   "native": [
+    56,
+    33
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 12,
+   "key": "s8_095",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_096": {
+   "w": 31,
+   "h": 15,
+   "src": [
+    1053,
+    967,
+    1130,
+    1005
+   ],
+   "native": [
+    77,
+    38
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 14,
+   "key": "s8_096",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "saucer"
+  },
+  "s8_097": {
+   "w": 18,
+   "h": 19,
+   "src": [
+    1392,
+    962,
+    1438,
+    1009
+   ],
+   "native": [
+    46,
+    47
+   ],
+   "mode": "hard",
+   "top": 0,
+   "foot": 18,
+   "key": "s8_097",
+   "sheet": 8,
+   "cat": "turret",
+   "kind": "turret"
+  }
+ }
+}

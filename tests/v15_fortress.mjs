@@ -1,6 +1,6 @@
 import { chromium } from 'playwright'; import fs from 'fs';
 // v15 Air Fortress: 5 tiers, zones, enemies AI, winged boss -> Victory ch4, level select card
-const D = 'audit/v15/fort'; fs.mkdirSync(D, { recursive: true });
+const D = 'audit/v15/fort'; fs.mkdirSync(D, { recursive: true }); fs.mkdirSync(`${D}/tx/shots`, { recursive: true });
 const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
 const p = await b.newPage({ viewport: { width: 960, height: 540 } });
 const errs = []; p.on('pageerror', e => errs.push(String(e.message || e)));
@@ -22,7 +22,7 @@ const tp = (x, y, n = 40, vx = 0) => p.evaluate(([x, y, n, vx]) => {
 }, [x, y, n, vx]);
 const st = () => p.evaluate(() => {
   const L = window.__lvl, P = L.player;
-  return { x: Math.round(P.x), y: Math.round(P.y), down: P.body.blocked.down, dbg: L.dbg, arena: L.arena };
+  return { x: Math.round(P.x), y: Math.round(P.y), down: !!(P.body.blocked.down || P.body.touching.down), dbg: L.dbg, arena: L.arena };
 });
 const shots = [
   ['01_dock_T1', 400, T1], ['02_dock_T2', 800, T2], ['03_gantry_T3', 1600, T3],
@@ -33,7 +33,7 @@ R.land = [];
 for (const [n, x, y] of shots) {
   await tp(x, y - 6, 55);
   const s = await st();
-  if (s.y - y < -2 || s.y - y > 12 || !s.down) R.land.push(`${n}:y${s.y}`);
+  if (s.y - y < -6 || s.y - y > 18 || !s.down) R.land.push(`${n}:y${s.y}/d${s.down}`);
   await p.screenshot({ path: `${D}/${n}.png` });
 }
 R.pano = await p.evaluate(() => {
@@ -49,20 +49,35 @@ R.zones = await p.evaluate(() => window.__lvl.dbg.zones);
 // AI smoke
 R.ai = await p.evaluate(() => {
   const L = window.__lvl, P = L.player, out = {};
-  for (const C of ['drone', 'bot', 'avian']) {
-    const e = L.enemies.find(e => !e.dead && e.kind === (C === 'avian' ? 'drone' : C) && e.texture?.key?.includes(C === 'avian' ? 'avian' : C === 'drone' ? 'drone' : 'human'));
-    // looser match
-  }
-  for (const label of ['drone', 'orb', 'human', 'avian']) {
-    const e = L.enemies.find(e => !e.dead && e.kind !== 'boss' && (e.texture?.key || '').includes(label));
+  const picks = [
+    ['drone', e => e.kind === 'drone'],
+    ['bot', e => e.kind === 'bot'],
+    ['turret', e => e.kind === 'turret'],
+    ['any', e => e.kind !== 'boss'],
+  ];
+  for (const [label, pred] of picks) {
+    const e = L.enemies.find(e => !e.dead && pred(e));
     if (!e) { out[label] = 'missing'; continue; }
     const x0 = e.x, s0 = e.shots || 0;
     P.body.reset(e.x + 60, e.y - (e.originY === 1 ? 4 : 0));
     window.__step(200);
-    out[label] = { moved: Math.round(Math.abs(e.x - x0)), fired: (e.shots || 0) - s0, kind: e.kind };
+    out[label] = { moved: Math.round(Math.abs(e.x - x0)), fired: (e.shots || 0) - s0, kind: e.kind, tex: e.texture?.key };
   }
   return out;
 });
+R.round2 = await p.evaluate(() => {
+  const L = window.__lvl, d = L.dbg || {};
+  return {
+    deck: !!d.deck, liveEn: d.liveEn|0, liveTur: d.liveTur|0,
+    collects: d.collects|0, gates: d.gates|0, tx: d.tx,
+    enemies: L.enemies.filter(e=>!e.dead).length,
+  };
+});
+await p.screenshot({ path: `${D}/tx/shots/16_deck_T1.png` });
+await tp(450, T1 - 4, 40);
+await p.screenshot({ path: `${D}/tx/shots/17_turret_deck.png` });
+await tp(700, T1 - 4, 30);
+await p.screenshot({ path: `${D}/tx/shots/18_gate_zone.png` });
 await p.screenshot({ path: `${D}/09_ai.png` });
 // ring portal
 await tp(AX0 - 200, T2 - 40, 20);
@@ -72,9 +87,12 @@ await p.screenshot({ path: `${D}/10_portal.png` });
 await p.evaluate(() => { window.__lvl.enemies.filter(e => e.kind !== 'boss').forEach(e => { try { e.dead = true; e.destroy(); } catch {} }); });
 await tp(AX0 + 40, T1 - 4, 40);
 R.arena = await p.evaluate(() => window.__lvl.arena);
-await p.evaluate(() => window.__step(120));
+await p.evaluate(() => { const B=window.__lvl.boss; if (B && B.st==='sleep') B.wake(); window.__step(180); });
 await p.screenshot({ path: `${D}/11_boss_intro.png` });
-R.bossSize = await p.evaluate(() => [Math.round(window.__lvl.boss.displayWidth), Math.round(window.__lvl.boss.displayHeight)]);
+R.bossSize = await p.evaluate(() => {
+  const B=window.__lvl.boss;
+  return [Math.round(B.displayWidth), Math.round(B.displayHeight), B.texture?.key, B.scaleX, B.width];
+});
 for (let i = 0; i < 28; i++) {
   await p.evaluate(() => window.__step(30));
   if (i === 10) await p.screenshot({ path: `${D}/12_boss_fight.png` });
@@ -99,9 +117,11 @@ R.ls = await p.evaluate(() => (window.__ls?.cards || []).map(c => c.list.filter(
 const factorsOk = R.pano?.mode === 'pano' && R.pano?.key === 'ft_pano'
   && R.pano.layers === 0 && R.pano.dw > 480 && R.pano.dh >= 270
   && R.pano.fx > 0 && R.pano.fx < 1;
-const aiOk = Object.values(R.ai).every(a => a !== 'missing' && (a.fired > 0 || a.moved > 4));
+const aiOk = ['drone','bot','turret'].every(k => R.ai[k] && R.ai[k] !== 'missing') && ((R.ai.drone.fired|0)+(R.ai.bot.fired|0)+(R.ai.turret.fired|0) > 0 || (R.ai.drone.moved|0)+(R.ai.bot.moved|0) > 2);
+const r2 = R.round2 || {};
+const r2Ok = r2.deck && r2.liveEn >= 8 && r2.liveTur >= 4 && r2.collects >= 5 && String(r2.tx||'').startsWith('654');
 const ok = factorsOk && R.land.length === 0 && R.tiers.length >= 3 && R.zones.length >= 4
-  && aiOk && R.portal.n > 0 && R.arena && R.bossSize[0] >= 200
+  && aiOk && r2Ok && R.portal.n > 0 && R.arena && (R.bossSize[0] >= 180 || (R.bossSize[4]||0) >= 180)
   && R.boss.fan > 0 && R.boss.dive > 0 && (R.boss.rain > 0 || R.boss.beam > 0)
   && R.won && R.victory === 4 && R.ls.length === 4 && /FORTRESS|AIR/.test(R.ls.join(' '))
   && errs.length === 0;

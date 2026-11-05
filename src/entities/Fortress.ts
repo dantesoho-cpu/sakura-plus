@@ -217,3 +217,35 @@ export class FtBoss extends Enemy {
     });
   }
 }
+
+/** Deck-mounted turret — aims at Sakura and fires when in range. Flush on platforms. */
+export class FtTurret extends Enemy {
+  kind = 'turret'; fireT = 1.2; shots = 0; range = 260;
+  constructor(s: Phaser.Scene, x: number, y: number, fx: Fx, public gun: Blaster, tex: string, hp = 3) {
+    super(s, x, y, tex, hp, fx); this.setOrigin(0.5, 1);
+    this.b.setAllowGravity(false); this.b.setImmovable(true);
+    this.b.setSize(Math.max(14, this.width * 0.7), Math.max(14, this.height * 0.7))
+      .setOffset((this.width - this.b.width) / 2, this.height - this.b.height);
+    this.setDepth(3.25);
+  }
+  knock() { /* bolted down */ }
+  tick(dt: number, px: number, py: number) {
+    super.tick(dt, px, py); if (this.dead) return;
+    this.b.setVelocity(0, 0);
+    const dx = px - this.x, dy = py - (this.y - this.height * 0.55);
+    const dist = Math.hypot(dx, dy);
+    this.face(Math.sign(dx) || this.faceDir);
+    const ang = Phaser.Math.RadToDeg(Math.atan2(dy, dx));
+    this.setAngle(Phaser.Math.Clamp(ang * 0.15, -18, 18));
+    if (dist < this.range && dist > 20) {
+      if ((this.fireT -= dt) <= 0.35 && this.teleT <= 0 && this.fireT + dt > 0.35) this.telegraph(0.3);
+      if (this.fireT <= 0) {
+        this.fireT = 1.55; this.shots++;
+        const a = Math.atan2(dy, dx);
+        const mx = this.x + Math.cos(a) * 10, my = this.y - this.height * 0.55 + Math.sin(a) * 6;
+        this.gun.fireVel(mx, my, Math.cos(a) * 200, Math.sin(a) * 200, { tex: 'ebolt', trail: 0xff6a3c, life: 2.2 });
+        audio.sfx('eshot', { rate: 0.85, vol: 0.5 }); this.punch(1.08, 0.92);
+      }
+    } else this.fireT = Math.min(this.fireT, 0.6);
+  }
+}

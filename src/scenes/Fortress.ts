@@ -11,7 +11,7 @@ import { Toast } from '../systems/Toast';
 import { FEEL } from '../tuning';
 import { SpeedCam } from '../systems/SpeedCam';
 import { PanoramaBg, loadFortressPano } from '../render/PanoramaBg';
-import { FtDrone, FtOrb, FtWalker, FtAvian, FtBoss, ftLoad } from '../entities/Fortress';
+import { FtDrone, FtOrb, FtWalker, FtAvian, FtBoss, FtTurret, ftLoad } from '../entities/Fortress';
 import type { Enemy } from '../entities/Enemy';
 // AIR FORTRESS (ch4) — terrain/arch/decor from transparent sheets (assets/ft/tx), single panorama bg.
 const WW = 7200, WH = 900;
@@ -56,6 +56,7 @@ type Frame = { w: number; h: number; top: number; foot: number; prof?: number[];
 type Place = {
   key: string; x: number; y: number; depth: number; flip: boolean;
   origin: string; solid: null | 'ground' | 'one' | 'ramp'; role: string;
+  src?: 'tx' | 'tx2' | 'deck';
 };
 
 export class Fortress extends Phaser.Scene {
@@ -79,6 +80,10 @@ export class Fortress extends Phaser.Scene {
   arenaFx: Phaser.GameObjects.Rectangle[] = [];
   txKeys: string[] = [];
   groundBands: [number, number][] = [];
+  gates: { btn: Phaser.GameObjects.Image; gate: Phaser.GameObjects.Image; zone?: Phaser.GameObjects.Zone; open: boolean }[] = [];
+  collects: Phaser.GameObjects.Image[] = [];
+  fxPool: string[] = [];
+  liveEn = 0; liveTur = 0;
   constructor() { super('Fortress'); }
 
   preload() {
@@ -88,9 +93,15 @@ export class Fortress extends Phaser.Scene {
     // keys listed in atlas meta — also accept directory listing via layout placements after atlas loads in create;
     // preload every sN_XXX by probing atlas file names from a baked key list packed beside atlas.
     this.load.json('ft_usage', 'assets/ft/tx/usage.json');
+    this.load.json('ft_deck', 'assets/ft/deck/deck.json');
+    this.load.json('ft_tx2_collect', 'assets/ft/tx2/collect/atlas.json');
+    this.load.json('ft_tx2_interact', 'assets/ft/tx2/interact/atlas.json');
+    this.load.json('ft_tx2_en', 'assets/ft/tx2/en/atlas.json');
+    this.load.json('ft_tx2_turret', 'assets/ft/tx2/turret/atlas.json');
+    this.load.json('ft_tx2_fx', 'assets/ft/tx2/fx/atlas.json');
   }
 
-  /** After atlas JSON arrives, queue image loads then continue create via load.once complete. */
+  /** After atlas JSON arrives, queue image loads (tx + deck + tx2) then continue create. */
   bootTx(done: () => void) {
     const atlas = this.cache.json.get('ft_atlas') as { meta: { keys: string[] }; frames: Record<string, Frame> };
     const keys = atlas?.meta?.keys || Object.keys(atlas?.frames || {});
@@ -100,6 +111,24 @@ export class Fortress extends Phaser.Scene {
       const f = atlas.frames[k];
       this.man[k] = f;
       if (!this.textures.exists('ft_' + k)) this.load.image('ft_' + k, `assets/ft/tx/${k}.png`);
+    }
+    const deck = this.cache.json.get('ft_deck') as { frames: Record<string, Frame> };
+    for (const k of Object.keys(deck?.frames || {})) {
+      this.man[k] = deck.frames[k];
+      if (!this.textures.exists('ft_' + k)) this.load.image('ft_' + k, `assets/ft/deck/${k}.png`);
+    }
+    const catPath: Record<string, string> = {
+      collect: 'collect', interact: 'interact', en: 'en', turret: 'turret', fx: 'fx',
+    };
+    for (const [jk, cat] of Object.entries({
+      ft_tx2_collect: 'collect', ft_tx2_interact: 'interact', ft_tx2_en: 'en',
+      ft_tx2_turret: 'turret', ft_tx2_fx: 'fx',
+    })) {
+      const a = this.cache.json.get(jk) as { frames: Record<string, Frame & { cat?: string; kind?: string }> };
+      for (const k of Object.keys(a?.frames || {})) {
+        this.man[k] = a.frames[k];
+        if (!this.textures.exists('ft_' + k)) this.load.image('ft_' + k, `assets/ft/tx2/${catPath[cat]}/${k}.png`);
+      }
     }
     if (this.load.list.size === 0) { done(); return; }
     this.load.once(Phaser.Loader.Events.COMPLETE, done);
@@ -120,9 +149,28 @@ export class Fortress extends Phaser.Scene {
     if (!this.textures.exists(key)) return;
     this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
     let im: Phaser.GameObjects.Image | null = null;
+    const role = p.role || '';
+    // live gameplay roles: spawn entities, skip decorative duplicate for enemies/turrets when AI spawned
+    if (role === 'turret' || role === 'en_mech') {
+      if (this.liveTur < 22 && this.egun) {
+        this.liveTur++;
+        const e = new FtTurret(this, p.x, p.y, this.fx, this.egun, key, role === 'en_mech' ? 6 : 3);
+        e.on('destroyed', () => { this.kills++; });
+        this.enemies.push(e); this.enemyGroup.add(e);
+        return e as any;
+      }
+    }
+    if (role === 'en_spawn' || role === 'en_heavy' || role === 'en_flyer') {
+      if (this.liveEn < 40 && this.egun) {
+        this.liveEn++;
+        const kind = role === 'en_flyer' ? 'flyer' : (role === 'en_heavy' ? 'heavy' : 'trooper');
+        this.spawnFoeTx(kind, p.x, p.y, key);
+        return null;
+      }
+    }
     if (p.origin === 'tl_walk') {
       im = this.add.image(Math.round(p.x), Math.round(p.y - (m.top || 0)), key).setOrigin(0, 0).setDepth(p.depth).setFlipX(p.flip);
-      if (p.solid === 'ground') this.addRect(p.x, p.y, m.w, 48, false);
+      if (p.solid === 'ground') this.addRect(p.x, p.y, m.w, Math.max(20, Math.min(56, m.h || 48)), false);
       else if (p.solid === 'one') this.addRect(p.x + 2, p.y, Math.max(8, m.w - 4), 10, true);
     } else if (p.origin === 'ramp' && m.prof) {
       const pr = m.prof;
@@ -132,28 +180,65 @@ export class Fortress extends Phaser.Scene {
       this.surf.push({ x: p.x, y, prof: pr, w: m.w, flip: p.flip });
       this.dbg.ramp = (this.dbg.ramp || 0) + 1;
     } else if (p.origin === 'ramp') {
-      // slope without profile — treat as one-way shelf at stated y
       im = this.add.image(Math.round(p.x), Math.round(p.y - (m.top || 0)), key).setOrigin(0, 0).setFlipX(p.flip).setDepth(p.depth);
       this.addRect(p.x + 2, p.y, Math.max(8, m.w - 4), 10, true);
+      this.dbg.ramp = (this.dbg.ramp || 0) + 1;
     } else {
-      // foot — props / pillars / set pieces flush on walkY
       const foot = (m.foot ?? m.h - 1);
       im = this.add.image(p.x, p.y + (m.h - 1 - foot), key).setOrigin(0.5, 1).setDepth(p.depth).setFlipX(p.flip);
-      if (p.role === 'banner' || m.kind === 'banner') {
+      if (role === 'banner' || m.kind === 'banner') {
         this.tweens.add({ targets: im, angle: { from: -3, to: 3 }, yoyo: true, repeat: -1, duration: 1600 + (p.x % 500), ease: 'Sine.inOut' });
         this.tweens.add({ targets: im, scaleX: { from: 1, to: 0.94 }, yoyo: true, repeat: -1, duration: 1100 + (p.x % 300), ease: 'Sine.inOut' });
       }
-      if (p.role === 'set' || m.kind === 'set') {
+      if (role === 'set' || m.kind === 'set') {
         this.tweens.add({ targets: im, y: im.y - 2, yoyo: true, repeat: -1, duration: 2200 + (p.x % 400), ease: 'Sine.inOut' });
       }
-      if (m.kind === 'pillar' || p.role.startsWith('pillar')) {
+      if (m.kind === 'pillar' || role.startsWith('pillar')) {
         const g = this.add.image(p.x, im.y - im.displayHeight * 0.55, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x9a7aff).setScale(0.4).setAlpha(0.28).setDepth(p.depth + 0.05);
         this.glows.push({ o: g, base: 0.26, t: p.x, sp: 1.5 });
       }
-      // glowing decor (consoles / lamps / crystals) — small pieces with warm pulse
-      if ((m.kind === 'decor' || p.role === 'decor') && m.h >= 18 && m.h <= 70 && this.textures.exists('glow')) {
+      if ((m.kind === 'decor' || role === 'decor') && m.h >= 18 && m.h <= 70 && this.textures.exists('glow')) {
         const g = this.add.image(p.x, im.y - im.displayHeight * 0.6, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xffd27a).setScale(0.28).setAlpha(0.22).setDepth(p.depth + 0.04);
         this.glows.push({ o: g, base: 0.2, t: p.x, sp: 2.2 });
+      }
+      if (role === 'collect') {
+        this.collects.push(im);
+        this.tweens.add({ targets: im, y: im.y - 3, yoyo: true, repeat: -1, duration: 700 + (p.x % 400), ease: 'Sine.inOut' });
+        const g = this.add.image(p.x, im.y - im.displayHeight * 0.5, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff9ad8).setScale(0.35).setAlpha(0.3).setDepth(p.depth - 0.01);
+        this.glows.push({ o: g, base: 0.25, t: p.x, sp: 2.8 });
+      }
+      if (role === 'gate' || m.kind === 'gate' || m.kind === 'door') {
+        const zone = this.add.zone(p.x, p.y - m.h * 0.45, Math.max(12, m.w * 0.6), Math.max(24, m.h * 0.85));
+        this.solids.add(zone);
+        this.gates.push({ btn: null as any, gate: im, zone, open: false });
+        im.setTint(0xc8b0ff);
+      }
+      if (role === 'button') {
+        // pair with nearest unpaired gate
+        let best: typeof this.gates[0] | null = null; let bd = 1e9;
+        for (const g of this.gates) {
+          if (g.btn || g.open) continue;
+          const d = Math.abs(g.gate.x - p.x) + Math.abs(g.gate.y - p.y) * 0.5;
+          if (d < bd) { bd = d; best = g; }
+        }
+        if (best) best.btn = im;
+        this.tweens.add({ targets: im, scaleY: { from: 1, to: 0.92 }, yoyo: true, repeat: -1, duration: 900, ease: 'Sine.inOut' });
+      }
+      if (role === 'interact') {
+        if (this.textures.exists('glow')) {
+          const g = this.add.image(p.x, im.y - im.displayHeight * 0.55, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x6fe8ff).setScale(0.3).setAlpha(0.22).setDepth(p.depth + 0.02);
+          this.glows.push({ o: g, base: 0.18, t: p.x, sp: 2.0 });
+        }
+        // medkit-ish tall red/white interactables heal on touch via update scan of name
+        (im as any)._ftInteract = true;
+      }
+      if (role === 'fx_ambient' || role === 'fx_pool' || (m.kind && ['beam', 'burst', 'bolt', 'fx'].includes(m.kind))) {
+        im.setBlendMode(Phaser.BlendModes.ADD);
+        if (role === 'fx_pool') { im.setAlpha(0.0).setVisible(false); this.fxPool.push(key); }
+        else {
+          im.setAlpha(0.55);
+          this.tweens.add({ targets: im, alpha: { from: 0.35, to: 0.75 }, yoyo: true, repeat: -1, duration: 800 + (p.x % 500), ease: 'Sine.inOut' });
+        }
       }
     }
     return im;
@@ -197,6 +282,7 @@ export class Fortress extends Phaser.Scene {
   create() {
     this.got = 0; this.gems = 0; this.kills = 0; this.deaths = 0; this.time_ = 0; this.ending = false;
     this.arena = false; this.won = false; this.cpLit = false; this.cpI = 0; this.rects = []; this.enemies = []; this.walls = [];
+    this.gates = []; this.collects = []; this.fxPool = []; this.liveEn = 0; this.liveTur = 0;
     this.dbg = { tiers: [], zones: ['dock', 'gantry', 'spires', 'hangar', 'bridge', 'arena'], portal: 0, ai: 0, wind: 0, vault: 0, secret: 0, ramp: 0 };
     this.physics.world.setBounds(0, 0, WW, WH + 80); this.physics.world.setBoundsCollision(true, true, false, false);
     this.cameras.main.setBackgroundColor(0x1a0a3a);
@@ -225,10 +311,17 @@ export class Fortress extends Phaser.Scene {
       const ch = this.add.rectangle(a, T1 + 6, b - a, 3, 0x6fe8ff, 0.25).setOrigin(0, 0).setDepth(1.95).setBlendMode(Phaser.BlendModes.ADD);
       this.tweens.add({ targets: ch, alpha: { from: 0.15, to: 0.4 }, yoyo: true, repeat: -1, duration: 900 + i * 70, ease: 'Sine.inOut' });
     }
-    // place every layout entry (all 222 sheet pieces appear)
-    for (const p of (layout?.placements || [])) this.placeLayout(p);
+    // Pass 1: place terrain/decor/collect/fx (skip live AI roles until guns exist)
+    const pendingAI: Place[] = [];
+    for (const p of (layout?.placements || [])) {
+      const r = p.role || '';
+      if (r === 'turret' || r === 'en_mech' || r === 'en_spawn' || r === 'en_heavy' || r === 'en_flyer') pendingAI.push(p);
+      else this.placeLayout(p);
+    }
+    (this as any)._pendingAI = pendingAI;
     const st = layout?.stats;
     if (st) this.dbg.tx = `${st.used_pieces}/${st.total_pieces}`;
+    this.dbg.deck = !!(layout?.placements || []).some((p: Place) => (p.role || '').startsWith('deck'));
 
     // wind lifts
     for (const [a, b, top, bot] of WINDS) {
@@ -318,7 +411,10 @@ export class Fortress extends Phaser.Scene {
     this.player.beam = new Beam(this, this.fx, () => this.enemies, (x, y) => !!this.solid.getTileAtWorldXY(x, y));
     this.player.beam.owner = this.player; this.safe = { ...this.spawn };
     this.hud = new Hud(this, HP_MAX, true); this.hud.setBossName('WINGED FORTRESS'); this.toast = new Toast(this); this.hud.setHp(this.player.hp);
-    for (const [k, x, y] of FOES) this.spawnFoe(k, x, y);
+    // Sheet7/8 AI from layout (capped inside placeLayout)
+    for (const p of ((this as any)._pendingAI || []) as Place[]) this.placeLayout(p);
+    // Keep a few classic FOES as backup diversity if layout AI sparse
+    if (this.liveEn < 8) for (const [k, x, y] of FOES) this.spawnFoe(k, x, y);
     this.boss = new FtBoss(this, (AX0 + AX1) / 2, T1 - 100, this.fx, this.egun, T1);
     this.enemies.push(this.boss); this.enemyGroup.add(this.boss);
     this.boss.onDead = () => this.win();
@@ -347,9 +443,9 @@ export class Fortress extends Phaser.Scene {
     this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     showRespawnBtn(true);
     this.events.once('shutdown', () => { audio.stopLoops(); showRespawnBtn(false); });
-    const u = this.cache.json.get('ft_usage') as { used?: number; total?: number } | undefined;
-    const label = u ? `${u.used}/${u.total} sheet pieces` : (st ? `${st.used_pieces}/${st.total_pieces} sheet pieces` : 'Air Fortress');
+    const label = st ? `${st.used_pieces}/${st.total_pieces} sheet pieces` : 'Air Fortress';
     this.toast.show(`AIR FORTRESS — ${label}`, '#ffd23f');
+    this.dbg.liveEn = this.liveEn; this.dbg.liveTur = this.liveTur; this.dbg.collects = this.collects.length; this.dbg.gates = this.gates.length;
     (window as any).__lvl = this; (window as any).__fortress = this;
     this.cameras.main.fadeIn(400);
   }
@@ -369,6 +465,21 @@ export class Fortress extends Phaser.Scene {
     else e = new FtWalker(this, x, y, this.fx, this.egun, 4, 80, k === 'bip' ? 'ft_en_bip' : 'ft_en_human');
     e.on('destroyed', () => { this.kills++; });
     this.enemies.push(e); this.enemyGroup.add(e); return e;
+  }
+  /** Spawn foe using a transparent-sheet texture key (sheet7 / sheet8). */
+  spawnFoeTx(kind: string, x: number, y: number, tex: string) {
+    let e: Enemy;
+    if (kind === 'flyer') e = new FtDrone(this, x, y, this.fx, this.egun, tex);
+    else if (kind === 'heavy') e = new FtWalker(this, x, y, this.fx, this.egun, 6, 90, tex);
+    else e = new FtWalker(this, x, y, this.fx, this.egun, 4, 80, tex);
+    e.on('destroyed', () => { this.kills++; });
+    this.enemies.push(e); this.enemyGroup.add(e); return e;
+  }
+  burstFx(x: number, y: number) {
+    if (!this.fxPool.length) { this.fx.explode(x, y, 0.5); return; }
+    const key = this.fxPool[Math.floor(Math.random() * this.fxPool.length)];
+    const im = this.add.image(x, y, key).setBlendMode(Phaser.BlendModes.ADD).setDepth(9).setAlpha(0.95);
+    this.tweens.add({ targets: im, alpha: 0, scale: 1.4, duration: 380, onComplete: () => im.destroy() });
   }
   lockArena() {
     if (this.arena) return; this.arena = true;
@@ -463,6 +574,25 @@ export class Fortress extends Phaser.Scene {
       if (s.found && !s.open && Math.abs(p.x - s.chest.x) < 28 && Math.abs(p.y - s.sy) < 40) {
         s.open = true; this.gems += 8; this.hud.setGems(this.gems); audio.sfx('flower', { rate: 1.4 });
         this.fx.explode(s.chest.x, s.chest.y - 10, 0.6); s.chest.setTint(0x666666);
+      }
+    }
+    // sheet5 collectibles
+    for (let i = this.collects.length - 1; i >= 0; i--) {
+      const c = this.collects[i]; if (!c.active) { this.collects.splice(i, 1); continue; }
+      if (Math.abs(p.x - c.x) < 22 && Math.abs(p.y - c.y) < 28) {
+        c.destroy(); this.collects.splice(i, 1); this.gems++; this.got++;
+        audio.sfx('flower', { rate: 1.25 }); this.burstFx(c.x, c.y - 8); this.hud.setGems(this.gems); this.hud.setMem(this.got);
+      }
+    }
+    // sheet6 buttons open paired energy gates
+    for (const g of this.gates) {
+      if (g.open || !g.btn || !g.btn.active) continue;
+      if (Math.abs(p.x - g.btn.x) < 26 && Math.abs(p.y - g.btn.y) < 40) {
+        g.open = true; audio.sfx('gate'); this.burstFx(g.gate.x, g.gate.y - 20);
+        this.tweens.add({ targets: g.gate, alpha: 0, y: g.gate.y - 50, duration: 420, onComplete: () => { try { g.zone?.destroy(); } catch {} try { g.gate.destroy(); } catch {} } });
+        this.tweens.add({ targets: g.btn, scaleY: 0.7, duration: 120 });
+        this.dbg.gatesOpened = (this.dbg.gatesOpened || 0) + 1;
+        this.toast.show('Energy gate unlocked.', '#6fe8ff');
       }
     }
     if (!this.portalUsed && Math.abs(p.x - (AX0 - 200)) < 40 && Math.abs(p.y - (T2 - 40)) < 50) {
