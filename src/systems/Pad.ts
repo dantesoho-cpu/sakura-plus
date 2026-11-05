@@ -13,7 +13,7 @@ function toast(msg: string) {
   d.textContent = msg; d.style.opacity = '1'; clearTimeout((d as any)._t); (d as any)._t = setTimeout(() => { d!.style.opacity = '0'; }, 2200);
 }
 export function toggleFullscreen() { const g: any = (window as any).__game; try { if (g?.scale) { g.scale.isFullscreen ? g.scale.stopFullscreen() : g.scale.startFullscreen(); } } catch { /* needs a user gesture on some browsers */ } }
-function inLevel() { const g: any = (window as any).__game; return !!g && ['Level1', 'Level2', 'Pause'].some(k => g.scene.isActive(k) || g.scene.isPaused(k)); }
+function inLevel() { const g: any = (window as any).__game; return !!g && ['Level1', 'Level2', 'Shrine', 'Fortress', 'Pause'].some(k => g.scene.isActive(k) || g.scene.isPaused(k)); }
 let held = { l: false, r: false, u: false, d: false };
 function poll() {
   pad.polls++;
