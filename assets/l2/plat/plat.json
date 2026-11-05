@@ -1,0 +1,136 @@
+{
+"deck_glass_3": {
+"w": 48,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_glass_5": {
+"w": 80,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_glass_8": {
+"w": 128,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_glass_12": {
+"w": 192,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_vent_3": {
+"w": 48,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_vent_5": {
+"w": 80,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_vent_8": {
+"w": 128,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_vent_12": {
+"w": 192,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_neon_3": {
+"w": 48,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_neon_5": {
+"w": 80,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_neon_8": {
+"w": 128,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"deck_neon_12": {
+"w": 192,
+"h": 22,
+"top": 1,
+"solid": false
+},
+"planter_4": {
+"w": 64,
+"h": 46,
+"top": 24,
+"solid": false
+},
+"planter_6": {
+"w": 96,
+"h": 46,
+"top": 24,
+"solid": false
+},
+"planter_10": {
+"w": 160,
+"h": 46,
+"top": 24,
+"solid": false
+},
+"pylon_4x96": {
+"w": 70,
+"h": 116,
+"top": 1,
+"solid": true
+},
+"pylon_6x160": {
+"w": 102,
+"h": 180,
+"top": 1,
+"solid": true
+},
+"pylon_8x224": {
+"w": 134,
+"h": 244,
+"top": 1,
+"solid": true
+},
+"bridge_10": {
+"w": 160,
+"h": 42,
+"top": 1,
+"solid": false
+},
+"bridge_16": {
+"w": 256,
+"h": 42,
+"top": 1,
+"solid": false
+},
+"stairs_4": {
+"w": 96,
+"h": 70,
+"top": 4,
+"solid": true,
+"slope": "steps16"
+},
+"ground_64": {
+"w": 64,
+"h": 96,
+"top": 1,
+"solid": true,
+"tile": true
+}
+}
