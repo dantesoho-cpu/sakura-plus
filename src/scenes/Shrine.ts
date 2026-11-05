@@ -55,7 +55,8 @@ const PLATS: [string, number, number][] = [
   // Crystal Deep
   ['p_arch3', 7600, T3 - 70], ['p_slab2', 8000, 760], ['p_slab1', 8080, 710], ['p_mid', 8640, 940], ['p_mid2', 8300, 1110], ['p_slab2', 7700, 1080],
   // polish: intentional stepping stones
-  ['p_float', 2150, 700], ['p_small', 3280, 650], ['p_mid', 5550, 940], ['p_float', 7250, 860], ['p_slab1', 8750, 1060]];
+  ['p_float', 2150, 700], ['p_small', 3280, 650], ['p_mid', 5550, 940], ['p_float', 7250, 860], ['p_slab1', 8750, 1060],
+  ['p_float', 1050, 1000], ['p_small', 2750, 820], ['p_mid', 4650, 1000], ['p_float', 6450, 780], ['p_slab2', 7900, 1000]];
 // [prop, x (centre), surface y, depth, flip]
 const PROPS: [string, number, number, number, boolean?][] = [
   // Moss Gate
@@ -81,7 +82,11 @@ const PROPS: [string, number, number, number, boolean?][] = [
   ['lantern_b', 1400, T5, 1.6], ['lantern_a', 2500, T5, 1.6], ['fence', 2100, T2, 1.6], ['banner_r', 2460, T3, 1.5],
   ['lantern_post', 2650, T3, 1.6], ['tree', 4550, T2, 1.3, true], ['lantern_b', 5100, T3, 1.6], ['shrine_mini', 5450, T4, 1.6],
   ['cr_a', 6800, T5, 1.7], ['cr_b', 7600, T3, 1.7], ['lantern_a', 8300, T4, 1.6], ['fence', 7900, T2, 1.6],
-  ['cr_c', 8200, T3, 1.7], ['lantern_post', 8720, T2, 1.6], ['pillar', 8600, T2, 1.3], ['banner_r', 8780, T1, 1.5]];
+  ['cr_c', 8200, T3, 1.7], ['lantern_post', 8720, T2, 1.6], ['pillar', 8600, T2, 1.3], ['banner_r', 8780, T1, 1.5],
+  // round: denser shelves + ground landmarks
+  ['lantern_a', 750, T2, 1.6], ['banner_r', 1100, T2, 1.5], ['fence', 1500, T1, 1.6], ['lantern_b', 2050, T4, 1.6],
+  ['pagoda', 3400, T1, 1.15], ['lantern_post', 3850, T2, 1.6], ['tree', 4800, T1, 1.3], ['cr_ped', 5600, T1, 1.4],
+  ['lantern_a', 6050, T1, 1.6], ['banner_r', 6500, T4, 1.5], ['shrine_mini', 7200, T1, 1.6], ['lantern_b', 8450, T1, 1.6]];
 // waterfalls [piece, x centre, top y, bottom y]; shafts carry bubble lifts
 const FALLS: [string, number, number, number][] = [['wf_a', 840, 860, T1 + 6], ['wf_wide', 2250, 400, T1 + 6], ['wf_b', 3620, 680, T2 + 6], ['wf_a', 4520, 860, T1 + 6], ['wf_wide', 5720, 500, 1016],
   ['wf_b', 7330, 640, 1016], ['wf_a', 8020, 700, T1 + 6], ['wf_wide', (AX0 + AX1) / 2, 720, GA + 6]];
@@ -95,7 +100,8 @@ const VAULTS: [number, number, number, number, number][] = [[2640, T5, 3350, T2,
 // secret alcoves behind false walls [x (left), surface y, entrance side]
 const SECRETS: [number, number, number][] = [[30, T1, 1], [5480, T4, -1]];
 const FLOWERS: [number, number][] = [[480, T2 - 24], [1450, T5 - 22], [2250, 470], [2700, T4 - 26], [4100, T1 - 24], [5400, T5 - 24], [6560, 1000], [7180, T1 - 24], [8400, T4 - 26], [8300, T1 - 30],
-  [980, T4 - 24], [3200, T3 - 24], [5000, T2 - 24], [7800, T5 - 22], [8700, T2 - 24]];
+  [980, T4 - 24], [3200, T3 - 24], [5000, T2 - 24], [7800, T5 - 22], [8700, T2 - 24],
+  [700, T1 - 24], [1900, T2 - 24], [3500, T1 - 24], [4600, T3 - 24], [6100, T1 - 24], [7600, T2 - 24], [8500, T3 - 24]];
 // gem arcs [x0, y0, n, kind] — collectible curves following the jump arcs
 const ARCS: [number, number, number, string][] = [[330, 980, 5, 'i_coin'], [600, 900, 6, 'i_gem_b'], [1440, 740, 5, 'i_coin'], [1880, 520, 4, 'i_gem_p'], [2900, 730, 7, 'i_coin'], [3440, 570, 5, 'i_gem_b'],
   [4300, 930, 8, 'i_coin'], [4800, 730, 5, 'i_gem_p'], [5900, 920, 7, 'i_gem_b'], [6300, 1120, 6, 'i_coin'], [7500, 980, 6, 'i_coin'], [8050, 690, 5, 'i_gem_p'], [1100, T1 - 30, 6, 'i_coin'], [5100, T1 - 30, 6, 'i_coin']];
@@ -115,7 +121,10 @@ const FOES: [string, number, number][] = [
   ['mech', 7700, T2], ['crab', 8100, T2], ['jellyb', 7900, 900], ['orb', 8300, 620], ['crab2', 7800, T3], ['mechl', 8400, T1], ['mechs', 8500, T4], ['jellyp', 8650, 880],
   ['orbs', 8000, 540], ['jelly', 8550, 1050],
   // Warden approach (pre-arena, outside hollow)
-  ['mech2', 8750, T2], ['crab2', 8680, T1]];
+  ['mech2', 8750, T2], ['crab2', 8680, T1],
+  // polish: fill sparse shelves / shafts
+  ['jelly', 950, 700], ['orb', 2100, 750], ['crab', 3550, T1], ['jellyp', 4800, 1050],
+  ['orbs', 5800, 700], ['mech', 7350, T1], ['jellyb', 8150, 780]];
 const ZONES: [number, string, number][] = [[0, 'Moss Gate', 0x1a5a6a], [1900, 'Falls of Ame', 0x1a4a8a], [3900, 'Lantern Terraces', 0x5a2a6a], [5700, 'Sunken Halls', 0x0a3a7a], [7400, 'Crystal Deep', 0x2a3a9a], [AX0 - 200, "Warden's Hollow", 0x1a2a5a]];
 export class Shrine extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; scam!: SpeedCam; bgp!: SheetParallax;

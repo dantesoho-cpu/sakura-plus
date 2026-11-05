@@ -47,9 +47,28 @@ const FOES: [string, number, number][] = [
 const FLOWERS: [number, number][] = [
   [340, T1 - 8], [900, T2 - 8], [1400, T1 - 8], [1900, T3 - 8], [2500, T1 - 8],
   [3000, T4 - 8], [3600, T2 - 8], [4200, T1 - 8], [4900, T5 - 8], [5600, T1 - 8],
+  [720, T1 - 8], [2100, T2 - 8], [3300, T1 - 8], [4500, T3 - 8], [5300, T2 - 8],
+  [6100, T1 - 8], [6700, T2 - 8], [1600, T5 - 8], [4000, T4 - 8],
 ];
 const GEMS: [number, number, number][] = [
   [600, T2 - 30, 5], [1600, T3 - 30, 4], [2800, T4 - 30, 6], [4000, T5 - 30, 5], [5200, T3 - 30, 4],
+  [1100, T1 - 28, 5], [2400, T2 - 28, 4], [4700, T1 - 28, 6], [6000, T2 - 28, 5], [6800, T1 - 28, 4],
+];
+/** Landmark set dressing from Dante's prop sheet — foot-planted on decks, no AI. */
+const PROP_DRESS: [string, number, number, number][] = [
+  // dock
+  ['deco0', 260, T1, 0.55], ['deco4', 520, T1, 0.5], ['ship0', 860, T2, 0.42],
+  // gantry
+  ['deco1', 1360, T1, 0.55], ['deco7', 1540, T2, 0.5], ['deco10', 1820, T1, 0.48],
+  // spires
+  ['deco2', 2400, T1, 0.55], ['deco8', 2660, T2, 0.5], ['deco11', 2900, T1, 0.48], ['hoop', 2750, T4 - 40, 0.45],
+  // hangar
+  ['ship0', 3580, T1, 0.4], ['deco5', 3880, T1, 0.52], ['deco12', 4180, T2, 0.48], ['deco9', 4400, T1, 0.5],
+  // bridge
+  ['deco3', 4960, T1, 0.55], ['deco6', 5200, T2, 0.5], ['deco13', 5500, T1, 0.48],
+  // approach + arena rim (leave boss center clear)
+  ['deco14', 5900, T1, 0.5], ['ship0', 6300, T1, 0.38], ['deco0', 7100, T1, 0.5],
+  ['deco4', 6540, T2, 0.45], ['hoop', 6720, T3 - 30, 0.4],
 ];
 
 type Frame = { w: number; h: number; top: number; foot: number; prof?: number[]; kind: string };
@@ -204,6 +223,8 @@ export class Fortress extends Phaser.Scene {
       }
       if (role === 'setpiece') {
         // parked sheet art — intentional scenery, soft idle bob, no AI
+        im.setAlpha(0.88 + (p.x % 7) * 0.015);
+        if ((p.x + p.y) % 3 === 0) im.setTint(0xd8d0ff);
         this.tweens.add({ targets: im, y: im.y - 2, yoyo: true, repeat: -1, duration: 2400 + (p.x % 500), ease: 'Sine.inOut' });
         if (m.h >= 40 && this.textures.exists('glow')) {
           const g = this.add.image(p.x, im.y - im.displayHeight * 0.55, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x8a7cff).setScale(0.32).setAlpha(0.16).setDepth(p.depth - 0.02);
@@ -270,6 +291,31 @@ export class Fortress extends Phaser.Scene {
     if (sy === Infinity) return;
     const dy = sy - feet;
     if (dy > -12 && dy < 6) { b.y += dy; b.velocity.y = 0; b.blocked.down = b.touching.down = true; this.onSlope = true; }
+  }
+  /** Settle onto nearby deck tops when Arcade misses a one-frame contact (land-probe stability). */
+  shelfSnap() {
+    const p = this.player, b = p?.body_;
+    if (!b || !b.enable || b.velocity.y < -20 || this.onSlope) return;
+    if (b.blocked.down || b.touching.down) return;
+    const feet = b.bottom; let best = Infinity;
+    const consider = (top: number) => {
+      const dy = top - feet;
+      if (dy > -10 && dy < 8 && Math.abs(dy) < Math.abs(best - feet)) best = top;
+    };
+    for (const z of this.ones.getChildren() as Phaser.GameObjects.Zone[]) {
+      const sb = z.body as Phaser.Physics.Arcade.StaticBody;
+      if (b.right < sb.x + 1 || b.x > sb.right - 1) continue;
+      consider(sb.y);
+    }
+    for (const z of this.solids.getChildren() as Phaser.GameObjects.Zone[]) {
+      const sb = z.body as Phaser.Physics.Arcade.StaticBody;
+      if (sb.height > 64) continue; // skip tall gates/walls
+      if (b.right < sb.x + 1 || b.x > sb.right - 1) continue;
+      consider(sb.y);
+    }
+    if (best === Infinity) return;
+    const dy = best - feet;
+    if (dy > -10 && dy < 8) { b.y += dy; b.velocity.y = 0; b.blocked.down = b.touching.down = true; }
   }
   groundAt(x: number, y: number): number {
     let best = -1;
@@ -433,6 +479,21 @@ export class Fortress extends Phaser.Scene {
       this.tweens.add({ targets: mid, angle: -360, duration: 16000, repeat: -1, ease: 'Linear' });
       (this as any)._midPortal = { x: 3000, y: T3 - 50 };
     }
+    // intentional prop landmarks (sheet-only)
+    for (const [k, x, y, sc] of PROP_DRESS) {
+      const key = 'ft_' + k;
+      if (!this.textures.exists(key)) continue;
+      const im = this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(2.65).setScale(sc);
+      if (k === 'ship0' || k === 'hoop') {
+        this.tweens.add({ targets: im, y: im.y - 3, yoyo: true, repeat: -1, duration: 2600 + (x % 400), ease: 'Sine.inOut' });
+      } else if (k.startsWith('deco')) {
+        this.tweens.add({ targets: im, alpha: { from: 0.92, to: 1 }, yoyo: true, repeat: -1, duration: 1800 + (x % 500), ease: 'Sine.inOut' });
+      }
+      if (this.textures.exists('glow') && (k === 'ship0' || k === 'hoop' || k.startsWith('deco'))) {
+        const g = this.add.image(x, y - 20, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x9a7aff).setScale(0.35).setAlpha(0.18).setDepth(2.6);
+        this.glows.push({ o: g, base: 0.15, t: x, sp: 1.6 });
+      }
+    }
 
     this.cpLamps = [];
     for (const [x, y] of this.cps) {
@@ -571,7 +632,7 @@ export class Fortress extends Phaser.Scene {
   update(_t: number, dms: number) {
     if (!this.player) return;
     const dt = dms / 1000; this.time_ += dt; this.bg.update(dt);
-    this.slopeSnap();
+    this.slopeSnap(); this.shelfSnap();
     for (const g of this.glows) g.o.setAlpha(g.base + 0.12 * Math.sin(this.time_ * g.sp + g.t * 0.01));
     if (touch.respawnP) { touch.respawnP = false; this.checkpoint(); }
     const p = this.player; if (!p || this.ending) return;

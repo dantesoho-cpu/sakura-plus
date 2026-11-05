@@ -9,7 +9,7 @@ export function ftLoad(s: Phaser.Scene) {
   for (const k of FT_EN) if (!s.textures.exists('ft_en_' + k)) s.load.image('ft_en_' + k, `assets/ft/en/${k}.png`);
   if (!s.textures.exists('ft_boss_0')) s.load.image('ft_boss_0', 'assets/ft/boss/boss0.png');
   for (const k of ['ring', 'hoop']) if (!s.textures.exists('ft_' + k)) s.load.image('ft_' + k, `assets/ft/prop/${k}.png`);
-  for (const k of ['ship0', 'portal0', 'deco0', 'deco1', 'deco2', 'deco3', 'deco4', 'deco5', 'deco6', 'deco7', 'deco8', 'gem0', 'gem1', 'gem3', 'gem5']) {
+  for (const k of ['ship0', 'portal0', 'deco0', 'deco1', 'deco2', 'deco3', 'deco4', 'deco5', 'deco6', 'deco7', 'deco8', 'deco9', 'deco10', 'deco11', 'deco12', 'deco13', 'deco14', 'gem0', 'gem1', 'gem2', 'gem3', 'gem4', 'gem5', 'gem6', 'gem7', 'gem8', 'gem9', 'gem10', 'gem11']) {
     if (!s.textures.exists('ft_' + k)) s.load.image('ft_' + k, `assets/ft/prop/${k}.png`);
   }
 }

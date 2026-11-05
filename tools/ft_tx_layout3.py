@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Layout v3 — intentional Air Fortress polish.
+"""Layout v3 — intentional Air Fortress polish (flow pass).
 Keeps continuous deck ground + 100% sheet usage.
 Combat is curated per zone; surplus enemy/turret art becomes setpiece scenery.
 """
@@ -146,27 +146,28 @@ def main():
     # ========== INTENTIONAL COMBAT (live AI roles) ==========
     # Curated sites only — surplus art becomes setpiece below.
     live_turrets = [
-        # dock
-        (420, T1, 'turret'), (780, T2, 'turret'),
-        # gantry
-        (1320, T1, 'turret'), (1760, T3, 'turret'),
-        # spires
-        (2360, T1, 'turret'), (2880, T2, 'turret'), (2680, T4, 'turret'),
-        # hangar
-        (3560, T1, 'turret'), (4100, T3, 'turret'),
-        # bridge
-        (4920, T1, 'turret'), (5380, T2, 'turret'),
-        # approach / arena rim
-        (6000, T1, 'turret'), (6520, T1, 'turret'), (6920, T2, 'turret'),
+        # dock — deck lip + upper watch
+        (380, T1, 'turret'), (820, T2, 'turret'),
+        # gantry — stagger height so approach lane stays readable
+        (1280, T1, 'turret'), (1680, T3, 'turret'),
+        # spires — ground / mid / canopy triangle
+        (2280, T1, 'turret'), (2840, T2, 'turret'), (2620, T4, 'turret'),
+        # hangar mouth + catwalk
+        (3480, T1, 'turret'), (4040, T3, 'turret'),
+        # bridge pylons
+        (4860, T1, 'turret'), (5320, T2, 'turret'),
+        # approach / arena rim (hold the choke, leave center for boss)
+        (5960, T1, 'turret'), (6480, T2, 'turret'), (7020, T1, 'turret'),
     ]
     live_en = [
-        (560, T1 - 8, 'en_spawn'), (980, T2 - 8, 'en_spawn'),
-        (1480, T1 - 8, 'en_heavy'), (1900, T3 - 40, 'en_flyer'),
-        (2480, T1 - 8, 'en_spawn'), (3020, T2 - 8, 'en_heavy'), (2760, T5 - 40, 'en_flyer'),
-        (3720, T1 - 8, 'en_spawn'), (4300, T2 - 8, 'en_heavy'), (4000, T4 - 40, 'en_flyer'),
-        (5100, T1 - 8, 'en_spawn'), (5480, T3 - 8, 'en_spawn'),
-        (6120, T2 - 8, 'en_heavy'), (6680, T1 - 8, 'en_spawn'),
-        (1600, T5 - 40, 'en_flyer'), (4600, T5 - 40, 'en_flyer'),
+        (600, T1 - 8, 'en_spawn'), (920, T2 - 8, 'en_spawn'),
+        (1420, T1 - 8, 'en_heavy'), (1840, T3 - 40, 'en_flyer'),
+        (2440, T1 - 8, 'en_spawn'), (2960, T2 - 8, 'en_heavy'), (2700, T5 - 40, 'en_flyer'),
+        (3660, T1 - 8, 'en_spawn'), (4240, T2 - 8, 'en_heavy'), (3920, T4 - 40, 'en_flyer'),
+        (5040, T1 - 8, 'en_spawn'), (5420, T3 - 8, 'en_spawn'),
+        (6080, T2 - 8, 'en_heavy'), (6620, T1 - 8, 'en_spawn'),
+        (1540, T5 - 40, 'en_flyer'), (4540, T5 - 40, 'en_flyer'),
+        (5800, T3 - 40, 'en_flyer'), (6900, T2 - 8, 'en_heavy'),
     ]
     # Prefer compact turret-looking art for live turrets; big mechs for live mechs
     tur_sorted = sorted(
@@ -207,7 +208,7 @@ def main():
         ('spire_guard', [(2320, T2), (2520, T1), (2720, T3), (2920, T1), (3120, T2)]),
         ('hangar_row', [(3480, T1), (3640, T1), (3800, T1), (3960, T2), (4200, T1), (4360, T1)]),
         ('bridge_watch', [(4840, T1), (5000, T2), (5200, T1), (5440, T1), (5560, T2)]),
-        ('arena_fleet', [(6460, T1), (6620, T1), (6780, T2), (6940, T1), (7080, T1), (6560, T2), (6860, T2)]),
+        ('arena_fleet', [(6460, T1), (6620, T1), (6780, T2), (6940, T1), (7080, T1), (6560, T2), (6860, T2), (6520, T3), (6840, T3), (7000, T2)]),
     ]
     leftover8 = [k for k in sorted(a8.keys(), key=lambda k: -a8[k]['w'] * a8[k]['h']) if k not in used_live8]
     leftover7 = [k for k in sorted(a7.keys(), key=lambda k: -a7[k]['w'] * a7[k]['h']) if k not in used_live7]
@@ -338,7 +339,7 @@ def main():
             'total_s1_4': len(u1), 'total_s5_9': len(u2),
             'placements': len(placements), 'deck_tiles': len([k for k in deck if not k.startswith('fill')]),
             'live_turrets': len(live_turrets), 'live_enemies': len(live_en),
-            'polish': 'layout3_intentional',
+            'polish': 'layout3_flow',
         },
         'fx_keys': {'beams': beams[:12], 'bursts': bursts[:16], 'bolts': bolts[:12]},
     }
@@ -368,7 +369,7 @@ def main():
         'deck_tiles': layout_out['stats']['deck_tiles'],
         'placements': len(placements),
         'live_turrets': len(live_turrets), 'live_enemies': len(live_en),
-        'by_sheet': by_sheet, 'polish': 'layout3_intentional',
+        'by_sheet': by_sheet, 'polish': 'layout3_flow',
     }
     AUD.mkdir(parents=True, exist_ok=True)
     with open(AUD / 'usage_all.json', 'w') as f:
