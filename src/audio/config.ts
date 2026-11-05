@@ -9,4 +9,4 @@ export const PLAYLIST: { file: string; title: string }[] = [
   { file: '6-child_of_paper_8bit', title: 'Child of Paper' },
   { file: '7-law_of_attraction_8bit', title: 'Law of Attraction' },
 ];
-export const DEFAULTS = { music: 0.6, sfx: 0.8, mute: false };
+export const DEFAULTS = { music: 0.52, sfx: 0.88, mute: false }; // v24: music down, SFX up so hits/pickups cut through

@@ -7,16 +7,16 @@ const DEF: Record<string, P> = {
   jump: { w: 'sq', f0: 280, f1: 620, dur: 0.12, duty: 0.5, vol: 0.35 },
   djump: { w: 'sq', f0: 420, f1: 900, dur: 0.14, duty: 0.25, arp: [1, 1.5], arpT: 0.04, vol: 0.32 },
   dash: { w: 'noise', f0: 9000, f1: 900, dur: 0.18, vol: 0.4 },
-  jet: { w: 'noise', f0: 2400, dur: 0.5, vol: 0.22, loop: true },
+  jet: { w: 'noise', f0: 2400, dur: 0.5, vol: 0.16, loop: true },
   blaster: { w: 'sq', f0: 1100, f1: 240, dur: 0.09, duty: 0.25, vol: 0.28 },
   charge: { w: 'sq', f0: 180, dur: 0.4, duty: 0.125, vib: [14, 8], vol: 0.18, loop: true },
   ping: { w: 'tri', f0: 1320, dur: 0.16, arp: [1, 1.5, 2], arpT: 0.04, vol: 0.4 },
   beam: { w: 'saw', f0: 160, f1: 70, dur: 0.6, vib: [18, 10], vol: 0.32, crush: 6 },
-  ehit: { w: 'noise', f0: 6000, f1: 2000, dur: 0.07, vol: 0.35 },
-  explode: { w: 'noise', f0: 3000, f1: 120, dur: 0.55, vol: 0.5 },
-  hurt: { w: 'sq', f0: 440, f1: 110, dur: 0.26, duty: 0.5, vib: [30, 20], vol: 0.4 },
-  flower: { w: 'sq', f0: 784, dur: 0.36, duty: 0.25, arp: [1, 1.26, 1.5, 2], arpT: 0.07, vol: 0.3 },
-  checkpoint: { w: 'tri', f0: 523, dur: 0.5, arp: [1, 1.26, 1.5, 2, 2.52], arpT: 0.08, vol: 0.45 },
+  ehit: { w: 'noise', f0: 6000, f1: 2000, dur: 0.07, vol: 0.42 },
+  explode: { w: 'noise', f0: 3000, f1: 120, dur: 0.55, vol: 0.55 },
+  hurt: { w: 'sq', f0: 440, f1: 110, dur: 0.26, duty: 0.5, vib: [30, 20], vol: 0.45 },
+  flower: { w: 'sq', f0: 784, dur: 0.36, duty: 0.25, arp: [1, 1.26, 1.5, 2], arpT: 0.07, vol: 0.38 },
+  checkpoint: { w: 'tri', f0: 523, dur: 0.5, arp: [1, 1.26, 1.5, 2, 2.52], arpT: 0.08, vol: 0.5 },
   gate: { w: 'sq', f0: 262, dur: 0.9, duty: 0.5, arp: [1, 1.5, 2, 2.5, 3, 4], arpT: 0.12, vol: 0.3 },
   respawn: { w: 'tri', f0: 900, f1: 300, dur: 0.3, arp: [1, 2], arpT: 0.05, vol: 0.45 },
   menu: { w: 'sq', f0: 880, dur: 0.05, duty: 0.5, vol: 0.25 },
@@ -30,7 +30,7 @@ class AudioMgr {
   track = -1; src: AudioBufferSourceNode | null = null; startedAt = 0; offset = 0; cache = new Map<number, Promise<AudioBuffer>>(); started = false;
   onTrack: ((t: string) => void) | null = null; ext = new Audio().canPlayType('audio/ogg; codecs="vorbis"') ? 'ogg' : 'mp3';
   constructor() {
-    this.mus.connect(this.master); const comp = this.ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.12; this.trim.gain.value = 0.62; this.fx.connect(this.trim).connect(comp).connect(this.master); this.master.connect(this.ctx.destination);
+    this.mus.connect(this.master); const comp = this.ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.12; this.trim.gain.value = 0.70; // v24: let SFX punch through music this.fx.connect(this.trim).connect(comp).connect(this.master); this.master.connect(this.ctx.destination);
     try { Object.assign(this.set, JSON.parse(localStorage.getItem('sakura.audio') || '{}')); } catch { /* defaults */ }
     this.apply(); for (const k in DEF) this.buf[k] = this.synth(DEF[k]);
     const sr = this.ctx.sampleRate; for (const k in GEN) { const d = GEN[k](sr), b = this.ctx.createBuffer(1, d.length, sr); b.getChannelData(0).set(d); this.buf[k] = b; }

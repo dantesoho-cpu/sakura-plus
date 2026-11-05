@@ -56,7 +56,7 @@ export const GEN: Record<string, Gen> = {
   heal: sr => { let a = 0, b = 0; return mk(0.6, sr, (t, k) => { a += (440 + 440 * k) / sr; b += (660 + 660 * k) / sr; return (Math.sin(TAU * a) + Math.sin(TAU * b) * 0.6) * (0.7 + 0.3 * Math.sin(TAU * t * 20)) * env(t, 0.03, 0.57, 1.3) * 0.2; }); },
   power: sr => { let a = 0, s = 0; return mk(1.0, sr, (t, k) => { a += (300 * Math.pow(6, k)) / sr; s += 60 / sr; return soft(Math.sin(TAU * a + Math.sin(TAU * a * 1.5) * 2) * 0.6 + Math.sin(TAU * s) * 0.5 * env(t, 0.01, 0.6)) * env(t, 0.02, 0.98, 1) * 0.3; }); },
   // waterfall: rushing brown-ish noise loop, 2s with crossfade
-  falls: sr => { const l = lp(), l2 = lp(); const o = mk(2.2, sr, t => soft(l(rnd(), 0.12) * 1.6 + l2(rnd(), 0.02) * 3 * (0.8 + 0.2 * Math.sin(TAU * t * 1.3))) * 0.4);
+  falls: sr => { const l = lp(), l2 = lp(); const o = mk(2.2, sr, t => soft(l(rnd(), 0.12) * 1.6 + l2(rnd(), 0.02) * 3 * (0.8 + 0.2 * Math.sin(TAU * t * 1.3))) * 0.28);
     const X = Math.floor(0.2 * sr); for (let i = 0; i < X; i++) { const w = i / X; o[i] = o[i] * w + o[o.length - X + i] * (1 - w); } return o.slice(0, o.length - X); },
   bossw: sr => { let a = 0; return mk(0.7, sr, (t, k) => { a += (80 + 500 * k * k) / sr; return soft(Math.sin(TAU * a) * 2 + Math.sin(TAU * a * 1.5) * 0.5) * (0.5 + 0.5 * Math.sin(TAU * t * (8 + 30 * k))) * env(t, 0.3, 0.4, 1) * 0.18; }); },
 };
