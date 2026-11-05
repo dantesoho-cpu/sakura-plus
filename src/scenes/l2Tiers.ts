@@ -17,7 +17,9 @@ export const RUNS: [number, number, number][] = [
   // Mania low canopy lane + UP/SKY connectors
   [640, 1080, LOW], [1480, 1980, LOW], [2480, 3000, LOW], [3480, 4020, LOW], [4380, 4880, LOW],
   [1888, 2060, UP], [2908, 3080, UP], [3948, 4120, UP],
-  [4488, 4580, SKY], [4996, 5120, SKY]];
+  [4488, 4580, SKY], [4996, 5120, SKY],
+  // visual-QA: bridge intentional Mania gaps so decks stay readable (no floating foes / empty seams)
+  [4088, 4220, MID], [2060, 2180, UP]];
 // climb towers: [x, yTop, yBot] solid columns with alternating ledges on both sides
 export const TOWERS: [number, number, number][] = [[1280, UP, 300], [2270, UP, 330], [3190, UP, 300], [4580, SKY, 330], [5010, SKY, 330], [900, MID, 404], [2700, MID, 404], [3900, MID, 404], [1600, LOW, 404], [3500, LOW, 404]];
 // lifts: [x, yLow, yHigh]
@@ -33,8 +35,8 @@ export const TIER_FOES: [string, number, number][] = [['assault', 900, MID], ['d
   ['scout', 1150, 440], ['scout', 2550, 440], ['scout', 3700, 440], ['mine', 1300, MID - 70], ['lancer', 2450, MID], ['mine', 3250, MID - 70],
   ['scout', 1760, UP], ['mine', 2400, UP - 70], ['lancer', 3700, UP], ['mine', 4850, SKY - 70],
   // pacing fills: mid-gap skyway + rooftop approach + street mid-beats
-  ['assault', 1450, MID], ['drone', 2550, MID - 90], ['shield', 3400, MID], ['sentry', 4200, MID],
-  ['assault', 2100, UP], ['drone', 3300, UP - 90], ['lancer', 4300, UP],
+  ['assault', 1450, MID], ['drone', 2550, MID - 90], ['shield', 3400, MID], ['sentry', 4400, MID],
+  ['assault', 1980, UP], ['drone', 3300, UP - 90], ['lancer', 4300, UP],
   ['scout', 1900, 440], ['mine', 3100, 360], ['heavy', 4000, 440]];
 // curved / sloped sheet-style pieces: [key, left x, surface y (bottom for ground pieces, top for 'overhang')]; walkable via fine one-way step strips following the art's top silhouette
 export const CURVES: [string, number, number][] = [['qramp', 990, 440], ['arch', 1960, 440], ['hill', 3870, 440], ['pipe', 2960, 440], ['slope', 3560, 440], ['overhang', 2160, MID], ['hill', 4700, 440]];
@@ -71,7 +73,11 @@ export class Tiers {
       [[-24, 16, 0.65], [0, 3, 0.7], [28, 12, 0.6]],  // banner + console
     ];
     (this.dbg as any).vignettes = 0; const vg: any[] = []; (window as any).__vig = vg;
-    RUNS.forEach(([x0, x1, y], ri) => { const L = x1 - x0; const beats = L > 700 ? [0.22, 0.48, 0.74] : L > 500 ? [0.28, 0.55, 0.78] : L > 320 ? [0.35, 0.7] : [0.5];
+    RUNS.forEach(([x0, x1, y], ri) => { const L = x1 - x0;
+      // LOW Mania canopy: fewer dress beats so the new lane stays readable
+      const beats = y === LOW
+        ? (L > 500 ? [0.35, 0.7] : [0.5])
+        : (L > 700 ? [0.22, 0.48, 0.74] : L > 500 ? [0.28, 0.55, 0.78] : L > 320 ? [0.35, 0.7] : [0.5]);
       beats.forEach((f, bi) => { let cx = Math.round(x0 + L * f); if (TOWERS.some(([tx]) => Math.abs(tx - cx) < 70)) cx += 90; if (cx < x0 + 50 || cx > x1 - 50) return;
         for (const [dx, id, sc0] of VIG[(ri + bi) % VIG.length]) { const im = sc.add.image(cx + dx, y + 1, 'l2e_' + String(id).padStart(2, '0')).setOrigin(0.5, 1).setDepth(1.95).setScale(sc0); if ((ri + bi) % 3 === 0) im.setFlipX(true); vg.push({ x: cx + dx, y, k: id }); }
         if (((ri + bi) & 1) === 0) { const gl = sc.add.image(cx, y - 30, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint((ri + bi) % 2 ? 0xffb0f0 : 0x8ff6ff).setScale(0.5).setAlpha(0.32).setDepth(1.9); s.neon.push({ o: gl, base: 0.32, t: ri + bi, wx: cx }); }
