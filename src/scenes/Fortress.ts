@@ -556,8 +556,13 @@ export class Fortress extends Phaser.Scene {
     });
     const cam = this.cameras.main; cam.setBounds(0, 0, WW, WH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30);
     this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
+    const kb = this.input.keyboard!;
+    const pause = () => { if (this.ending) return; audio.stopLoops(); audio.sfx('menu'); this.scene.launch('Pause', { lvl: 'Fortress' }); this.scene.pause(); };
+    kb.on('keydown-P', pause); kb.on('keydown-ESC', pause); kb.on('keydown-R', () => this.checkpoint()); kb.on('keydown-BACKSPACE', () => this.checkpoint());
+    const clear = () => this.player?.resetInput();
+    this.events.on('resume', clear); this.events.on('pause', clear); this.game.events.on('blur', clear); this.game.events.on('hidden', clear);
     showRespawnBtn(true);
-    this.events.once('shutdown', () => { audio.stopLoops(); showRespawnBtn(false); });
+    this.events.once('shutdown', () => { audio.stopLoops(); showRespawnBtn(false); this.game.events.off('blur', clear); this.game.events.off('hidden', clear); });
     this.toast.show('AIR FORTRESS', '#ffd23f');
     this.dbg.liveEn = this.liveEn; this.dbg.liveTur = this.liveTur; this.dbg.collects = this.collects.length; this.dbg.gates = this.gates.length;
     (window as any).__lvl = this; (window as any).__fortress = this;
