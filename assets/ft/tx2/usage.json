@@ -1724,7 +1724,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6113,
+     "x": 5228,
      "y": 472,
      "role": "setpiece"
     }
@@ -1737,7 +1737,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6641,
+     "x": 6017,
      "y": 612,
      "role": "setpiece"
     }
@@ -1750,7 +1750,7 @@
    "used": 1,
    "at": [
     {
-     "x": 5660,
+     "x": 4407,
      "y": 192,
      "role": "setpiece"
     }
@@ -1763,7 +1763,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6305,
+     "x": 5660,
      "y": 192,
      "role": "setpiece"
     }
@@ -1776,7 +1776,7 @@
    "used": 1,
    "at": [
     {
-     "x": 5100,
+     "x": 5040,
      "y": 752,
      "role": "en_spawn"
     }
@@ -1789,7 +1789,7 @@
    "used": 1,
    "at": [
     {
-     "x": 3949,
+     "x": 2708,
      "y": 472,
      "role": "setpiece"
     }
@@ -1841,7 +1841,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6796,
+     "x": 6113,
      "y": 472,
      "role": "setpiece"
     }
@@ -1893,12 +1893,12 @@
    "used": 2,
    "at": [
     {
-     "x": 3020,
+     "x": 2960,
      "y": 612,
      "role": "en_heavy"
     },
     {
-     "x": 3720,
+     "x": 3660,
      "y": 752,
      "role": "en_spawn"
     }
@@ -1911,7 +1911,7 @@
    "used": 1,
    "at": [
     {
-     "x": 980,
+     "x": 920,
      "y": 612,
      "role": "en_spawn"
     }
@@ -1950,7 +1950,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6120,
+     "x": 6080,
      "y": 612,
      "role": "en_heavy"
     }
@@ -1963,7 +1963,7 @@
    "used": 1,
    "at": [
     {
-     "x": 4796,
+     "x": 3491,
      "y": 752,
      "role": "setpiece"
     }
@@ -1976,7 +1976,7 @@
    "used": 1,
    "at": [
     {
-     "x": 5228,
+     "x": 3949,
      "y": 472,
      "role": "setpiece"
     }
@@ -1989,7 +1989,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6680,
+     "x": 6620,
      "y": 752,
      "role": "en_spawn"
     }
@@ -2002,7 +2002,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6017,
+     "x": 5012,
      "y": 612,
      "role": "setpiece"
     }
@@ -2015,7 +2015,7 @@
    "used": 1,
    "at": [
     {
-     "x": 1900,
+     "x": 1840,
      "y": 440,
      "role": "en_flyer"
     }
@@ -2028,7 +2028,7 @@
    "used": 1,
    "at": [
     {
-     "x": 5444,
+     "x": 4178,
      "y": 332,
      "role": "setpiece"
     }
@@ -2041,7 +2041,7 @@
    "used": 1,
    "at": [
     {
-     "x": 5012,
+     "x": 3720,
      "y": 612,
      "role": "setpiece"
     }
@@ -2054,7 +2054,7 @@
    "used": 1,
    "at": [
     {
-     "x": 2760,
+     "x": 2700,
      "y": 160,
      "role": "en_flyer"
     }
@@ -2067,7 +2067,7 @@
    "used": 1,
    "at": [
     {
-     "x": 7106,
+     "x": 6305,
      "y": 192,
      "role": "setpiece"
     }
@@ -2080,7 +2080,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6209,
+     "x": 5444,
      "y": 332,
      "role": "setpiece"
     }
@@ -2093,7 +2093,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6486,
+     "x": 5921,
      "y": 752,
      "role": "setpiece"
     }
@@ -2106,7 +2106,7 @@
    "used": 1,
    "at": [
     {
-     "x": 5921,
+     "x": 4796,
      "y": 752,
      "role": "setpiece"
     }
@@ -2119,7 +2119,7 @@
    "used": 1,
    "at": [
     {
-     "x": 3720,
+     "x": 7036,
      "y": 612,
      "role": "setpiece"
     }
@@ -2132,7 +2132,7 @@
    "used": 1,
    "at": [
     {
-     "x": 4407,
+     "x": 3130,
      "y": 192,
      "role": "setpiece"
     }
@@ -2171,7 +2171,7 @@
    "used": 1,
    "at": [
     {
-     "x": 4178,
+     "x": 2919,
      "y": 332,
      "role": "setpiece"
     }
@@ -2197,7 +2197,7 @@
    "used": 1,
    "at": [
     {
-     "x": 2480,
+     "x": 2440,
      "y": 752,
      "role": "en_spawn"
     }
@@ -2262,12 +2262,12 @@
    "used": 2,
    "at": [
     {
-     "x": 4300,
+     "x": 4240,
      "y": 612,
      "role": "en_heavy"
     },
     {
-     "x": 5480,
+     "x": 5420,
      "y": 472,
      "role": "en_spawn"
     }
@@ -2293,8 +2293,8 @@
    "used": 1,
    "at": [
     {
-     "x": 3491,
-     "y": 752,
+     "x": 6556,
+     "y": 472,
      "role": "setpiece"
     }
    ]
@@ -2319,7 +2319,7 @@
    "used": 1,
    "at": [
     {
-     "x": 1480,
+     "x": 1420,
      "y": 752,
      "role": "en_heavy"
     }
@@ -2332,7 +2332,7 @@
    "used": 1,
    "at": [
     {
-     "x": 560,
+     "x": 600,
      "y": 752,
      "role": "en_spawn"
     }
@@ -2345,7 +2345,7 @@
    "used": 1,
    "at": [
     {
-     "x": 151,
+     "x": 6486,
      "y": 752,
      "role": "setpiece"
     }
@@ -2358,7 +2358,7 @@
    "used": 1,
    "at": [
     {
-     "x": 754,
+     "x": 6951,
      "y": 332,
      "role": "setpiece"
     }
@@ -2371,7 +2371,7 @@
    "used": 1,
    "at": [
     {
-     "x": 955,
+     "x": 7106,
      "y": 192,
      "role": "setpiece"
     }
@@ -2384,7 +2384,7 @@
    "used": 1,
    "at": [
     {
-     "x": 1296,
+     "x": 151,
      "y": 752,
      "role": "setpiece"
     }
@@ -2397,7 +2397,7 @@
    "used": 1,
    "at": [
     {
-     "x": 1628,
+     "x": 553,
      "y": 440,
      "role": "setpiece"
     }
@@ -2410,8 +2410,8 @@
    "used": 1,
    "at": [
     {
-     "x": 2914,
-     "y": 332,
+     "x": 1628,
+     "y": 472,
      "role": "setpiece"
     }
    ]
@@ -2423,13 +2423,26 @@
    "used": 1,
    "at": [
     {
-     "x": 3125,
-     "y": 192,
+     "x": 1794,
+     "y": 332,
      "role": "setpiece"
     }
    ]
   },
   "s7_054": {
+   "kind": "trooper",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 2281,
+     "y": 752,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_055": {
    "kind": "trooper",
    "cat": "en",
    "sheet": 7,
@@ -2442,228 +2455,7 @@
     }
    ]
   },
-  "s7_055": {
-   "kind": "trooper",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 5223,
-     "y": 472,
-     "role": "setpiece"
-    }
-   ]
-  },
   "s7_056": {
-   "kind": "flyer",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 1462,
-     "y": 580,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_057": {
-   "kind": "enemy",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 2281,
-     "y": 752,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_058": {
-   "kind": "enemy",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 2492,
-     "y": 612,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_059": {
-   "kind": "trooper",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 3486,
-     "y": 752,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_060": {
-   "kind": "trooper",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 5916,
-     "y": 752,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_061": {
-   "kind": "trooper",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 6108,
-     "y": 472,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_062": {
-   "kind": "trooper",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 6204,
-     "y": 332,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_063": {
-   "kind": "trooper",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 5439,
-     "y": 332,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_064": {
-   "kind": "trooper",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 6300,
-     "y": 192,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_065": {
-   "kind": "trooper",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 5655,
-     "y": 192,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_066": {
-   "kind": "trooper",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 3944,
-     "y": 472,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_067": {
-   "kind": "flyer",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 4600,
-     "y": 160,
-     "role": "en_flyer"
-    }
-   ]
-  },
-  "s7_068": {
-   "kind": "enemy",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 749,
-     "y": 332,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_069": {
-   "kind": "flyer",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 548,
-     "y": 440,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_070": {
-   "kind": "enemy",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 6481,
-     "y": 752,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_071": {
-   "kind": "enemy",
-   "cat": "en",
-   "sheet": 7,
-   "used": 1,
-   "at": [
-    {
-     "x": 4402,
-     "y": 192,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s7_072": {
    "kind": "flyer",
    "cat": "en",
    "sheet": 7,
@@ -2676,7 +2468,33 @@
     }
    ]
   },
-  "s7_073": {
+  "s7_057": {
+   "kind": "enemy",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 1296,
+     "y": 752,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_058": {
+   "kind": "enemy",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 6900,
+     "y": 612,
+     "role": "en_heavy"
+    }
+   ]
+  },
+  "s7_059": {
    "kind": "trooper",
    "cat": "en",
    "sheet": 7,
@@ -2689,20 +2507,20 @@
     }
    ]
   },
-  "s7_074": {
+  "s7_060": {
    "kind": "trooper",
    "cat": "en",
    "sheet": 7,
    "used": 1,
    "at": [
     {
-     "x": 6012,
-     "y": 612,
+     "x": 4402,
+     "y": 192,
      "role": "setpiece"
     }
    ]
   },
-  "s7_075": {
+  "s7_061": {
    "kind": "trooper",
    "cat": "en",
    "sheet": 7,
@@ -2715,33 +2533,163 @@
     }
    ]
   },
-  "s7_076": {
-   "kind": "flyer",
+  "s7_062": {
+   "kind": "trooper",
    "cat": "en",
    "sheet": 7,
    "used": 1,
    "at": [
     {
-     "x": 4000,
-     "y": 300,
-     "role": "en_flyer"
+     "x": 5223,
+     "y": 472,
+     "role": "setpiece"
     }
    ]
   },
-  "s7_077": {
+  "s7_063": {
+   "kind": "trooper",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 3944,
+     "y": 472,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_064": {
+   "kind": "trooper",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 5439,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_065": {
+   "kind": "trooper",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 4173,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_066": {
+   "kind": "trooper",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 2492,
+     "y": 612,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_067": {
    "kind": "flyer",
    "cat": "en",
    "sheet": 7,
    "used": 1,
    "at": [
     {
-     "x": 1600,
+     "x": 4540,
      "y": 160,
      "role": "en_flyer"
     }
    ]
   },
-  "s7_078": {
+  "s7_068": {
+   "kind": "enemy",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 6636,
+     "y": 612,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_069": {
+   "kind": "flyer",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 6481,
+     "y": 720,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_070": {
+   "kind": "enemy",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 5655,
+     "y": 192,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_071": {
+   "kind": "enemy",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 2914,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_072": {
+   "kind": "flyer",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 6641,
+     "y": 580,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_073": {
+   "kind": "trooper",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 955,
+     "y": 192,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_074": {
    "kind": "trooper",
    "cat": "en",
    "sheet": 7,
@@ -2754,6 +2702,58 @@
     }
    ]
   },
+  "s7_075": {
+   "kind": "trooper",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 3486,
+     "y": 752,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s7_076": {
+   "kind": "flyer",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 3920,
+     "y": 300,
+     "role": "en_flyer"
+    }
+   ]
+  },
+  "s7_077": {
+   "kind": "flyer",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 1540,
+     "y": 160,
+     "role": "en_flyer"
+    }
+   ]
+  },
+  "s7_078": {
+   "kind": "trooper",
+   "cat": "en",
+   "sheet": 7,
+   "used": 1,
+   "at": [
+    {
+     "x": 3125,
+     "y": 192,
+     "role": "setpiece"
+    }
+   ]
+  },
   "s7_079": {
    "kind": "enemy",
    "cat": "en",
@@ -2761,8 +2761,8 @@
    "used": 1,
    "at": [
     {
-     "x": 4173,
-     "y": 332,
+     "x": 2703,
+     "y": 472,
      "role": "setpiece"
     }
    ]
@@ -2774,8 +2774,8 @@
    "used": 1,
    "at": [
     {
-     "x": 347,
-     "y": 612,
+     "x": 6300,
+     "y": 192,
      "role": "setpiece"
     }
    ]
@@ -2787,7 +2787,7 @@
    "used": 1,
    "at": [
     {
-     "x": 553,
+     "x": 6796,
      "y": 472,
      "role": "setpiece"
     }
@@ -2800,8 +2800,8 @@
    "used": 1,
    "at": [
     {
-     "x": 2703,
-     "y": 440,
+     "x": 1462,
+     "y": 580,
      "role": "setpiece"
     }
    ]
@@ -2813,8 +2813,8 @@
    "used": 1,
    "at": [
     {
-     "x": 7101,
-     "y": 160,
+     "x": 6108,
+     "y": 440,
      "role": "setpiece"
     }
    ]
@@ -2826,8 +2826,8 @@
    "used": 1,
    "at": [
     {
-     "x": 146,
-     "y": 720,
+     "x": 6204,
+     "y": 300,
      "role": "setpiece"
     }
    ]
@@ -2839,9 +2839,9 @@
    "used": 1,
    "at": [
     {
-     "x": 6636,
-     "y": 580,
-     "role": "setpiece"
+     "x": 5800,
+     "y": 440,
+     "role": "en_flyer"
     }
    ]
   },
@@ -2852,7 +2852,7 @@
    "used": 1,
    "at": [
     {
-     "x": 1794,
+     "x": 754,
      "y": 300,
      "role": "setpiece"
     }
@@ -2865,8 +2865,8 @@
    "used": 1,
    "at": [
     {
-     "x": 6791,
-     "y": 472,
+     "x": 5916,
+     "y": 752,
      "role": "setpiece"
     }
    ]
@@ -2878,8 +2878,8 @@
    "used": 1,
    "at": [
     {
-     "x": 6946,
-     "y": 332,
+     "x": 6012,
+     "y": 612,
      "role": "setpiece"
     }
    ]
@@ -2891,7 +2891,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6951,
+     "x": 6209,
      "y": 300,
      "role": "setpiece"
     }
@@ -2943,8 +2943,8 @@
    "used": 1,
    "at": [
     {
-     "x": 6920,
-     "y": 620,
+     "x": 7020,
+     "y": 760,
      "role": "turret"
     }
    ]
@@ -2956,8 +2956,8 @@
    "used": 1,
    "at": [
     {
-     "x": 925,
-     "y": 192,
+     "x": 322,
+     "y": 612,
      "role": "setpiece"
     }
    ]
@@ -2982,7 +2982,7 @@
    "used": 1,
    "at": [
     {
-     "x": 2360,
+     "x": 2280,
      "y": 760,
      "role": "turret"
     }
@@ -2995,7 +2995,7 @@
    "used": 1,
    "at": [
     {
-     "x": 4920,
+     "x": 4860,
      "y": 760,
      "role": "turret"
     }
@@ -3021,8 +3021,8 @@
    "used": 1,
    "at": [
     {
-     "x": 1598,
-     "y": 472,
+     "x": 925,
+     "y": 192,
      "role": "setpiece"
     }
    ]
@@ -3151,7 +3151,7 @@
    "used": 1,
    "at": [
     {
-     "x": 4100,
+     "x": 4040,
      "y": 480,
      "role": "turret"
     }
@@ -3216,7 +3216,7 @@
    "used": 1,
    "at": [
     {
-     "x": 1320,
+     "x": 1280,
      "y": 760,
      "role": "turret"
     }
@@ -3229,7 +3229,7 @@
    "used": 1,
    "at": [
     {
-     "x": 780,
+     "x": 820,
      "y": 620,
      "role": "turret"
     }
@@ -3242,7 +3242,7 @@
    "used": 1,
    "at": [
     {
-     "x": 420,
+     "x": 380,
      "y": 760,
      "role": "turret"
     }
@@ -3255,7 +3255,7 @@
    "used": 1,
    "at": [
     {
-     "x": 6000,
+     "x": 5960,
      "y": 760,
      "role": "turret"
     }
@@ -3281,7 +3281,7 @@
    "used": 1,
    "at": [
     {
-     "x": 2680,
+     "x": 2620,
      "y": 340,
      "role": "turret"
     }
@@ -3294,7 +3294,7 @@
    "used": 1,
    "at": [
     {
-     "x": 5380,
+     "x": 5320,
      "y": 620,
      "role": "turret"
     }
@@ -3320,8 +3320,8 @@
    "used": 1,
    "at": [
     {
-     "x": 724,
-     "y": 332,
+     "x": 121,
+     "y": 752,
      "role": "setpiece"
     }
    ]
@@ -3333,13 +3333,52 @@
    "used": 1,
    "at": [
     {
-     "x": 322,
-     "y": 612,
+     "x": 6840,
+     "y": 480,
      "role": "setpiece"
     }
    ]
   },
   "s8_034": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 724,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_035": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 7000,
+     "y": 620,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_036": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 6520,
+     "y": 480,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_037": {
    "kind": "turret",
    "cat": "turret",
    "sheet": 8,
@@ -3352,33 +3391,20 @@
     }
    ]
   },
-  "s8_035": {
+  "s8_038": {
    "kind": "turret",
    "cat": "turret",
    "sheet": 8,
    "used": 1,
    "at": [
     {
-     "x": 523,
+     "x": 1598,
      "y": 472,
      "role": "setpiece"
     }
    ]
   },
-  "s8_036": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 121,
-     "y": 752,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_037": {
+  "s8_039": {
    "kind": "turret",
    "cat": "turret",
    "sheet": 8,
@@ -3391,32 +3417,6 @@
     }
    ]
   },
-  "s8_038": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 2291,
-     "y": 752,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_039": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 2713,
-     "y": 472,
-     "role": "setpiece"
-    }
-   ]
-  },
   "s8_040": {
    "kind": "turret",
    "cat": "turret",
@@ -3424,8 +3424,8 @@
    "used": 1,
    "at": [
     {
-     "x": 1266,
-     "y": 752,
+     "x": 523,
+     "y": 472,
      "role": "setpiece"
     }
    ]
@@ -3450,8 +3450,8 @@
    "used": 1,
    "at": [
     {
-     "x": 1764,
-     "y": 332,
+     "x": 1266,
+     "y": 752,
      "role": "setpiece"
     }
    ]
@@ -3463,8 +3463,8 @@
    "used": 1,
    "at": [
     {
-     "x": 3135,
-     "y": 192,
+     "x": 2502,
+     "y": 612,
      "role": "setpiece"
     }
    ]
@@ -3476,7 +3476,7 @@
    "used": 1,
    "at": [
     {
-     "x": 2880,
+     "x": 2840,
      "y": 620,
      "role": "turret"
     }
@@ -3515,7 +3515,7 @@
    "used": 1,
    "at": [
     {
-     "x": 3560,
+     "x": 3480,
      "y": 760,
      "role": "turret"
     }
@@ -3528,7 +3528,7 @@
    "used": 1,
    "at": [
     {
-     "x": 1760,
+     "x": 1680,
      "y": 480,
      "role": "turret"
     }
@@ -3567,8 +3567,8 @@
    "used": 1,
    "at": [
     {
-     "x": 6520,
-     "y": 760,
+     "x": 6480,
+     "y": 620,
      "role": "turret"
     }
    ]
@@ -3619,8 +3619,8 @@
    "used": 1,
    "at": [
     {
-     "x": 6491,
-     "y": 752,
+     "x": 6118,
+     "y": 472,
      "role": "setpiece"
     }
    ]
@@ -3632,8 +3632,8 @@
    "used": 1,
    "at": [
     {
-     "x": 6956,
-     "y": 332,
+     "x": 6491,
+     "y": 752,
      "role": "setpiece"
     }
    ]
@@ -3645,8 +3645,8 @@
    "used": 1,
    "at": [
     {
-     "x": 7111,
-     "y": 192,
+     "x": 6646,
+     "y": 612,
      "role": "setpiece"
     }
    ]
@@ -3658,8 +3658,8 @@
    "used": 1,
    "at": [
     {
-     "x": 2919,
-     "y": 332,
+     "x": 2286,
+     "y": 752,
      "role": "setpiece"
     }
    ]
@@ -3671,8 +3671,8 @@
    "used": 1,
    "at": [
     {
-     "x": 3130,
-     "y": 192,
+     "x": 2497,
+     "y": 612,
      "role": "setpiece"
     }
    ]
@@ -3684,8 +3684,8 @@
    "used": 1,
    "at": [
     {
-     "x": 1261,
-     "y": 752,
+     "x": 558,
+     "y": 472,
      "role": "setpiece"
     }
    ]
@@ -3775,234 +3775,13 @@
    "used": 1,
    "at": [
     {
-     "x": 6118,
-     "y": 472,
+     "x": 5665,
+     "y": 192,
      "role": "setpiece"
     }
    ]
   },
   "s8_068": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 6214,
-     "y": 332,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_069": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 6022,
-     "y": 612,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_070": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 4412,
-     "y": 192,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_071": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 357,
-     "y": 612,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_072": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 1925,
-     "y": 192,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_073": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 759,
-     "y": 332,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_074": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 558,
-     "y": 472,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_075": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 920,
-     "y": 192,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_076": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 2497,
-     "y": 612,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_077": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 2708,
-     "y": 472,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_078": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 2286,
-     "y": 752,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_079": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 1759,
-     "y": 332,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_080": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 1427,
-     "y": 612,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_081": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 2502,
-     "y": 612,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_082": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 156,
-     "y": 752,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_083": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 6646,
-     "y": 612,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_084": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 6801,
-     "y": 472,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_085": {
    "kind": "turret",
    "cat": "turret",
    "sheet": 8,
@@ -4015,85 +3794,7 @@
     }
    ]
   },
-  "s8_086": {
-   "kind": "saucer",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 5017,
-     "y": 612,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_087": {
-   "kind": "saucer",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 3954,
-     "y": 472,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_088": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 3496,
-     "y": 752,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_089": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 3725,
-     "y": 612,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_090": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 1593,
-     "y": 472,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_091": {
-   "kind": "turret",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 6310,
-     "y": 192,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_092": {
+  "s8_069": {
    "kind": "turret",
    "cat": "turret",
    "sheet": 8,
@@ -4106,7 +3807,202 @@
     }
    ]
   },
-  "s8_093": {
+  "s8_070": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 3725,
+     "y": 612,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_071": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 6956,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_072": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 1427,
+     "y": 612,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_073": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 156,
+     "y": 752,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_074": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 7111,
+     "y": 192,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_075": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 357,
+     "y": 612,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_076": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 1759,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_077": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 1925,
+     "y": 192,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_078": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 1593,
+     "y": 472,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_079": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 1261,
+     "y": 752,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_080": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 759,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_081": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 1764,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_082": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 6801,
+     "y": 472,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_083": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 6214,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_084": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 6310,
+     "y": 192,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_085": {
    "kind": "turret",
    "cat": "turret",
    "sheet": 8,
@@ -4119,33 +4015,7 @@
     }
    ]
   },
-  "s8_094": {
-   "kind": "enemy",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 2924,
-     "y": 332,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_095": {
-   "kind": "saucer",
-   "cat": "turret",
-   "sheet": 8,
-   "used": 1,
-   "at": [
-    {
-     "x": 5665,
-     "y": 192,
-     "role": "setpiece"
-    }
-   ]
-  },
-  "s8_096": {
+  "s8_086": {
    "kind": "saucer",
    "cat": "turret",
    "sheet": 8,
@@ -4158,7 +4028,72 @@
     }
    ]
   },
-  "s8_097": {
+  "s8_087": {
+   "kind": "saucer",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 3135,
+     "y": 192,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_088": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 2713,
+     "y": 472,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_089": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 2924,
+     "y": 332,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_090": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 920,
+     "y": 192,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_091": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 6022,
+     "y": 612,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_092": {
    "kind": "turret",
    "cat": "turret",
    "sheet": 8,
@@ -4167,6 +4102,71 @@
     {
      "x": 4801,
      "y": 752,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_093": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 4412,
+     "y": 192,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_094": {
+   "kind": "enemy",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 2291,
+     "y": 752,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_095": {
+   "kind": "saucer",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 5017,
+     "y": 612,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_096": {
+   "kind": "saucer",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 3496,
+     "y": 752,
+     "role": "setpiece"
+    }
+   ]
+  },
+  "s8_097": {
+   "kind": "turret",
+   "cat": "turret",
+   "sheet": 8,
+   "used": 1,
+   "at": [
+    {
+     "x": 3954,
+     "y": 472,
      "role": "setpiece"
     }
    ]
