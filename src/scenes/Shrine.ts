@@ -7,6 +7,8 @@ import { Pickups, type PK } from '../systems/Pickups';
 import { Cannon } from '../systems/Cannon';
 import { SheetParallax, loadPx } from '../systems/SheetParallax';
 import { SpeedCam } from '../systems/SpeedCam';
+import { Cull } from '../systems/Cull';
+import { CanvasLite } from '../systems/CanvasLite';
 import { Fx } from '../systems/Fx';
 import { Blaster } from '../weapons/Blaster';
 import { Hud } from '../systems/Hud';
@@ -133,7 +135,7 @@ const FOES: [string, number, number][] = [
   ['orbs', 7500, 540], ['crab', 7600, T2], ['jellyp', 8450, 1000]];
 const ZONES: [number, string, number][] = [[0, 'Moss Gate', 0x1a5a6a], [1900, 'Falls of Ame', 0x1a4a8a], [3900, 'Lantern Terraces', 0x5a2a6a], [5700, 'Sunken Halls', 0x0a3a7a], [7400, 'Crystal Deep', 0x2a3a9a], [AX0 - 200, "Warden's Hollow", 0x1a2a5a]];
 export class Shrine extends Phaser.Scene {
-  player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; scam!: SpeedCam; bgp!: SheetParallax;
+  player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; scam!: SpeedCam; culler!: Cull; clite!: CanvasLite; bgp!: SheetParallax;
   solids!: Phaser.Physics.Arcade.StaticGroup; ones!: Phaser.Physics.Arcade.StaticGroup; flowers!: Phaser.Physics.Arcade.StaticGroup; gemsG!: Phaser.Physics.Arcade.StaticGroup; enemyGroup!: Phaser.Physics.Arcade.Group;
   got = 0; gems = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 70, y: GY }; safe = { x: 70, y: GY }; lookX = 0; lookY = 0; ending = false; cpX = 2400; cpLit = false;
   rects: Phaser.Geom.Rectangle[] = []; onSlope = false; man: Record<string, M> = {}; anim: { im: Phaser.GameObjects.Image; k: string; n: number; t: number; fps: number }[] = [];
@@ -262,8 +264,9 @@ export class Shrine extends Phaser.Scene {
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp)); this.toast = new Toast(this);
     { const key = 'sh_vig'; if (!this.textures.exists(key)) { const c = this.textures.createCanvas(key, 240, 135)!, x = c.getContext(), g = x.createRadialGradient(120, 68, 40, 120, 68, 150); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(2,6,20,1)'); x.fillStyle = g; x.fillRect(0, 0, 240, 135); c.refresh(); }
       this.vig = this.add.image(240, 135, key).setScrollFactor(0).setDisplaySize(480, 270).setDepth(40).setAlpha(0.45); }
-    const cam = this.cameras.main; cam.setBounds(0, TOP, WW, WH - TOP); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp);
-    cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true); cam.fadeIn(450);
+    const cam = this.cameras.main; cam.setBounds(0, TOP, WW, WH - TOP); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this);
+    this.time.delayedCall(0, () => { const P: any = this.player; this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); });
+    cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(false); cam.fadeIn(450);
     const kb = this.input.keyboard!;
     const pause = () => { if (this.ending) return; audio.stopLoops(); audio.sfx('menu'); this.scene.launch('Pause', { lvl: 'Shrine' }); this.scene.pause(); };
     kb.on('keydown-P', pause); kb.on('keydown-ESC', pause); kb.on('keydown-R', () => this.checkpoint()); kb.on('keydown-BACKSPACE', () => this.checkpoint());
@@ -348,7 +351,7 @@ export class Shrine extends Phaser.Scene {
     // water: wading slows Sakura and streams bubbles; ambient bubbles rise everywhere in view
     { const b = p.body_, w = p.y > T1 + 2 && this.chans.some(([a, c]) => p.x > a && p.x < c); if (w && !this.inWater) { this.dbg.water++; this.fx.spark(p.x, T1 + 2); audio.sfx('jump', { rate: 0.6, vol: 0.3 }); } this.inWater = w;
       if (w) { b.velocity.x *= 0.9; if (b.velocity.y > 90) b.velocity.y = 90; }
-      if ((this.bubT -= dt) <= 0) { this.bubT = w ? 0.06 : 0.35; const wv = cam.worldView, bx = w ? p.x + Phaser.Math.Between(-6, 6) : Phaser.Math.Between(wv.x, wv.right), by = w ? p.y - 10 : wv.bottom;
+      if ((this.bubT -= dt) <= 0) { const lite = this.clite?.on; this.bubT = w ? (lite ? 0.12 : 0.06) : (lite ? 0.7 : 0.35); const wv = cam.worldView, bx = w ? p.x + Phaser.Math.Between(-6, 6) : Phaser.Math.Between(wv.x, wv.right), by = w ? p.y - 10 : wv.bottom;
         const bb = this.add.image(bx, by, 'sh_fx_bub').setScale(0.25 + Math.random() * 0.35).setAlpha(0.7).setDepth(w ? 7.8 : -60).setBlendMode(Phaser.BlendModes.ADD); const life = w ? 600 : 4000 + Math.random() * 2000;
         this.tweens.add({ targets: bb, y: by - (w ? 40 : 220), x: bx + Phaser.Math.Between(-12, 12), alpha: 0, duration: life, ease: 'Sine.out', onComplete: () => bb.destroy() }); } }
     for (const g of this.glows.slice(0, 5)) { (g.o as any).x = ((g.t * 8 + (g.o as any).__x0 || 0) % 520) - 20; if ((g.o as any).__x0 === undefined) (g.o as any).__x0 = g.o.x; }
@@ -359,7 +362,7 @@ export class Shrine extends Phaser.Scene {
     this.portT -= dt; if (this.portT <= 0 && Math.abs(p.x - this.portal.x) < 16 && Math.abs(p.y - T4) < 20) { this.portT = 2; this.warp(); }
     this.portalB.setScale(1.5 + 0.2 * Math.sin(this.time_ * 3));
     this.cannon.update(dt); this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
-    { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06); cam.setFollowOffset(-this.lookX, 30 - this.lookY); } this.scam.update(dt);
+    { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06); cam.setFollowOffset(-this.lookX, 30 - this.lookY); } this.scam.update(dt); this.culler.update(); this.clite?.update(dt);
     p.pfx.update(dt); p.beam.update(dt, p.x + p.facing * 16, p.y - (p.poseLock ? 16 : 19), p.facing); this.gun.update(dt); this.egun.update(dt);
     this.gun.shots.getChildren().forEach((o: any) => this.vaults.forEach((v, i) => { if (o.active && !v.on && Math.abs(o.x - v.lever.x) < 10 && Math.abs(o.y - (v.lever.y - 20)) < 22) { this.fx.spark(o.x, o.y); this.gun.kill(o); this.pull(i); } }));
     this.enemies = this.enemies.filter(e => e.active);

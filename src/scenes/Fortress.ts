@@ -10,6 +10,8 @@ import { Hud } from '../systems/Hud';
 import { Toast } from '../systems/Toast';
 import { FEEL } from '../tuning';
 import { SpeedCam } from '../systems/SpeedCam';
+import { Cull } from '../systems/Cull';
+import { CanvasLite } from '../systems/CanvasLite';
 import { PanoramaBg, loadFortressPano } from '../render/PanoramaBg';
 import { FtDrone, FtOrb, FtWalker, FtAvian, FtBoss, FtTurret, ftLoad } from '../entities/Fortress';
 import type { Enemy } from '../entities/Enemy';
@@ -86,7 +88,7 @@ type Place = {
 export class Fortress extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups;
   solids!: Phaser.Physics.Arcade.StaticGroup; ones!: Phaser.Physics.Arcade.StaticGroup; flowers!: Phaser.Physics.Arcade.StaticGroup;
-  bg!: PanoramaBg; enemyGroup!: Phaser.Physics.Arcade.Group; scam!: SpeedCam;
+  bg!: PanoramaBg; enemyGroup!: Phaser.Physics.Arcade.Group; scam!: SpeedCam; culler!: Cull; clite!: CanvasLite;
   got = 0; gems = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 100, y: T1 - 4 }; safe = { x: 100, y: T1 - 4 };
   lookX = 0; lookY = 0; rapT = 0; powT = 0; ending = false; cpLit = false; cpI = 0;
   boss!: FtBoss; arena = false; won = false; walls: Phaser.GameObjects.Zone[] = [];
@@ -555,7 +557,9 @@ export class Fortress extends Phaser.Scene {
       if (!f.active) return; f.destroy(); this.got++; audio.sfx('flower'); this.fx.explode(f.x, f.y, 0.4); this.hud.setMem(this.got);
     });
     const cam = this.cameras.main; cam.setBounds(0, 0, WW, WH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30);
-    this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
+    this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this);
+    this.time.delayedCall(0, () => { const P: any = this.player; this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); });
+    cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(false);
     const kb = this.input.keyboard!;
     const pause = () => { if (this.ending) return; audio.stopLoops(); audio.sfx('menu'); this.scene.launch('Pause', { lvl: 'Fortress' }); this.scene.pause(); };
     kb.on('keydown-P', pause); kb.on('keydown-ESC', pause); kb.on('keydown-R', () => this.checkpoint()); kb.on('keydown-BACKSPACE', () => this.checkpoint());
@@ -652,9 +656,8 @@ export class Fortress extends Phaser.Scene {
     p.update(dt); this.gun.update(dt); this.egun.update(dt);
     this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; if (p.beam) { p.beam.boost = this.powT > 0 ? 1.8 : 1; p.beam.update(dt, p.x + p.facing * 16, p.y - 19, p.facing); }
     for (const e of this.enemies) if (e.active && !e.dead) e.tick(dt, p.x, p.y - 16);
-    this.scam?.update(dt); this.hud.setTime(this.time_); this.hud.setGems(this.gems);
+    this.scam?.update(dt); this.culler?.update(); this.clite?.update(dt); this.hud.setTime(this.time_); this.hud.setGems(this.gems);
     this.hud.draw(p.hasJet ? p.fuel / JET.fuel : -1, this.arena && this.boss && !this.boss.dead ? this.boss.hp / this.boss.maxHp : -1);
-    p.x = Math.round(p.x); p.y = Math.round(p.y);
     const tier = p.y > T1 - 40 ? 1 : p.y > T2 - 40 ? 2 : p.y > T3 - 40 ? 3 : p.y > T4 - 40 ? 4 : 5;
     if (!this.dbg.tiers.includes(tier)) this.dbg.tiers.push(tier);
     const zx = p.x < 1200 ? 'dock' : p.x < 2400 ? 'gantry' : p.x < 3600 ? 'spires' : p.x < 4800 ? 'hangar' : p.x < AX0 ? 'bridge' : 'arena';
