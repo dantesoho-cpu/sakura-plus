@@ -330,12 +330,14 @@ export class Level1 extends Phaser.Scene {
   slopeSnap() {
     const p = this.player, b = p?.body_; if (!b || !b.enable) return; const was = this.onSlope; this.onSlope = false;
     if (b.velocity.y < 0) return;
-    const feet = b.bottom, lead = 3, xs = [b.left - (b.velocity.x < 0 ? lead : 0), b.right - 0.01 + (b.velocity.x > 0 ? lead : 0)]; let sy = Infinity, slope = false;
+    // lead samples ahead of motion so 150px/s runs don't skip thin slope tiles between steps
+    const feet = b.bottom, lead = Math.min(10, 4 + Math.abs(b.velocity.x) * 0.04);
+    const xs = [b.left - (b.velocity.x < 0 ? lead : 0), b.center.x, b.right - 0.01 + (b.velocity.x > 0 ? lead : 0)]; let sy = Infinity, slope = false;
     for (const x of xs) { const v = this.surface(x, feet); if (v < sy) sy = v; const cx = Math.floor(x / TS), c = this.at(cx, Math.floor((v - 0.01) / TS)), c2 = this.at(cx, Math.floor(v / TS)); if (c in SLOPES || c2 in SLOPES) slope = true; }
     for (const x of xs) { const v = this.platY(x, feet); if (v < sy) { sy = v; slope = true; } }
     if ((!slope && !was) || sy === Infinity) return;
-    const tol = was ? 9 : 1;
-    if (feet >= sy - tol && feet <= sy + 12) { const dy = Math.floor(sy) - feet; b.y += dy; b.velocity.y = 0; b.blocked.down = true; b.touching.down = true; this.onSlope = true; }
+    const tol = was ? 12 : 2;
+    if (feet >= sy - tol && feet <= sy + 14) { const dy = Math.floor(sy) - feet; b.y += dy; b.velocity.y = 0; b.blocked.down = true; b.touching.down = true; this.onSlope = true; }
   }
   // ---- continuous blossom skin over slope zones: smoothed surface => rounded crests / soft toes, cap wraps without stair-steps ----
   skinY = new Map<number, number>();

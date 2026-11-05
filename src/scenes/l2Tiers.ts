@@ -106,10 +106,13 @@ export class Tiers {
     if (this.capT > 0) { this.capT -= dt; if (this.capT <= 0 || b.velocity.y > 0) { this.capT = 0; b.setMaxVelocityY(this.maxFall); } }
     this.dbg.maxTier = Math.max(this.dbg.maxTier, b.blocked.down || b.touching.down ? this.tierOf(p.y) : 0);
     for (const l of this.lifts) { l.t += dt * 0.45; const y = l.y1 + (l.y0 - l.y1) * (0.5 + 0.5 * Math.cos(l.t)); const mb = l.im.body as Phaser.Physics.Arcade.Body;
-      const riding = (b.touching.down || b.blocked.down) && Math.abs(p.x - l.im.x) < 28 && Math.abs(b.bottom - mb.top) < 6; const dy = y - l.im.y; mb.reset(l.im.x, y);
-      if (riding) { if (dy > 0) { p.y += dy; } this.dbg.rides++; } l.gl.setPosition(l.im.x, y + 14).setAlpha(0.35 + 0.2 * Math.sin(t * 8)); }
-    for (const m of this.megas) { m.cd -= dt; m.col.setAlpha(0.22 + 0.15 * Math.sin(t * 6 + m.x));
-      if (m.cd <= 0 && Math.abs(p.x - m.x) < 18 && p.y >= m.y - 16 && p.y <= m.y + 2 && b.velocity.y >= 0 && !p.locked) { m.cd = 0.4; this.dbg.launches++; b.setMaxVelocityY(m.pw + 20); this.capT = 0.8; b.setVelocityY(-m.pw); p.boostT = 0.6; p.y = m.y - 14; p.airJumps = 1; p.canAirDash = true; p.setAnimState?.('jump', true);
-        audio.sfx('power', { rate: 1.2, vol: 0.7 }); s.tweens.add({ targets: m.im, scaleY: 0.4, duration: 70, yoyo: true }); s.fx?.spark(m.x, m.y - 8); s.cameras.main.shake(80, 0.003);
-        const r = s.add.image(m.x, m.y - 6, 'l2f_15').setBlendMode(Phaser.BlendModes.ADD).setTint(0x6bff8f).setScale(0.3).setDepth(12); s.tweens.add({ targets: r, scale: 1.4, alpha: 0, duration: 380, onComplete: () => r.destroy() }); } } }
+      // stickier ride catch so rising decks don't drop Sakura between frames
+      const riding = (b.touching.down || b.blocked.down || Math.abs(b.bottom - mb.top) < 8) && Math.abs(p.x - l.im.x) < 30 && Math.abs(b.bottom - mb.top) < 10;
+      const dy = y - l.im.y; mb.reset(l.im.x, y);
+      if (riding) { p.y += dy; b.velocity.y = Math.min(b.velocity.y, 40); b.blocked.down = b.touching.down = true; p.coyoteT = Math.max(p.coyoteT, 0.08); this.dbg.rides++; }
+      l.gl.setPosition(l.im.x, y + 14).setAlpha(0.4 + 0.22 * Math.sin(t * 8)); }
+    for (const m of this.megas) { m.cd -= dt; m.col.setAlpha(0.28 + 0.18 * Math.sin(t * 6 + m.x));
+      if (m.cd <= 0 && Math.abs(p.x - m.x) < 20 && p.y >= m.y - 18 && p.y <= m.y + 2 && b.velocity.y >= 0 && !p.locked) { m.cd = 0.32; this.dbg.launches++; b.setMaxVelocityY(m.pw + 20); this.capT = 0.9; b.setVelocityY(-m.pw); p.boostT = 0.7; p.coyoteT = 0; p.y = m.y - 14; p.airJumps = 1; p.canAirDash = true; p.setAnimState?.('jump', true); p.squash?.(0.78, 1.28);
+        audio.sfx('power', { rate: 1.25, vol: 0.75 }); s.tweens.add({ targets: m.im, scaleY: 0.32, duration: 60, yoyo: true, ease: 'Back.easeOut' }); s.fx?.spark(m.x, m.y - 8); s.cameras.main.shake(90, 0.0035);
+        const r = s.add.image(m.x, m.y - 6, 'l2f_15').setBlendMode(Phaser.BlendModes.ADD).setTint(0x6bff8f).setScale(0.35).setDepth(12); s.tweens.add({ targets: r, scale: 1.6, alpha: 0, duration: 420, onComplete: () => r.destroy() }); } } }
 }

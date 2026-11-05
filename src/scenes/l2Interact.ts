@@ -55,8 +55,8 @@ export class Interact {
     for (const g of this.glows) { g.t += dt; g.o.setAlpha(g.b + 0.12 * Math.sin(g.t * 2.2) + (Math.random() < 0.01 ? 0.25 : 0)); }
     for (const sp of this.springs) { sp.cd -= dt; sp.gl.setAlpha(0.3 + 0.15 * Math.sin(this.s.time.now / 200 + sp.x));
       if (sp.cd <= 0 && Math.abs(p.x - sp.x) < 16 && p.y >= sp.y - 16 && p.y <= sp.y + 2 && b.velocity.y >= 0 && !p.locked) {
-        sp.cd = 0.35; this.dbg.launches++; b.setVelocityY(-560); p.boostT = 0.45; p.y = sp.y - 14; p.airJumps = 1; p.canAirDash = true; p.setAnimState?.('jump', true); audio.sfx('power', { rate: 1.6, vol: 0.6 });
-        this.s.tweens.add({ targets: sp.im, scaleY: 0.3, duration: 60, yoyo: true, ease: 'Quad.easeOut' });
+        sp.cd = 0.28; this.dbg.launches++; b.setVelocityY(-580); p.boostT = 0.55; p.coyoteT = 0; p.y = sp.y - 14; p.airJumps = 1; p.canAirDash = true; p.setAnimState?.('jump', true); p.squash?.(0.82, 1.22); audio.sfx('power', { rate: 1.65, vol: 0.65 });
+        this.s.tweens.add({ targets: sp.im, scaleY: 0.22, duration: 55, yoyo: true, ease: 'Back.easeOut' });
         const r = this.s.add.ellipse(sp.x, sp.y - 6, 20, 6).setStrokeStyle(2, sp.c).setDepth(12).setBlendMode(Phaser.BlendModes.ADD); this.s.tweens.add({ targets: r, scaleX: 3, scaleY: 3, alpha: 0, duration: 350, onComplete: () => r.destroy() });
         this.s.fx?.spark(sp.x, sp.y - 8); } }
     if (p.dashing) for (const k of this.brk) if (k.im.active && Math.abs(p.x - k.im.x) < k.im.displayWidth / 2 + 6 && p.y > k.im.y - k.im.displayHeight && p.y - 28 < k.im.y) this.shatter(k);

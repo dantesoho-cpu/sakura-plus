@@ -5,7 +5,7 @@ export const T = {
   gravity: 1250 /*1100: snappier rise*/, fallGravityMult: 1.72 /*1.6: faster fall*/, maxFall: 460 /*420*/,
   jumpVel: 440 /*410*/, doubleJumpVel: 380 /*360*/, jumpCutMult: 0.45,
   apexBand: 50 /*new: |vy| below this near the top...*/, apexGravMult: 0.55 /*new: ...uses this gravity => apex hang*/,
-  coyote: 0.1, buffer: 0.12, dashSpeed: 440 /*400*/, dashTime: 0.15 /*0.16 => 70px (was 64)*/, dashCooldown: 0.18 /*0.2*/,
+  coyote: 0.14 /*0.1: forgive high-speed ledge exits*/, buffer: 0.16 /*0.12: catch early taps at 150px/s*/, dashSpeed: 440 /*400*/, dashTime: 0.15 /*0.16 => 70px (was 64)*/, dashCooldown: 0.18 /*0.2*/,
   dashEndCarry: 0.45 /*new: keep 45% of dash speed on exit instead of a dead stop*/, landTime: 0.1 /*0.12*/,
 };
 // Jet boots: hold jump after the double jump.

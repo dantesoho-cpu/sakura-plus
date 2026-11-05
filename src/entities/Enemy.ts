@@ -12,10 +12,18 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
     scene.time.delayedCall(0, () => { if (this.active && !this.eliteChk) this.checkElite(); }); // after the subclass set its texture + anim
   }
   aura: Phaser.GameObjects.Image; tele: Phaser.GameObjects.Image; teleT = 0; eyeY = 0.55; eyeX = 0;
-  /** Attack telegraph: blinking red warning glow + ring for `sec` seconds. */
+  /** Attack telegraph: amber flash + expanding dual ring so windups stay readable at 150px/s. */
   telegraph(sec: number) {
-    this.teleT = sec; const r = this.scene.add.circle(this.x, this.y - this.height * this.eyeY, 4).setStrokeStyle(1.5, 0xff4060).setFillStyle().setDepth(9).setBlendMode(Phaser.BlendModes.ADD);
-    this.scene.tweens.add({ targets: r, radius: 22, alpha: 0, duration: sec * 1000, onComplete: () => r.destroy() });
+    const hold = Math.max(sec, 0.28); this.teleT = hold;
+    const cx = this.x, cy = this.y - this.height * this.eyeY, s = this.scene;
+    const r = s.add.circle(cx, cy, 5).setStrokeStyle(2.5, 0xff4060).setFillStyle().setDepth(9).setBlendMode(Phaser.BlendModes.ADD);
+    const r2 = s.add.circle(cx, cy, 3).setStrokeStyle(1.5, 0xffd23f).setFillStyle().setDepth(9).setBlendMode(Phaser.BlendModes.ADD);
+    s.tweens.add({ targets: r, radius: 30, alpha: 0, duration: hold * 1000, ease: 'Cubic.out', onComplete: () => r.destroy() });
+    s.tweens.add({ targets: r2, radius: 18, alpha: 0, duration: hold * 700, ease: 'Quad.out', onComplete: () => r2.destroy() });
+    if (s.textures.exists('glow')) {
+      const g = s.add.image(cx, cy, 'glow').setTint(0xff6030).setBlendMode(Phaser.BlendModes.ADD).setDepth(8.9).setAlpha(0.55).setScale(0.6);
+      s.tweens.add({ targets: g, scale: 1.6, alpha: 0, duration: hold * 900, onComplete: () => g.destroy() });
+    }
   }
   get b() { return this.body as Phaser.Physics.Arcade.Body; }
   hit(dmg: number, dir: number) {
@@ -93,6 +101,6 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
     const ex = this.x + (this.flipX ? -this.eyeX : this.eyeX), ey = this.y - this.height * this.eyeY;
     if (this.kind === 'boss') this.aura.setVisible(false);
     this.aura.setPosition(ex, ey).setScale(0.45 + 0.15 * Math.sin(this.t * 6)).setAlpha(0.3 + 0.2 * Math.sin(this.t * 6));
-    if (this.teleT > 0) { this.teleT -= dt; this.tele.setVisible(Math.floor(this.teleT * 20) % 2 === 0).setPosition(ex, ey).setScale(1.1); this.setTint(Math.floor(this.teleT * 20) % 2 ? 0xff9aa0 : 0xffffff); if (this.teleT <= 0) { this.tele.setVisible(false); this.clearTint(); } }
+    if (this.teleT > 0) { this.teleT -= dt; const blink = Math.floor(this.teleT * 14) % 2 === 0; this.tele.setVisible(blink).setPosition(ex, ey).setScale(1.35).setTint(0xffd23f).setAlpha(0.95); this.setTint(blink ? 0xff8060 : 0xffe0a0); if (this.teleT <= 0) { this.tele.setVisible(false); this.clearTint(); } }
   }
 }
