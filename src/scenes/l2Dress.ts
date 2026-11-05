@@ -21,12 +21,12 @@ export class Dress {
       const o = sc.add.image(x, GY - 6 - Math.floor(rnd() * 26), 'l2t_' + pad(id)).setOrigin(0.5, 1).setDepth(0.4 + rnd() * 0.2).setTint(0x3c3878).setAlpha(1).setScrollFactor(0.82, 1).setScale(0.7 + rnd() * 0.25).setFlipX(rnd() < 0.4);
       this.far.push({ o, x0: x }); this.dbg.far++; }
     // 2) holo billboards hovering over the street, bobbing; shots glitch them
-    for (let x = 180, i = 0; x < X1 - 80; x += 260 + Math.floor(rnd() * 160), i++) { const id = ADS[i % ADS.length], c = ADC[i % ADC.length], y = GY - 122 - Math.floor(rnd() * 34);
+    for (let x = 160, i = 0; x < X1 - 80; x += 200 + Math.floor(rnd() * 120), i++) { const id = ADS[i % ADS.length], c = ADC[i % ADC.length], y = GY - 122 - Math.floor(rnd() * 34);
       const im = sc.add.image(x, y, 'l2t_' + pad(id)).setDepth(1.2).setScale(0.75).setAlpha(0.92); const gl = glow(x, y, c, Math.max(im.displayWidth, im.displayHeight) / 55, 0.3, 1.15);
       this.ads.push({ im, gl, x, y, t: rnd() * 9, g: 0, c }); this.dbg.ads++; }
     // 3) lantern strings: cable between two posts, 3-5 sheet lanterns (env_05 / env_17 / env_14 / env_22) hanging + swaying
     this.wires = sc.add.graphics().setDepth(1.47);
-    for (let x = 330; x < X1 - 200; x += 520 + Math.floor(rnd() * 200)) { const w = 140 + Math.floor(rnd() * 60), y = GY - 108; const n = 3 + Math.floor(rnd() * 3), L: any[] = [];
+    for (let x = 280; x < X1 - 200; x += 420 + Math.floor(rnd() * 160)) { const w = 140 + Math.floor(rnd() * 60), y = GY - 108; const n = 3 + Math.floor(rnd() * 3), L: any[] = [];
       for (let i = 0; i < n; i++) { const f = (i + 1) / (n + 1), lx = x + w * f, ly = y + Math.sin(f * Math.PI) * 18; const id = [5, 17, 14, 22][Math.floor(rnd() * 4)];
         const im = sc.add.image(lx, ly, 'l2e_' + pad(id)).setOrigin(0.5, 0).setDepth(1.48).setScale(id === 5 || id === 17 ? 0.6 : 0.8); const gl = glow(lx, ly + im.displayHeight * 0.6, [0xffd23f, 0xff4fd8, 0x3ff3ff][i % 3], 0.35, 0.4, 1.47);
         L.push({ im, gl, x: lx, y: ly, t: rnd() * 6, spin: 0 }); this.dbg.lanterns++; }

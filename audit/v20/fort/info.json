@@ -1,0 +1,15 @@
+{
+  "bands": 7,
+  "fillTex": [
+    true,
+    true,
+    true
+  ],
+  "bg": 2762816,
+  "objs": 2258,
+  "cull": {
+    "culled": 1516,
+    "checked": 1717
+  },
+  "errs": []
+}

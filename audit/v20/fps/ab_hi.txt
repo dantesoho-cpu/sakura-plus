@@ -1,0 +1,3 @@
+v=ab0 {"frames":173,"avgFps":16.7,"over20":173,"p95":83.3,"phaser":19,"hi":2,"objs":2486,"x":78}
+hi=1&v=ab1 {"frames":331,"avgFps":32.3,"over20":237,"p95":50,"phaser":36,"hi":1,"objs":2486,"x":1391}
+hi=2&v=ab2 {"frames":170,"avgFps":16.3,"over20":170,"p95":83.3,"phaser":19,"hi":2,"objs":2508,"x":167}

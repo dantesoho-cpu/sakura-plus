@@ -26,6 +26,8 @@ const WINDS: [number, number, number, number][] = [
   [2600, 2660, T5 - 20, T2 - 10],
   [3900, 3960, T4 - 20, T1 - 10],
   [5100, 5160, T5 - 20, T2 - 10],
+  [1800, 1855, T5 - 20, T3 - 10],
+  [4400, 4455, T4 - 20, T2 - 10],
 ];
 /** Hangar vaults: [leverX, leverY, vaultX, vaultY, side] */
 const VAULTS: [number, number, number, number, number][] = [
@@ -39,6 +41,8 @@ const SECRETS: [number, number, number][] = [
   [5450, T2, -1],
   [1680, T3, 1],
   [4800, T4, -1],
+  [900, T5, 1],
+  [5800, T5, -1],
 ];
 const FOES: [string, number, number][] = [
   ['drone', 420, T2 - 40], ['orb', 780, T1], ['bip', 980, T1], ['drone', 1200, T3 - 30],
@@ -56,10 +60,14 @@ const FLOWERS: [number, number][] = [
   [3000, T4 - 8], [3600, T2 - 8], [4200, T1 - 8], [4900, T5 - 8], [5600, T1 - 8],
   [720, T1 - 8], [2100, T2 - 8], [3300, T1 - 8], [4500, T3 - 8], [5300, T2 - 8],
   [6100, T1 - 8], [6700, T2 - 8], [1600, T5 - 8], [4000, T4 - 8],
+  [480, T5 - 8], [1360, T5 - 8], [3180, T5 - 8], [5400, T5 - 8], [780, T3 - 8], [2920, T3 - 8], [2160, T4 - 8],
 ];
 const GEMS: [number, number, number][] = [
   [600, T2 - 30, 5], [1600, T3 - 30, 4], [2800, T4 - 30, 6], [4000, T5 - 30, 5], [5200, T3 - 30, 4],
   [1100, T1 - 28, 5], [2400, T2 - 28, 4], [4700, T1 - 28, 6], [6000, T2 - 28, 5], [6800, T1 - 28, 4],
+  // route arcs
+  [450, T5 - 28, 5], [1400, T5 - 28, 5], [3200, T5 - 28, 6], [5300, T5 - 28, 5],
+  [800, T3 - 28, 5], [2800, T3 - 28, 5], [4400, T3 - 28, 5], [2100, T4 - 28, 5], [5000, T4 - 28, 5],
 ];
 /** Landmark set dressing from Dante's prop sheet — foot-planted on decks, no AI. */
 const PROP_DRESS: [string, number, number, number][] = [
@@ -76,6 +84,27 @@ const PROP_DRESS: [string, number, number, number][] = [
   // approach + arena rim (leave boss center clear)
   ['deco14', 5900, T1, 0.5], ['airship_main', 6280, T1, 0.42], ['banner_b', 7050, T1, 0.65],
   ['deco4', 6540, T2, 0.45], ['hoop_left', 6680, T3 - 20, 0.55],
+  // Mania route landmarks on new connectors
+  ['banner_c', 1040, T3, 0.6], ['deco10', 2140, T4, 0.48], ['banner_d', 3700, T5, 0.6],
+  ['deco5', 4560, T3, 0.5], ['banner_a', 5520, T5, 0.6], ['deco9', 3180, T3, 0.48],
+];
+/** Mania-style tiered route steppers: [key, x, walkY] — short sheet plats bridging shelf gaps */
+const ROUTE_STEPS: [string, number, number][] = [
+  // mid T3 bridges
+  ['s1_002', 320, T3], ['s1_009', 760, T3], ['s1_001', 1120, T3], ['s1_035', 1680, T3],
+  ['s1_002', 2700, T3], ['s1_009', 3200, T3], ['s1_001', 3900, T3], ['s1_035', 4300, T3],
+  ['s1_002', 5500, T3], ['s1_009', 5900, T3],
+  // high T4 / canopy T5 routes
+  ['s1_003', 360, T4], ['s1_005', 720, T4], ['s1_029', 1600, T4], ['s1_003', 2060, T4],
+  ['s1_005', 2500, T4], ['s1_029', 3300, T4], ['s1_003', 3700, T4], ['s1_005', 4560, T4],
+  ['s1_029', 5000, T4], ['s1_003', 5600, T4],
+  ['s1_009', 440, T5], ['s1_002', 900, T5], ['s1_001', 1340, T5], ['s1_035', 1740, T5],
+  ['s1_009', 2500, T5], ['s1_002', 3100, T5], ['s1_001', 3920, T5], ['s1_035', 4840, T5],
+  ['s1_009', 5260, T5],
+  // T2 gap fillers + vertical stairs between tiers
+  ['s1_001', 1000, T2], ['s1_035', 2160, T2], ['s1_002', 4480, T2], ['s1_009', 4860, T2],
+  ['s1_003', 1040, T2 - 70], ['s1_005', 1040, T3 - 70], ['s1_003', 2620, T2 - 70], ['s1_005', 2620, T3 - 70],
+  ['s1_003', 3920, T2 - 70], ['s1_005', 3920, T3 - 70], ['s1_003', 5120, T2 - 70], ['s1_005', 5120, T3 - 70],
 ];
 
 type Frame = { w: number; h: number; top: number; foot: number; prof?: number[]; kind: string };
@@ -349,7 +378,7 @@ export class Fortress extends Phaser.Scene {
     this.dbg = { tiers: [], zones: ['dock', 'gantry', 'spires', 'hangar', 'bridge', 'arena'], portal: 0, ai: 0, wind: 0, vault: 0, secret: 0, ramp: 0 };
     this.physics.world.setBounds(0, 0, WW, WH + 80); this.physics.world.setBoundsCollision(true, true, false, false);
     // steel under-deck fallback (never flat purple void if a fill tile fails)
-    this.cameras.main.setBackgroundColor(0x2a2840);
+    this.cameras.main.setBackgroundColor(0x1a1828);
     this.bg = new PanoramaBg(this);
     this.surf = []; this.glows = []; this.onSlope = false; this.winds = []; this.vaults = []; this.secrets = []; this.arenaFx = [];
     this.solids = this.physics.add.staticGroup(); this.ones = this.physics.add.staticGroup(); this.flowers = this.physics.add.staticGroup();
@@ -368,37 +397,45 @@ export class Fortress extends Phaser.Scene {
     // Floating upper-tier shelves stay floating; only T1 ground_bands get solid bodies.
     const fillKeys = ['ft_fill_00', 'ft_fill_01', 'ft_fill_02'];
     const deepKeys = ['ft_fill_deep_00', 'ft_fill_deep_01', 'ft_fill_deep_02'];
-    const FILL_TOP = T1 + 6;                 // tuck under deck gold lip
-    const FILL_BOT = WH + 220;               // past camera lowest extent + margin
+    const FILL_TOP = T1 + 4;                 // tuck tight under deck gold lip
+    const FILL_BOT = WH + 280;               // past camera lowest extent + extra margin
     const FILL_H = FILL_BOT - FILL_TOP;
-    const DEEP_Y = T1 + 6 + 128;             // deeper rows use darker variant
+    const LIP_H = 36;                        // thin gold-rim under-deck band
+    const DEEP_Y = FILL_TOP + LIP_H + 160;   // mid steel then darker deep
     for (let bi = 0; bi < this.groundBands.length; bi++) {
       const [a, b] = this.groundBands[bi];
       const w = Math.max(8, b - a);
       // band solid walk surface (reliable T1 landing; deck tiles dress the top)
-      this.addRect(a, T1, w, 48, false);
+      this.addRect(a, T1, w, 56, false);
       const fk = fillKeys[bi % fillKeys.length];
       const dk = deepKeys[bi % deepKeys.length];
+      // full-height underpaint first so no purple peek between tile seams
+      if (this.textures.exists(dk)) {
+        const under = this.add.tileSprite(a, FILL_TOP, w, FILL_H, dk).setOrigin(0, 0).setDepth(1.88);
+        under.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      } else {
+        this.add.rectangle(a + w / 2, FILL_TOP + FILL_H / 2, w, FILL_H, 0x1a1828, 1).setDepth(1.87);
+      }
       if (this.textures.exists('ft_fill_lip')) {
-        const lip = this.add.tileSprite(a, FILL_TOP, w, 64, 'ft_fill_lip').setOrigin(0, 0).setDepth(1.92);
+        const lip = this.add.tileSprite(a, FILL_TOP, w, LIP_H, 'ft_fill_lip').setOrigin(0, 0).setDepth(1.93);
         lip.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
       if (this.textures.exists(fk)) {
-        const bodyH = Math.max(64, Math.min(DEEP_Y, FILL_BOT) - (FILL_TOP + 64));
-        const body = this.add.tileSprite(a, FILL_TOP + 64, w, bodyH, fk).setOrigin(0, 0).setDepth(1.9);
+        const bodyH = Math.max(64, DEEP_Y - (FILL_TOP + LIP_H));
+        const body = this.add.tileSprite(a, FILL_TOP + LIP_H, w, bodyH, fk).setOrigin(0, 0).setDepth(1.91);
         body.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
       if (this.textures.exists(dk) && FILL_BOT > DEEP_Y) {
-        const deep = this.add.tileSprite(a, DEEP_Y, w, FILL_BOT - DEEP_Y, dk).setOrigin(0, 0).setDepth(1.89);
+        const deep = this.add.tileSprite(a, DEEP_Y, w, FILL_BOT - DEEP_Y, dk).setOrigin(0, 0).setDepth(1.90);
         deep.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
       // pit side walls / edges where ground ends
       if (this.textures.exists('ft_fill_edge_L')) {
-        const el = this.add.tileSprite(a - 4, FILL_TOP, 24, FILL_H, 'ft_fill_edge_L').setOrigin(0, 0).setDepth(1.93);
+        const el = this.add.tileSprite(a - 6, FILL_TOP, 28, FILL_H, 'ft_fill_edge_L').setOrigin(0, 0).setDepth(1.94);
         el.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
       if (this.textures.exists('ft_fill_edge_R')) {
-        const er = this.add.tileSprite(b - 20, FILL_TOP, 24, FILL_H, 'ft_fill_edge_R').setOrigin(0, 0).setDepth(1.93);
+        const er = this.add.tileSprite(b - 22, FILL_TOP, 28, FILL_H, 'ft_fill_edge_R').setOrigin(0, 0).setDepth(1.94);
         er.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
     }
@@ -421,6 +458,13 @@ export class Fortress extends Phaser.Scene {
     if (st) this.dbg.tx = `${st.used_pieces}/${st.total_pieces}`;
     this.dbg.deck = !!(layout?.placements || []).some((p: Place) => (p.role || '').startsWith('deck'));
     (this.solids as any).refresh?.(); (this.ones as any).refresh?.();
+
+    // Mania-style tiered route steppers (sheet plats bridging shelf gaps)
+    for (const [k, x, y] of ROUTE_STEPS) {
+      if (!this.man[k] && !this.textures.exists('ft_' + k)) continue;
+      this.placeLayout({ key: k, x, y, depth: 2.08, flip: false, origin: 'tl_walk', solid: 'one', role: 'route_step' });
+    }
+    (this.ones as any).refresh?.();
 
     // wind lifts
     for (const [a, b, top, bot] of WINDS) {
@@ -650,7 +694,11 @@ export class Fortress extends Phaser.Scene {
     if (!this.player) return;
     const dt = dms / 1000; this.time_ += dt; this.bg.update(dt);
     this.slopeSnap(); this.shelfSnap();
-    for (const g of this.glows) g.o.setAlpha(g.base + 0.12 * Math.sin(this.time_ * g.sp + g.t * 0.01));
+    { const cx = this.cameras.main.scrollX + 240; let gi = 0;
+      for (const g of this.glows) { const near = Math.abs(g.t - cx) < 700 || g.t < 200; // t often stores x
+        if (!near) { if (g.o.alpha) g.o.setAlpha(0); continue; }
+        if ((gi++ & 1) === 1) continue;
+        g.o.setAlpha(g.base + 0.12 * Math.sin(this.time_ * g.sp + g.t * 0.01)); } }
     if (touch.respawnP) { touch.respawnP = false; this.checkpoint(); }
     const p = this.player; if (!p || this.ending) return;
     p.update(dt); this.gun.update(dt); this.egun.update(dt);

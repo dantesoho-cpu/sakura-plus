@@ -14,13 +14,19 @@ export class Victory extends Phaser.Scene {
     for (let i = 0; i < 64; i++) { this.add.image(i * 16, 238, 'tiles', 1).setOrigin(0, 0).setDepth(30);
       for (let r = 1; r < 3; r++) this.add.image(i * 16, 238 + r * 16, 'tiles', 24 + ((i >> 1) * 7 % 12) * 4 + (i & 1) + ((r + 1) & 1) * 2).setOrigin(0, 0).setDepth(30); }
     // Sakura runs in, hops into the parked car (it dips on its springs), then it pulls away: wheels spin, exhaust + petal + tail-light trail
-    const car = new Car(this, 300, 244, 1.5).setDepth(40).setScrollFactor(0); (window as any).__car = car; this.car = car;
-    const sak = this.add.sprite(-20, 240, 'p_idle', 0).setOrigin(0.5, 1).setScale(1.5).setDepth(41).setScrollFactor(0).play('run'); this.sak = sak;
+    let car: Car;
+    try { car = new Car(this, 300, 244, 1.5).setDepth(40).setScrollFactor(0) as Car; }
+    catch (e) { // fallback silent coupe if rig/textures missing mid-boot
+      car = this.add.container(300, 244) as any; const body = this.add.rectangle(0, -10, 48, 18, 0xf4f0e8).setOrigin(0.5, 1); (car as any).add(body); (car as any).setScale(1.5); (car as any).setDepth(40); (car as any).setScrollFactor(0); (car as any).rig = { w: 48, h: 18, r: 6, wheels: [], head: [40, 8], tail: [4, 8], exhaust: [2, 12] }; (car as any).startTrail = () => {}; (car as any).speed = 0; }
+    (window as any).__car = car; this.car = car;
+    const playSafe = (spr: Phaser.GameObjects.Sprite, key: string) => { if (this.anims.exists(key)) { try { spr.play(key); } catch { /* missing frames */ } } };
+    const sakTex = this.textures.exists('p_idle') ? 'p_idle' : (this.textures.exists('p_run') ? 'p_run' : 'glow');
+    const sak = this.add.sprite(-20, 240, sakTex, 0).setOrigin(0.5, 1).setScale(1.5).setDepth(41).setScrollFactor(0); playSafe(sak, 'run'); this.sak = sak;
     this.tweens.add({ targets: sak, x: 262, duration: 1300, ease: 'Linear', onComplete: () => {
-      sak.play('jump'); this.tweens.add({ targets: sak, x: 292, duration: 380, ease: 'Linear' });
-      this.tweens.add({ targets: sak, y: 206, duration: 190, ease: 'Quad.out', yoyo: true, onYoyo: () => { sak.play('fall'); this.tweens.add({ targets: sak, alpha: 0, duration: 170, ease: 'Quad.in' }); }, onComplete: () => {
+      playSafe(sak, 'jump'); this.tweens.add({ targets: sak, x: 292, duration: 380, ease: 'Linear' });
+      this.tweens.add({ targets: sak, y: 206, duration: 190, ease: 'Quad.out', yoyo: true, onYoyo: () => { playSafe(sak, 'fall'); this.tweens.add({ targets: sak, alpha: 0, duration: 170, ease: 'Quad.in' }); }, onComplete: () => {
         sak.setVisible(false); this.tweens.add({ targets: car, scaleY: 1.38, duration: 90, yoyo: true, ease: 'Quad.out' });
-        this.time.delayedCall(350, () => { car.startTrail(40); this.driving = true; this.tweens.add({ targets: car, x: 720, duration: 3600, ease: 'Quad.in' }); });
+        this.time.delayedCall(350, () => { try { car.startTrail(40); } catch { /* particle textures optional */ } this.driving = true; this.tweens.add({ targets: car, x: 720, duration: 3600, ease: 'Quad.in' }); });
       } });
     } });
     const st = { fontFamily: 'monospace', fontStyle: 'bold', fontSize: '16px', color: '#ffd23f', stroke: '#1a0f2e', strokeThickness: 4 };

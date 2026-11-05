@@ -196,14 +196,14 @@ export class FtBoss extends Enemy {
       this.setAngle(Phaser.Math.Clamp(this.b.velocity.x * 0.06, -6, 6));
       if (this.stT <= 0) {
         this.n++; const cycle = this.phase === 3 ? 5 : this.phase === 2 ? 4 : 3; const ph = this.n % cycle;
-        if (ph === 0) { this.st = 'aim'; this.stT = this.phase === 3 ? 0.4 : 0.55; this.telegraph(this.stT); this.tx = px; this.ty = Math.min(py - 10, this.groundY - 40); this.s9(FtBoss.BOLT, this.x, this.y + 10, 0.4, 1.6, this.stT * 1000); }
-        else if (this.phase >= 2 && ph === cycle - 1) { this.st = 'rainTele'; this.stT = 0.55; this.telegraph(0.55); this.s9(FtBoss.BURST, this.x, this.y - 20, 0.5, 2.0, 550); }
+        if (ph === 0) { this.st = 'aim'; this.stT = this.phase === 3 ? 0.45 : 0.65; this.telegraph(this.stT); this.tx = px; this.ty = Math.min(py - 10, this.groundY - 40); this.s9(FtBoss.BOLT, this.x, this.y + 10, 0.4, 1.6, this.stT * 1000); }
+        else if (this.phase >= 2 && ph === cycle - 1) { this.st = 'rainTele'; this.stT = 0.7; this.telegraph(0.7); this.s9(FtBoss.BURST, this.x, this.y - 20, 0.5, 2.0, 550); }
         else if (ph === 2 || (this.phase === 3 && ph === 3)) {
-          this.st = 'beamTele'; this.stT = 0.5; this.telegraph(0.5); this.tx = px; this.ty = py;
+          this.st = 'beamTele'; this.stT = 0.65; this.telegraph(0.65); this.tx = px; this.ty = py;
           const a = Math.atan2(py - this.y, px - this.x);
           this.s9(FtBoss.BEAM, this.x + Math.cos(a) * 40, this.y + Math.sin(a) * 40, 0.35, 1.8, 500, Phaser.Math.RadToDeg(a) + 90);
         } else {
-          this.st = 'fanTele'; this.stT = 0.45; this.telegraph(0.45); this.tx = px; this.ty = py - 10;
+          this.st = 'fanTele'; this.stT = 0.6; this.telegraph(0.6); this.tx = px; this.ty = py - 10;
           this.s9(FtBoss.BURST, this.x, this.y + 8, 0.35, 1.5, 450);
         }
       }

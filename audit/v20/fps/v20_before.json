@@ -1,0 +1,57 @@
+{
+  "TAG": "v20_before",
+  "res": {
+    "Level2": {
+      "frames": 163,
+      "avgFps": 15.7,
+      "p95ms": 83.4,
+      "p99ms": 300,
+      "over20ms": 163,
+      "objs": 2490,
+      "blendAdd": 626,
+      "renderer": "webgl",
+      "phaserFps": 18,
+      "x": 764,
+      "cull": {
+        "culled": 1952,
+        "checked": 2271
+      },
+      "clite": {
+        "emitters": 0,
+        "culled": 0,
+        "alive": 0,
+        "on": false
+      },
+      "lerp": 0.11,
+      "roundPx": false,
+      "rtype": 2,
+      "errs": []
+    },
+    "Level1": {
+      "frames": 183,
+      "avgFps": 17.6,
+      "p95ms": 66.7,
+      "p99ms": 316.6,
+      "over20ms": 183,
+      "objs": 2097,
+      "blendAdd": 224,
+      "renderer": "webgl",
+      "phaserFps": 20,
+      "x": 1916,
+      "cull": {
+        "culled": 1610,
+        "checked": 1717
+      },
+      "clite": {
+        "emitters": 0,
+        "culled": 0,
+        "alive": 0,
+        "on": false
+      },
+      "lerp": 0.11,
+      "roundPx": false,
+      "rtype": 2,
+      "errs": []
+    }
+  }
+}

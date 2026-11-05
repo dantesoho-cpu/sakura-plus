@@ -35,9 +35,20 @@ export class Parallax {
     if (opts.fg) { this.fg = add('g2_fg', 270 - 70, 1.15, 60, 0); this.fg.ts.setAlpha(0.9); }
     for (let i = 0; i < 26; i++) { const img = S.add.image(0, 0, i % 2 ? 'spark' : 'spark2').setScrollFactor(0).setDepth(-92).setScale(0.5).setBlendMode(Phaser.BlendModes.ADD);
       this.sparks.push({ img, x: Math.random() * 560, y: 168 + Math.random() * 40, ph: Math.random() * 6 }); }
-    if (!S.anims.exists('bird')) S.anims.create({ key: 'bird', frames: S.anims.generateFrameNumbers('bird', {}), frameRate: 8, repeat: -1 });
-    for (let i = 0; i < 5; i++) { const g = S.add.sprite(0, 0, 'bird').setScrollFactor(0).setDepth(-89).play({ key: 'bird', startFrame: i % 2 }).setTint(0x3a2a5a);
-      this.birds.push({ g, x: Math.random() * 600, y: 40 + Math.random() * 50, v: 14 + Math.random() * 10, ph: Math.random() * 6 }); }
+    // birds are optional — Victory can boot after a hard scene.stop() sweep before Boot anims settle
+    if (S.textures.exists('bird')) {
+      if (!S.anims.exists('bird')) {
+        const frames = S.anims.generateFrameNumbers('bird', {});
+        if (frames && frames.length) S.anims.create({ key: 'bird', frames, frameRate: 8, repeat: -1 });
+      }
+      if (S.anims.exists('bird')) {
+        for (let i = 0; i < 5; i++) {
+          const g = S.add.sprite(0, 0, 'bird').setScrollFactor(0).setDepth(-89).setTint(0x3a2a5a);
+          try { g.play({ key: 'bird', startFrame: i % Math.max(1, (S.anims.get('bird')?.frames?.length || 2)) }); } catch { /* keep static */ }
+          this.birds.push({ g, x: Math.random() * 600, y: 40 + Math.random() * 50, v: 14 + Math.random() * 10, ph: Math.random() * 6 });
+        }
+      }
+    }
   }
   dt = 0;
   /** advance animation time; positions are applied in sync() on the camera's prerender, i.e. after follow/lerp has set this frame's scroll (no 1-frame lag vs the world) */

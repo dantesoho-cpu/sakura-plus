@@ -1,0 +1,85 @@
+{
+  "round": "v20",
+  "bundle": "index-PTkan4YQ.js",
+  "smoke": {
+    "Level1": {
+      "x": 225,
+      "hp": 5,
+      "cull": true,
+      "roundPx": false,
+      "lerp": 0.11,
+      "objs": 1594,
+      "cullDbg": {
+        "culled": 1170,
+        "checked": 1213
+      },
+      "errs": []
+    },
+    "Level2": {
+      "x": 236,
+      "hp": 5,
+      "cull": true,
+      "roundPx": false,
+      "lerp": 0.11,
+      "objs": 2324,
+      "cullDbg": {
+        "culled": 1325,
+        "checked": 1424
+      },
+      "errs": []
+    },
+    "Shrine": {
+      "x": 254,
+      "hp": 5,
+      "cull": true,
+      "roundPx": false,
+      "lerp": 0.34,
+      "objs": 1349,
+      "cullDbg": {
+        "culled": 1105,
+        "checked": 1168
+      },
+      "errs": []
+    },
+    "Fortress": {
+      "x": 314,
+      "hp": 4,
+      "cull": true,
+      "roundPx": false,
+      "lerp": 0.11,
+      "objs": 2268,
+      "cullDbg": {
+        "culled": 1570,
+        "checked": 1727
+      },
+      "errs": []
+    }
+  },
+  "victory": {
+    "fortress": {
+      "active": true,
+      "data": {
+        "time": 333,
+        "got": 8,
+        "kills": 22,
+        "deaths": 1,
+        "ch": 4,
+        "gems": 5
+      },
+      "errs": []
+    },
+    "hard": {
+      "active": true,
+      "data": {
+        "time": 120,
+        "got": 7,
+        "kills": 12,
+        "deaths": 1,
+        "ch": 1
+      },
+      "errs": []
+    }
+  },
+  "pageErrors": [],
+  "pass": true
+}

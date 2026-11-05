@@ -1,0 +1,25 @@
+{
+  "fortress": {
+    "active": true,
+    "data": {
+      "time": 333,
+      "got": 8,
+      "kills": 22,
+      "deaths": 1,
+      "ch": 4,
+      "gems": 5
+    },
+    "errs": []
+  },
+  "hard": {
+    "active": true,
+    "data": {
+      "time": 120,
+      "got": 7,
+      "kills": 12,
+      "deaths": 1,
+      "ch": 1
+    },
+    "errs": []
+  }
+}

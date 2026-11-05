@@ -5,13 +5,25 @@ export class Car extends Phaser.GameObjects.Container {
   trail?: Phaser.GameObjects.Particles.ParticleEmitter; smoke?: Phaser.GameObjects.Particles.ParticleEmitter;
   speed = 0; t = Math.random() * 9; lastX = 0; rig: any;
   constructor(s: Phaser.Scene, x: number, y: number, scale = 1) {
-    super(s, x, y); s.add.existing(this); const r = this.rig = s.cache.json.get('car_rig'); this.lastX = x;
+    super(s, x, y); s.add.existing(this);
+    const fallback = { w: 48, h: 22, r: 6, wheels: [[10, 18], [38, 18]] as [number, number][], head: [44, 10], tail: [4, 10], exhaust: [2, 14] };
+    const r = this.rig = s.cache.json.get('car_rig') || fallback; this.lastX = x;
     // origin: bottom-centre of the body box
     const ox = -r.w / 2, oy = -r.h;
-    for (const [wx, wy] of r.wheels) this.wheels.push(s.add.image(ox + wx, oy + wy, 'car_wheel'));
-    this.body_ = s.add.image(ox, oy, 'car_body').setOrigin(0, 0);
-    this.head = s.add.image(ox + r.head[0] + 4, oy + r.head[1], 'glow').setTint(0xfff3c0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.6);
-    this.tail = s.add.image(ox + r.tail[0], oy + r.tail[1], 'glow').setTint(0xff3a6a).setBlendMode(Phaser.BlendModes.ADD).setScale(0.35);
+    const hasWheel = s.textures.exists('car_wheel'), hasBody = s.textures.exists('car_body');
+    for (const [wx, wy] of (r.wheels || fallback.wheels)) {
+      if (hasWheel) this.wheels.push(s.add.image(ox + wx, oy + wy, 'car_wheel'));
+      else this.wheels.push(s.add.circle(ox + wx, oy + wy, Math.max(3, (r.r || 6)), 0x222028) as any);
+    }
+    this.body_ = hasBody ? s.add.image(ox, oy, 'car_body').setOrigin(0, 0)
+      : s.add.rectangle(ox + r.w / 2, oy + r.h, r.w, r.h, 0xf4f0e8).setOrigin(0.5, 1) as any;
+    const glowKey = s.textures.exists('glow') ? 'glow' : undefined;
+    this.head = glowKey
+      ? s.add.image(ox + r.head[0] + 4, oy + r.head[1], glowKey).setTint(0xfff3c0).setBlendMode(Phaser.BlendModes.ADD).setScale(0.6)
+      : s.add.circle(ox + r.head[0], oy + r.head[1], 3, 0xfff3c0) as any;
+    this.tail = glowKey
+      ? s.add.image(ox + r.tail[0], oy + r.tail[1], glowKey).setTint(0xff3a6a).setBlendMode(Phaser.BlendModes.ADD).setScale(0.35)
+      : s.add.circle(ox + r.tail[0], oy + r.tail[1], 2, 0xff3a6a) as any;
     this.add([...this.wheels, this.body_, this.head, this.tail]); this.setScale(scale);
   }
   /** start exhaust + petal trail (call once the car is in the scene's display list) */

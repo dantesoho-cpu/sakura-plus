@@ -392,7 +392,7 @@ export class Level1 extends Phaser.Scene {
     }
     // landmarks & water pieces from the sheet near pits / waterfalls
     const lm = DECO.landmark; let li = 0;
-    for (let x = 6; x < M[0].length - 6; x += 26) { const y = this.surfaceBelow(x, 80, S); if (y > 0 && !busy(x, y)) this.cull(this.add.image(x * TS, y * TS + 2, this.dusk(x, lm[li++ % lm.length])).setOrigin(0.5, 1).setDepth(-7)); }
+    for (let x = 6; x < M[0].length - 6; x += 18) { const y = this.surfaceBelow(x, 80, S); if (y > 0 && !busy(x, y)) this.cull(this.add.image(x * TS, y * TS + 2, this.dusk(x, lm[li++ % lm.length])).setOrigin(0.5, 1).setDepth(-7)); }
     // (old: sheet water pieces stamped at each fall foot — replaced by fallUnit lips/basins)
   }
   // ---- second-gen pieces (regenerated in the sakuratileset style): ruins, pillars, walls, scaffolds, banners, lanterns, rocks, plants ----
