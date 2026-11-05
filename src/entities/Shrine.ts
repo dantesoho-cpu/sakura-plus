@@ -72,7 +72,7 @@ export class ShBoss extends Enemy {
   kind = 'boss'; maxHp = BOSS_HP; awake = false; st = 'sleep'; stT = 0; hx: number; hy: number; n = 0; dbg: Record<string, number> = { fan: 0, dive: 0, spiral: 0, summon: 0 };
   summon: (x: number, y: number) => void = () => {}; escorts = () => 0; onDead: () => void = () => {}; tx = 0; ty = 0; glowI: Phaser.GameObjects.Image;
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx, public gun: Blaster, public groundY: number) { super(s, x, y, 'nk_shboss_0', BOSS_HP, fx); this.hx = x; this.hy = y; this.setOrigin(0.5, 0.5); this.b.setSize(this.width * 0.8, this.height * 0.7); this.play('nk_shboss_walk');
-    this.setAlpha(0); this.setDepth(8.5); this.glowI = s.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x6fe8ff).setScale(2.6).setAlpha(0).setDepth(8.4); }
+    this.setAlpha(0); this.setDepth(8.5); this.glowI = s.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x6fe8ff).setScale(5).setAlpha(0).setDepth(8.4); }
   get p2() { return this.hp <= this.maxHp / 2; }
   hit(dmg: number, dir: number) { if (!this.awake || this.dead || this.st === 'dying') return; const was = this.p2; super.hit(dmg, dir); if (!was && this.p2 && !this.dead) { this.st = 'spiral'; this.stT = 2.4; this.scene.cameras.main.flash(200, 120, 230, 255); audio.sfx('gate'); } }
   knock() {}
