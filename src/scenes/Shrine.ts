@@ -86,7 +86,10 @@ const PROPS: [string, number, number, number, boolean?][] = [
   // round: denser shelves + ground landmarks
   ['lantern_a', 750, T2, 1.6], ['banner_r', 1100, T2, 1.5], ['fence', 1500, T1, 1.6], ['lantern_b', 2050, T4, 1.6],
   ['pagoda', 3400, T1, 1.15], ['lantern_post', 3850, T2, 1.6], ['tree', 4800, T1, 1.3], ['cr_ped', 5600, T1, 1.4],
-  ['lantern_a', 6050, T1, 1.6], ['banner_r', 6500, T4, 1.5], ['shrine_mini', 7200, T1, 1.6], ['lantern_b', 8450, T1, 1.6]];
+  ['lantern_a', 6050, T1, 1.6], ['banner_r', 6500, T4, 1.5], ['shrine_mini', 7200, T1, 1.6], ['lantern_b', 8450, T1, 1.6],
+  // round4 intentional dress (flush on T1/T2 shelves)
+  ['lantern_a', 2180, T2, 1.55], ['banner_r', 3350, T1, 1.45], ['shrine_mini', 4750, T2, 1.5],
+  ['lantern_a', 6280, T1, 1.55], ['cr_a', 7420, T1, 1.6], ['banner_r', 8920, T1, 1.45]];
 // waterfalls [piece, x centre, top y, bottom y]; shafts carry bubble lifts
 const FALLS: [string, number, number, number][] = [['wf_a', 840, 860, T1 + 6], ['wf_wide', 2250, 400, T1 + 6], ['wf_b', 3620, 680, T2 + 6], ['wf_a', 4520, 860, T1 + 6], ['wf_wide', 5720, 500, 1016],
   ['wf_b', 7330, 640, 1016], ['wf_a', 8020, 700, T1 + 6], ['wf_wide', (AX0 + AX1) / 2, 720, GA + 6]];

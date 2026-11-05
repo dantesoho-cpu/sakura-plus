@@ -56,19 +56,19 @@ const GEMS: [number, number, number][] = [
 ];
 /** Landmark set dressing from Dante's prop sheet — foot-planted on decks, no AI. */
 const PROP_DRESS: [string, number, number, number][] = [
-  // dock
-  ['deco0', 260, T1, 0.55], ['deco4', 520, T1, 0.5], ['ship0', 860, T2, 0.42],
+  // dock — banners + one airship (no sheet-label cards)
+  ['banner_a', 240, T1, 0.7], ['banner_b', 420, T1, 0.7], ['deco4', 560, T1, 0.5], ['airship_main', 900, T2, 0.5],
   // gantry
-  ['deco1', 1360, T1, 0.55], ['deco7', 1540, T2, 0.5], ['deco10', 1820, T1, 0.48],
+  ['deco1', 1360, T1, 0.55], ['banner_c', 1520, T2, 0.65], ['deco10', 1820, T1, 0.48], ['airship_tower', 1680, T1, 0.55],
   // spires
-  ['deco2', 2400, T1, 0.55], ['deco8', 2660, T2, 0.5], ['deco11', 2900, T1, 0.48], ['hoop', 2750, T4 - 40, 0.45],
+  ['deco2', 2400, T1, 0.55], ['hoop_ring', 2680, T4 - 30, 0.7], ['banner_d', 2860, T1, 0.65], ['mech_console', 3050, T2, 0.45],
   // hangar
-  ['ship0', 3580, T1, 0.4], ['deco5', 3880, T1, 0.52], ['deco12', 4180, T2, 0.48], ['deco9', 4400, T1, 0.5],
+  ['airship_fleet', 3520, T1, 0.48], ['deco5', 3880, T1, 0.52], ['mech_portal', 4120, T2 - 10, 0.5], ['deco9', 4400, T1, 0.5],
   // bridge
-  ['deco3', 4960, T1, 0.55], ['deco6', 5200, T2, 0.5], ['deco13', 5500, T1, 0.48],
+  ['deco3', 4960, T1, 0.55], ['banner_a', 5180, T2, 0.65], ['deco13', 5500, T1, 0.48], ['airship_ring', 5340, T3 - 20, 0.42],
   // approach + arena rim (leave boss center clear)
-  ['deco14', 5900, T1, 0.5], ['ship0', 6300, T1, 0.38], ['deco0', 7100, T1, 0.5],
-  ['deco4', 6540, T2, 0.45], ['hoop', 6720, T3 - 30, 0.4],
+  ['deco14', 5900, T1, 0.5], ['airship_main', 6280, T1, 0.42], ['banner_b', 7050, T1, 0.65],
+  ['deco4', 6540, T2, 0.45], ['hoop_left', 6680, T3 - 20, 0.55],
 ];
 
 type Frame = { w: number; h: number; top: number; foot: number; prof?: number[]; kind: string };
@@ -461,35 +461,37 @@ export class Fortress extends Phaser.Scene {
       this.secrets.push({ wall: ws, chest, sy, found: false, open: false, ex: gx });
     }
 
-    // legacy set dressings that remain until new interactable sheets arrive
-    if (this.textures.exists('ft_ship0')) {
-      const s0 = this.add.image(2400, T5 - 40, 'ft_ship0').setOrigin(0.5, 1).setDepth(1.45).setScale(0.55).setAlpha(0.9);
+    // floating landmarks — clean crops only (no sheet titles)
+    const floatShip = this.textures.exists('ft_airship_main') ? 'ft_airship_main' : (this.textures.exists('ft_ship0') ? 'ft_ship0' : null);
+    if (floatShip) {
+      const s0 = this.add.image(2400, T5 - 40, floatShip).setOrigin(0.5, 1).setDepth(1.45).setScale(0.6).setAlpha(0.92);
       this.tweens.add({ targets: s0, y: s0.y - 6, yoyo: true, repeat: -1, duration: 2200, ease: 'Sine.inOut' });
-      const s1 = this.add.image(4800, T4 - 20, 'ft_ship0').setOrigin(0.5, 1).setDepth(1.45).setScale(0.4).setFlipX(true).setAlpha(0.85);
+      const s1 = this.add.image(4800, T4 - 20, floatShip).setOrigin(0.5, 1).setDepth(1.45).setScale(0.45).setFlipX(true).setAlpha(0.88);
       this.tweens.add({ targets: s1, y: s1.y - 5, yoyo: true, repeat: -1, duration: 2600, ease: 'Sine.inOut' });
     }
     if (this.textures.exists('ft_ring')) {
-      const ring = this.add.image(AX0 - 200, T2 - 40, 'ft_ring').setDepth(3).setScale(0.7);
+      const ring = this.add.image(AX0 - 200, T2 - 40, 'ft_ring').setDepth(3).setScale(0.75);
       this.tweens.add({ targets: ring, angle: 360, duration: 12000, repeat: -1, ease: 'Linear' });
       const rg = this.add.image(AX0 - 200, T2 - 40, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xb04aff).setScale(1.6).setAlpha(0.35).setDepth(2.9);
       this.glows.push({ o: rg, base: 0.3, t: AX0, sp: 2.2 });
     }
-    if (this.textures.exists('ft_portal0')) {
-      const mid = this.add.image(3000, T3 - 50, 'ft_portal0').setDepth(2.8).setScale(0.55).setAlpha(0.9);
+    const portalKey = this.textures.exists('ft_mech_portal') ? 'ft_mech_portal' : (this.textures.exists('ft_portal0') ? 'ft_portal0' : null);
+    if (portalKey) {
+      const mid = this.add.image(3000, T3 - 50, portalKey).setDepth(2.8).setScale(0.6).setAlpha(0.92);
       this.tweens.add({ targets: mid, angle: -360, duration: 16000, repeat: -1, ease: 'Linear' });
       (this as any)._midPortal = { x: 3000, y: T3 - 50 };
     }
-    // intentional prop landmarks (sheet-only)
+    // intentional prop landmarks (sheet-only, title-free crops)
     for (const [k, x, y, sc] of PROP_DRESS) {
       const key = 'ft_' + k;
       if (!this.textures.exists(key)) continue;
       const im = this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(2.65).setScale(sc);
-      if (k === 'ship0' || k === 'hoop') {
+      if (k.includes('airship') || k.includes('hoop') || k === 'ship0') {
         this.tweens.add({ targets: im, y: im.y - 3, yoyo: true, repeat: -1, duration: 2600 + (x % 400), ease: 'Sine.inOut' });
-      } else if (k.startsWith('deco')) {
+      } else if (k.startsWith('deco') || k.startsWith('banner')) {
         this.tweens.add({ targets: im, alpha: { from: 0.92, to: 1 }, yoyo: true, repeat: -1, duration: 1800 + (x % 500), ease: 'Sine.inOut' });
       }
-      if (this.textures.exists('glow') && (k === 'ship0' || k === 'hoop' || k.startsWith('deco'))) {
+      if (this.textures.exists('glow') && (k.includes('airship') || k.includes('hoop') || k.includes('mech') || k.startsWith('deco') || k.startsWith('banner'))) {
         const g = this.add.image(x, y - 20, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x9a7aff).setScale(0.35).setAlpha(0.18).setDepth(2.6);
         this.glows.push({ o: g, base: 0.15, t: x, sp: 1.6 });
       }
@@ -549,8 +551,7 @@ export class Fortress extends Phaser.Scene {
     this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     showRespawnBtn(true);
     this.events.once('shutdown', () => { audio.stopLoops(); showRespawnBtn(false); });
-    const label = st ? `${st.used_pieces}/${st.total_pieces} sheet pieces` : 'Air Fortress';
-    this.toast.show(`AIR FORTRESS — ${label}`, '#ffd23f');
+    this.toast.show('AIR FORTRESS', '#ffd23f');
     this.dbg.liveEn = this.liveEn; this.dbg.liveTur = this.liveTur; this.dbg.collects = this.collects.length; this.dbg.gates = this.gates.length;
     (window as any).__lvl = this; (window as any).__fortress = this;
     this.cameras.main.fadeIn(400);
