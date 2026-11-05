@@ -1,0 +1,15 @@
+{
+  "round": "v20",
+  "verified_at_phoenix": "2026-11-05 03:15 America/Phoenix",
+  "url": "https://dantesoho-cpu.github.io/sakura-plus/",
+  "bundle": "index-CXP7hcJB.js",
+  "prev_bundle": "index-DGDaghcB.js",
+  "bundle_changed": true,
+  "last_modified_utc": "2026-11-05T10:15:08Z",
+  "last_modified_phoenix": "2026-11-05 03:15:08 America/Phoenix",
+  "pages_run_id": 42008967145,
+  "pages_conclusion": "success",
+  "publish_commit": "0869167f",
+  "sakura_commit": "6e4e4f4a",
+  "smoke": "PASS"
+}
