@@ -22,7 +22,10 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (this.dead) return; audio.sfx('ehit'); this.hp -= dmg; this.flashT = FEEL.ehit.flash; this.setTintFill(0xffffff);
     this.fx.spark(this.x - dir * 4, this.y - this.height / 2); this.knock(dir); this.hitT = 0.18; this.punch(0.8, 1.18, 160); this.jolt(dir);
     this.impact(dir, dmg); this.dbgImpacts++;
-    if (this.hp <= 0) this.die(); else { this.fx.hitStop(FEEL.ehit.stop + Math.min(40, (dmg - 1) * 12)); if (dmg >= 3) this.scene.cameras.main.shake(90, 0.004); }
+    if (this.hp <= 0) this.die(); else {
+      this.fx.hitStop(FEEL.ehit.stop + Math.min(48, (dmg - 1) * 14));
+      this.scene.cameras.main.shake(dmg >= 3 ? 100 : 55, dmg >= 3 ? 0.005 : 0.0022);
+    }
   }
   /** layered hit feedback: additive sheet flash (random angle/scale so repeats vary) + a short directional streak + ring */
   dbgImpacts = 0;
@@ -32,7 +35,8 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
     s.tweens.add({ targets: im, scale: sc * (1.1 + Math.random() * 0.3), alpha: 0, angle: im.angle + dir * 60, duration: 110 + dmg * 20, ease: 'Cubic.out', onComplete: () => im.destroy() });
     const st = s.add.rectangle(cx, cy, 2, 18 + dmg * 4, 0xffffff).setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setAngle(90 + (Math.random() - 0.5) * 50);
     s.tweens.add({ targets: st, x: cx - dir * 20, scaleX: 0.2, alpha: 0, duration: 120, onComplete: () => st.destroy() });
-    if (dmg >= 2) { const r = s.add.circle(cx, cy, 4).setStrokeStyle(2, 0xff9af0).setDepth(12).setBlendMode(Phaser.BlendModes.ADD); s.tweens.add({ targets: r, radius: 18 + dmg * 3, alpha: 0, duration: 200, onComplete: () => r.destroy() }); } }
+    const r = s.add.circle(cx, cy, 3 + Math.min(2, dmg)).setStrokeStyle(dmg >= 2 ? 2 : 1.5, dmg >= 3 ? 0xffd23f : 0xff9af0).setDepth(12).setBlendMode(Phaser.BlendModes.ADD);
+    s.tweens.add({ targets: r, radius: 14 + dmg * 4, alpha: 0, duration: 180 + dmg * 20, onComplete: () => r.destroy() }); }
   /** hurt animation: drones spin-wobble, turrets recoil-shake (others: no-op besides flash/punch) */
   wob = 0; wobT = 0;
   jolt(dir: number) { if (this.dead || this.hp <= 0) return; const s = this.scene;

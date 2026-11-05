@@ -29,11 +29,14 @@ const WINDS: [number, number, number, number][] = [
 const VAULTS: [number, number, number, number, number][] = [
   [1760, T3, 1880, T3, 1],
   [4120, T4, 4240, T4, -1],
+  [5280, T2, 5400, T2, 1],
 ];
 /** Secret alcoves: [x, walkY, side] */
 const SECRETS: [number, number, number][] = [
   [3050, T1, 1],
   [5450, T2, -1],
+  [1680, T3, 1],
+  [4800, T4, -1],
 ];
 const FOES: [string, number, number][] = [
   ['drone', 420, T2 - 40], ['orb', 780, T1], ['bip', 980, T1], ['drone', 1200, T3 - 30],
@@ -43,6 +46,8 @@ const FOES: [string, number, number][] = [
   ['orb', 4000, T2], ['human', 4200, T1], ['wing', 4400, T3 - 30], ['tri', 4600, T1],
   ['avian', 4800, T5 - 20], ['drone', 5000, T2 - 40], ['thrust', 5200, T1], ['human', 5500, T2],
   ['bip', 5700, T1], ['drone', 5900, T4 - 30], ['orb', 6100, T1], ['avian', 6200, T3 - 20],
+  // approach pacing before arena lock
+  ['human', 6350, T1], ['drone', 6480, T2 - 40], ['tri', 6550, T1], ['wing', 6300, T3 - 20],
 ];
 const FLOWERS: [number, number][] = [
   [340, T1 - 8], [900, T2 - 8], [1400, T1 - 8], [1900, T3 - 8], [2500, T1 - 8],
@@ -233,7 +238,8 @@ export class Fortress extends Phaser.Scene {
       }
       if (role === 'collect') {
         this.collects.push(im);
-        this.tweens.add({ targets: im, y: im.y - 3, yoyo: true, repeat: -1, duration: 700 + (p.x % 400), ease: 'Sine.inOut' });
+        // gentle hover without floating clear of the deck
+        this.tweens.add({ targets: im, y: im.y - 1.5, yoyo: true, repeat: -1, duration: 900 + (p.x % 400), ease: 'Sine.inOut' });
         const g = this.add.image(p.x, im.y - im.displayHeight * 0.5, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff9ad8).setScale(0.35).setAlpha(0.3).setDepth(p.depth - 0.01);
         this.glows.push({ o: g, base: 0.25, t: p.x, sp: 2.8 });
       }
@@ -485,7 +491,8 @@ export class Fortress extends Phaser.Scene {
     for (const [k, x, y, sc] of PROP_DRESS) {
       const key = 'ft_' + k;
       if (!this.textures.exists(key)) continue;
-      const im = this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(2.65).setScale(sc);
+      const mm = this.m(k); const foot = (mm.foot ?? mm.h - 1);
+      const im = this.add.image(x, y + (mm.h - 1 - foot) * sc, key).setOrigin(0.5, 1).setDepth(2.65).setScale(sc);
       if (k.includes('airship') || k.includes('hoop') || k === 'ship0') {
         this.tweens.add({ targets: im, y: im.y - 3, yoyo: true, repeat: -1, duration: 2600 + (x % 400), ease: 'Sine.inOut' });
       } else if (k.startsWith('deco') || k.startsWith('banner')) {
@@ -537,7 +544,7 @@ export class Fortress extends Phaser.Scene {
     this.physics.add.overlap(this.gun.shots, this.enemyGroup, (s: any, e: any) => {
       if (!e.active || e.dead) return; const dir = Math.sign(e.x - this.player.x) || 1; e.hit(s.damage || 1, dir); this.gun.kill(s);
     });
-    const hurt = () => this.hud.setHp(this.player.hp);
+    const hurt = () => { this.hud.setHp(this.player.hp); this.fx.hitStop(FEEL.hurt.stop); this.fx.shake(FEEL.hurt.shakeMs, FEEL.hurt.shakeI); };
     this.physics.add.overlap(this.player, this.egun.shots, (_p, s: any) => { if (s.active && this.player.damage(s.x)) { this.egun.kill(s); hurt(); } });
     this.physics.add.overlap(this.player, this.enemyGroup, (_p, e: any) => {
       if (!e.active || e.dead || (e.kind === 'boss' && !e.awake)) return;
