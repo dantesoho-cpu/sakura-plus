@@ -7235,6 +7235,28 @@
    "src": "deck"
   },
   {
+   "key": "deck_mid_02",
+   "x": 2887,
+   "y": 340,
+   "depth": 2.08,
+   "flip": false,
+   "origin": "tl_walk",
+   "solid": "one",
+   "role": "deck_pad",
+   "src": "deck"
+  },
+  {
+   "key": "deck_mid_00",
+   "x": 2950,
+   "y": 340,
+   "depth": 2.08,
+   "flip": false,
+   "origin": "tl_walk",
+   "solid": "one",
+   "role": "deck_pad",
+   "src": "deck"
+  },
+  {
    "key": "deck_mid_00",
    "x": 3372,
    "y": 200,
@@ -7281,6 +7303,28 @@
   {
    "key": "deck_mid_01",
    "x": 3624,
+   "y": 200,
+   "depth": 2.08,
+   "flip": false,
+   "origin": "tl_walk",
+   "solid": "one",
+   "role": "deck_pad",
+   "src": "deck"
+  },
+  {
+   "key": "deck_mid_02",
+   "x": 3687,
+   "y": 200,
+   "depth": 2.08,
+   "flip": false,
+   "origin": "tl_walk",
+   "solid": "one",
+   "role": "deck_pad",
+   "src": "deck"
+  },
+  {
+   "key": "deck_mid_00",
+   "x": 3750,
    "y": 200,
    "depth": 2.08,
    "flip": false,
@@ -7611,6 +7655,28 @@
   {
    "key": "deck_mid_01",
    "x": 2524,
+   "y": 200,
+   "depth": 2.08,
+   "flip": false,
+   "origin": "tl_walk",
+   "solid": "one",
+   "role": "deck_pad",
+   "src": "deck"
+  },
+  {
+   "key": "deck_mid_02",
+   "x": 2587,
+   "y": 200,
+   "depth": 2.08,
+   "flip": false,
+   "origin": "tl_walk",
+   "solid": "one",
+   "role": "deck_pad",
+   "src": "deck"
+  },
+  {
+   "key": "deck_mid_00",
+   "x": 2650,
    "y": 200,
    "depth": 2.08,
    "flip": false,
@@ -12522,7 +12588,7 @@
   "used_s5_9": 432,
   "total_s1_4": 222,
   "total_s5_9": 432,
-  "placements": 1134,
+  "placements": 1140,
   "deck_tiles": 11,
   "live_turrets": 14,
   "live_enemies": 16,

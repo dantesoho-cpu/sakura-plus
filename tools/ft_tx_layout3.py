@@ -138,7 +138,8 @@ def main():
                    (3200, T2), (4200, T2), (5600, T1), (6100, T2), (6600, T1), (2400, T5)]:
         w = deck[mids[0]]['w']
         x = max(20, cx - 2 * w)
-        for j in range(5):
+        n = 7 if ty <= T4 else 5
+        for j in range(n):
             place(placements, mids[j % len(mids)], x + j * (w - 1), ty, depth=2.08,
                   origin='tl_walk', solid=('ground' if ty >= T1 else 'one'), role='deck_pad', src='deck')
 

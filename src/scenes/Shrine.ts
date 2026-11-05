@@ -53,7 +53,9 @@ const PLATS: [string, number, number][] = [
   ['p_float', 5900, 950], ['p_float', 6080, 900], ['p_float', 6260, 840], ['p_slab1', 6200, 760], ['p_mid', 6300, 700], ['p_float', 7000, 600], ['p_float', 6900, 548], ['p_hang', 6600, T5], ['p_hang', 6810, T5],
   ['p_float', 6700, 960], ['p_float', 7120, 940],
   // Crystal Deep
-  ['p_arch3', 7600, T3 - 70], ['p_slab2', 8000, 760], ['p_slab1', 8080, 710], ['p_mid', 8640, 940], ['p_mid2', 8300, 1110], ['p_slab2', 7700, 1080]];
+  ['p_arch3', 7600, T3 - 70], ['p_slab2', 8000, 760], ['p_slab1', 8080, 710], ['p_mid', 8640, 940], ['p_mid2', 8300, 1110], ['p_slab2', 7700, 1080],
+  // polish: intentional stepping stones
+  ['p_float', 2150, 700], ['p_small', 3280, 650], ['p_mid', 5550, 940], ['p_float', 7250, 860], ['p_slab1', 8750, 1060]];
 // [prop, x (centre), surface y, depth, flip]
 const PROPS: [string, number, number, number, boolean?][] = [
   // Moss Gate
@@ -74,7 +76,12 @@ const PROPS: [string, number, number, number, boolean?][] = [
   ['cr_ped', 7480, T2, 1.4], ['cr_tall', 7700, T2, 1.6], ['cr_b', 8200, T2, 1.7], ['cr_pillar', 8500, T2, 1.4], ['cr_c', 8700, T2, 1.7], ['cr_a', 7500, T3, 1.7], ['cr_tall', 8350, T3, 1.6], ['cr_c', 8200, T4, 1.7],
   ['cr_tall', 7600, T1, 1.6], ['cr_ped', 8100, T1, 1.4], ['cr_a', 8600, T1, 1.7, true],
   // Warden's Hollow
-  ['torii_big', AX0 + 10, GA, 1.3], ['banner_gate', (AX0 + AX1) / 2, GA, 1.1], ['lantern_a', AX0 + 150, GA, 1.6], ['lantern_a', AX1 - 150, GA, 1.6, true], ['cr_pillar', AX1 - 60, GA, 1.4], ['pagoda', AX0 + 90, GA, 1.15]];
+  ['torii_big', AX0 + 10, GA, 1.3], ['banner_gate', (AX0 + AX1) / 2, GA, 1.1], ['lantern_a', AX0 + 150, GA, 1.6], ['lantern_a', AX1 - 150, GA, 1.6, true], ['cr_pillar', AX1 - 60, GA, 1.4], ['pagoda', AX0 + 90, GA, 1.15],
+  // polish: intentional set dressing on existing shelves / floor (flush-safe)
+  ['lantern_b', 1400, T5, 1.6], ['lantern_a', 2500, T5, 1.6], ['fence', 2100, T2, 1.6], ['banner_r', 2460, T3, 1.5],
+  ['lantern_post', 2650, T3, 1.6], ['tree', 4550, T2, 1.3, true], ['lantern_b', 5100, T3, 1.6], ['shrine_mini', 5450, T4, 1.6],
+  ['cr_a', 6800, T5, 1.7], ['cr_b', 7600, T3, 1.7], ['lantern_a', 8300, T4, 1.6], ['fence', 7900, T2, 1.6],
+  ['cr_c', 8200, T3, 1.7], ['lantern_post', 8720, T2, 1.6], ['pillar', 8600, T2, 1.3], ['banner_r', 8780, T1, 1.5]];
 // waterfalls [piece, x centre, top y, bottom y]; shafts carry bubble lifts
 const FALLS: [string, number, number, number][] = [['wf_a', 840, 860, T1 + 6], ['wf_wide', 2250, 400, T1 + 6], ['wf_b', 3620, 680, T2 + 6], ['wf_a', 4520, 860, T1 + 6], ['wf_wide', 5720, 500, 1016],
   ['wf_b', 7330, 640, 1016], ['wf_a', 8020, 700, T1 + 6], ['wf_wide', (AX0 + AX1) / 2, 720, GA + 6]];
@@ -87,16 +94,28 @@ const LOOP = { cx: 6560, cy: 1080, r: 74, x0: 6470, x1: 6492 };
 const VAULTS: [number, number, number, number, number][] = [[2640, T5, 3350, T2, -1], [6200, T1, 7000, T1, -1]];
 // secret alcoves behind false walls [x (left), surface y, entrance side]
 const SECRETS: [number, number, number][] = [[30, T1, 1], [5480, T4, -1]];
-const FLOWERS: [number, number][] = [[480, T2 - 24], [1450, T5 - 22], [2250, 470], [2700, T4 - 26], [4100, T1 - 24], [5400, T5 - 24], [6560, 1000], [7180, T1 - 24], [8400, T4 - 26], [8300, T1 - 30]];
+const FLOWERS: [number, number][] = [[480, T2 - 24], [1450, T5 - 22], [2250, 470], [2700, T4 - 26], [4100, T1 - 24], [5400, T5 - 24], [6560, 1000], [7180, T1 - 24], [8400, T4 - 26], [8300, T1 - 30],
+  [980, T4 - 24], [3200, T3 - 24], [5000, T2 - 24], [7800, T5 - 22], [8700, T2 - 24]];
 // gem arcs [x0, y0, n, kind] — collectible curves following the jump arcs
 const ARCS: [number, number, number, string][] = [[330, 980, 5, 'i_coin'], [600, 900, 6, 'i_gem_b'], [1440, 740, 5, 'i_coin'], [1880, 520, 4, 'i_gem_p'], [2900, 730, 7, 'i_coin'], [3440, 570, 5, 'i_gem_b'],
   [4300, 930, 8, 'i_coin'], [4800, 730, 5, 'i_gem_p'], [5900, 920, 7, 'i_gem_b'], [6300, 1120, 6, 'i_coin'], [7500, 980, 6, 'i_coin'], [8050, 690, 5, 'i_gem_p'], [1100, T1 - 30, 6, 'i_coin'], [5100, T1 - 30, 6, 'i_coin']];
 const FOES: [string, number, number][] = [
+  // Moss Gate — opening combat + vertical pressure
   ['crab', 420, T2], ['jelly', 860, 980], ['orb', 760, 880], ['mech', 1100, T2], ['crabl', 600, T1], ['jellyp', 1300, 1120], ['mech2', 1800, T1], ['orbs', 1200, 790], ['crab2', 1100, T3], ['jelly', 1800, 610], ['orb', 1450, 450],
+  // Falls of Ame — shaft guards + bridge watch
   ['mech', 2000, T2], ['jellyb', 2250, 900], ['crab', 2700, T2], ['crabs', 2600, T3], ['orb', 2900, 620], ['jellyp', 2600, 1120], ['mechl', 3000, T1], ['mech2', 2900, T4], ['jelly', 3500, 800],
+  ['orbs', 2450, 560], ['crab2', 3350, T2], ['jelly', 3100, 700],
+  // Lantern Terraces — stair ambush + canopy snipers
   ['crab', 4100, T2], ['orbs', 4450, 840], ['mech', 4900, T2], ['crab2', 5100, T3], ['jellyp', 4900, 600], ['mechs', 5300, T4], ['orb', 5400, 450], ['crabl', 4600, T1], ['mech2', 5400, T1],
+  ['jellyb', 4350, 980], ['mechs', 5600, T3],
+  // Sunken Halls — submerged jellies + floating shelf
   ['jelly', 6000, 1100], ['jellyb', 6400, 1060], ['jellyp', 6900, 1120], ['jelly', 6700, 900], ['orb', 6600, 620], ['crabs', 6800, T4], ['orbs', 7100, 470],
-  ['mech', 7700, T2], ['crab', 8100, T2], ['jellyb', 7900, 900], ['orb', 8300, 620], ['crab2', 7800, T3], ['mechl', 8400, T1], ['mechs', 8500, T4], ['jellyp', 8650, 880]];
+  ['jellyp', 6150, 980], ['crab', 7050, T1],
+  // Crystal Deep — crystal corridor pressure
+  ['mech', 7700, T2], ['crab', 8100, T2], ['jellyb', 7900, 900], ['orb', 8300, 620], ['crab2', 7800, T3], ['mechl', 8400, T1], ['mechs', 8500, T4], ['jellyp', 8650, 880],
+  ['orbs', 8000, 540], ['jelly', 8550, 1050],
+  // Warden approach (pre-arena, outside hollow)
+  ['mech2', 8750, T2], ['crab2', 8680, T1]];
 const ZONES: [number, string, number][] = [[0, 'Moss Gate', 0x1a5a6a], [1900, 'Falls of Ame', 0x1a4a8a], [3900, 'Lantern Terraces', 0x5a2a6a], [5700, 'Sunken Halls', 0x0a3a7a], [7400, 'Crystal Deep', 0x2a3a9a], [AX0 - 200, "Warden's Hollow", 0x1a2a5a]];
 export class Shrine extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; scam!: SpeedCam; bgp!: SheetParallax;
@@ -175,7 +194,10 @@ export class Shrine extends Phaser.Scene {
     for (const [k, x, y, d, f] of PROPS) { const im = this.prop(k, x, y, d, f); if (k.startsWith('lantern') || k === 'shrine_orb' || k.startsWith('cr_')) {
       const cr = k.startsWith('cr_'), g = this.add.image(x, im.y - im.displayHeight * (cr ? 0.5 : 0.62), 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(cr ? 0x9a7aff : k === 'shrine_orb' ? 0x6fe8ff : 0xffb25a).setScale(cr ? 0.9 : 0.6).setAlpha(0.35).setDepth(d + 0.05);
       if (cr) { this.glows.push({ o: g, base: 0.38, t: x, sp: 1.3 }); this.tweens.add({ targets: g, scale: { from: 0.8, to: 1.05 }, yoyo: true, repeat: -1, duration: 1400 + x % 600, ease: 'Sine.inOut' }); this.tweens.add({ targets: im, alpha: { from: 1, to: 0.86 }, yoyo: true, repeat: -1, duration: 1400 + x % 600, ease: 'Sine.inOut' }); }
-      else (g as any).__flick = 1, this.glows.push({ o: g, base: 0.36, t: x, sp: 4 }); } }
+      else (g as any).__flick = 1, this.glows.push({ o: g, base: 0.36, t: x, sp: 4 }); }
+      if (k.startsWith('torii') || k === 'pagoda' || k.startsWith('shrine_')) {
+        this.tweens.add({ targets: im, y: im.y - 1.5, yoyo: true, repeat: -1, duration: 2200 + (x % 500), ease: 'Sine.inOut' });
+      } }
     for (const [k, x, y] of [['banner_a', 1350, T3 + 6], ['banner_b', 2440, T3 + 6], ['banner_a', 2720, T4 + 6], ['banner_b', 4620, T3 + 6], ['banner_a', 5100, T4 + 6], ['banner_b', 5560, T4 + 6], ['banner_a', 6450, T4 + 6], ['banner_b', 7700, T3 + 6], ['banner_a', 1700, T4 + 6]] as [string, number, number][]) {
       const im = this.add.image(x, y, 'sh_' + k).setOrigin(0.5, 0).setScale(S).setDepth(1.8); this.tweens.add({ targets: im, angle: { from: -3, to: 3 }, yoyo: true, repeat: -1, duration: 1700 + x % 500, ease: 'Sine.inOut' }); this.tweens.add({ targets: im, scaleX: { from: S, to: S * 0.94 }, yoyo: true, repeat: -1, duration: 1100 + x % 300, ease: 'Sine.inOut' }); }
     for (const [k, x, t, b] of FALLS) { const m = this.m(k), seg = m.h * S - 2; // tiled at native scale (no stretch); each segment animates out of phase
