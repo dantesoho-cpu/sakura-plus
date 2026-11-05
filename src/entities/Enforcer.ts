@@ -109,16 +109,25 @@ export class Enforcer extends Enemy {
     this.zap(this.x, this.y, x2, y2, w * 1.6);
     if (this.lasT <= 0) { g.clear(); this.st = 'hover'; this.stT = 1.0; }
   }
-  die() { // slow-mo, flashes, chained explosions, collapse, then the real destroy
+  die() { // slow-mo, sheet boom cascade, collapse, final flash
     if (this.st === 'dying') return; this.enrage?.destroy(); this.enrage = undefined; this.shieldT = 0; this.laser?.clear(); this.st = 'dying'; this.dead = true; this.b.setVelocity(0, 0); this.b.enable = false; this.emit('dying', this);
     const sc = this.scene; let n = 0; this.clearTint();
-    // slow-mo for the first ~1.2s (physics/tweens/anims), always restored
     const w = (sc.physics as any).world; const slow = (on: boolean) => { if (!sc.sys.isActive()) return; w.timeScale = on ? 2.5 : 1; sc.tweens.timeScale = on ? 0.4 : 1; sc.anims.globalTimeScale = on ? 0.4 : 1; };
-    slow(true); sc.time.delayedCall(1200, () => slow(false)); sc.events.once('shutdown', () => { w.timeScale = 1; sc.tweens.timeScale = 1; sc.anims.globalTimeScale = 1; });
-    sc.cameras.main.flash(120, 255, 255, 255); this.fx.shake(300, 0.006);
-    // collapse: sags, tilts and sinks while it burns
-    sc.tweens.add({ targets: this, y: this.y + 26, angle: (this.flipX ? 1 : -1) * 28, scaleY: 0.85, duration: 1400, ease: 'Quad.in' });
-    sc.time.addEvent({ delay: 140, repeat: 9, callback: () => { n++; audio.sfx('explode', { rate: n === 10 ? 0.6 : 1 }); this.fx.explode(this.x + Phaser.Math.Between(-24, 24), this.y + Phaser.Math.Between(-16, 16), n === 10 ? 2 : 0.8);
-      this.setTintFill(n % 2 ? 0xffffff : 0xff6040); if (n === 10) { sc.cameras.main.flash(260, 255, 240, 250); this.fx.shake(400, 0.012); this.emit('destroyed', this); this.destroy(); } } });
+    slow(true); sc.time.delayedCall(1400, () => slow(false)); sc.events.once('shutdown', () => { w.timeScale = 1; sc.tweens.timeScale = 1; sc.anims.globalTimeScale = 1; });
+    sc.cameras.main.flash(160, 255, 255, 255); this.fx.shake(360, 0.008);
+    sc.tweens.add({ targets: this, y: this.y + 32, angle: (this.flipX ? 1 : -1) * 32, scaleY: 0.8, duration: 1600, ease: 'Quad.in' });
+    const ADD = Phaser.BlendModes.ADD;
+    sc.time.addEvent({ delay: 120, repeat: 11, callback: () => {
+      if (!this.active) return; n++; const ex = this.x + Phaser.Math.Between(-28, 28), ey = this.y + Phaser.Math.Between(-18, 18);
+      audio.sfx('explode', { rate: n >= 11 ? 0.55 : 0.85 + Math.random() * 0.3, vol: 0.55 });
+      this.fx.explode(ex, ey, n >= 11 ? 2.2 : 0.85);
+      const ring = sc.add.circle(ex, ey, 8).setStrokeStyle(3, n % 2 ? 0xffffff : 0xff6040).setDepth(14).setBlendMode(ADD);
+      sc.tweens.add({ targets: ring, radius: 70 + n * 6, alpha: 0, duration: 420, onComplete: () => ring.destroy() });
+      this.setTintFill(n % 2 ? 0xffffff : 0xff6040);
+      if (n >= 12) { sc.cameras.main.flash(320, 255, 240, 250); this.fx.shake(480, 0.014);
+        const fl = sc.add.rectangle(240, 135, 480, 270, 0xffffff).setScrollFactor(0).setDepth(200).setAlpha(0.9);
+        sc.tweens.add({ targets: fl, alpha: 0, duration: 700, onComplete: () => fl.destroy() });
+        this.emit('destroyed', this); this.destroy(); }
+    } });
   }
 }
