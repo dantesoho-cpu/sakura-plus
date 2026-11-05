@@ -9,8 +9,8 @@ export class CanvasLite {
     if (!this.on) return;
     { let n = 0; for (const o of s.children.list as any[]) if (o instanceof Phaser.GameObjects.Image && o.blendMode === Phaser.BlendModes.ADD && o.alpha <= 0.3 && o.alpha > 0 && !s.tweens.isTweening(o)) { o.setAlpha(0); n++; } (window as any).__cliteGlows = n; }
     for (const o of s.children.list as any[]) if (o instanceof Phaser.GameObjects.Particles.ParticleEmitter && !skip.includes(o) && o.emitting && !o.follow && o.frequency >= 0) {
-      if (o.frequency > 0) o.frequency *= 3;
-      o.maxAliveParticles = Math.min(o.maxAliveParticles || 24, 24);
+      if (o.frequency > 0) o.frequency *= 4;
+      o.maxAliveParticles = Math.min(o.maxAliveParticles || 16, 16);
       this.homes.push({ e: o, x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9 });
     }
     this.dbg.emitters = this.homes.length;
