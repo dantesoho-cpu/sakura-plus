@@ -1,0 +1,23 @@
+{
+  "tiers": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "zones": [
+    "dock",
+    "gantry",
+    "spires",
+    "hangar",
+    "bridge",
+    "arena"
+  ],
+  "portal": 1,
+  "ai": 0,
+  "wind": 45,
+  "vault": 1,
+  "secret": 0,
+  "ramp": 8
+}

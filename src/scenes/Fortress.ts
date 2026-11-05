@@ -26,45 +26,80 @@ const PLAT_KEYS = [
 const GROUND: [number, number][] = [
   [0, 980], [1120, 1980], [2140, 3180], [3340, 4480], [4640, 5580], [5740, 6380], [AX0 - 40, WW],
 ];
-/** Floating shelves: [a, b, walkY] — LMR modular strips. */
+/** Floating shelves: [a, b, walkY] — LMR modular strips (staggered lengths for curves). */
 const SHELVES: [number, number, number][] = [
-  // T2 gantries
-  [280, 520, T2], [700, 1180, T2], [1400, 1880, T2], [2100, 2680, T2], [2900, 3560, T2],
-  [3800, 4480, T2], [4700, 5380, T2], [5600, 6180, T2],
+  // T2 gantries — staggered docks
+  [260, 500, T2], [640, 1120, T2], [1280, 1760, T2], [1960, 2520, T2], [2720, 3380, T2],
+  [3600, 4280, T2], [4520, 5180, T2], [5420, 6080, T2], [6280, 6520, T2],
   // T3 spires
-  [180, 420, T3], [560, 1100, T3], [1300, 1880, T3], [2100, 2780, T3], [3000, 3680, T3],
-  [3900, 4580, T3], [4800, 5480, T3], [5700, 6280, T3],
+  [160, 400, T3], [520, 1040, T3], [1220, 1780, T3], [1980, 2680, T3], [2880, 3560, T3],
+  [3780, 4480, T3], [4680, 5380, T3], [5580, 6180, T3],
   // T4 hangar rails
-  [160, 480, T4], [700, 1280, T4], [1500, 2280, T4], [2500, 3280, T4], [3500, 4280, T4],
-  [4500, 5280, T4], [5500, 6200, T4],
+  [140, 460, T4], [640, 1220, T4], [1420, 2180, T4], [2400, 3180, T4], [3400, 4180, T4],
+  [4400, 5180, T4], [5400, 6120, T4],
   // T5 canopy
-  [120, 420, T5], [560, 1180, T5], [1400, 2180, T5], [2400, 3180, T5], [3400, 4280, T5],
-  [4500, 5380, T5], [5600, 6300, T5],
+  [100, 400, T5], [520, 1140, T5], [1340, 2100, T5], [2320, 3080, T5], [3300, 4180, T5],
+  [4400, 5280, T5], [5500, 6240, T5],
 ];
 /** Isolated vignette platforms: [piece, x, walkY] */
 const PLATS: [string, number, number][] = [
   ['p_crystal', 1020, T1 - 40], ['p_mural', 2040, T1 - 36], ['p_block', 3260, T1 - 36],
+  ['p_crystal', 4500, T1 - 40], ['p_mural', 5900, T1 - 36],
   ['p_tl', 1020, T2 - 60], ['p0', 2680, T3 - 20], ['p1', 3580, T4 - 20],
-  ['p_hang', 1800, T5 + 40], ['p_hang', 4200, T4 + 36], ['p_rail', 640, T3 - 50],
-  ['p_rail2', 2400, T2 - 48], ['p_tiny', 900, T4 - 10], ['p_step', 1600, T1 - 20],
-  ['p_step2', 4000, T2 - 16], ['p_thin', 520, T5 - 8],
+  ['p_hang', 1800, T5 + 40], ['p_hang', 4200, T4 + 36], ['p_hang', 5600, T3 + 30],
+  ['p_rail', 640, T3 - 50], ['p_rail2', 2400, T2 - 48], ['p_rail', 4100, T5 - 40],
+  ['p_rail2', 5100, T3 - 48], ['p_tiny', 900, T4 - 10], ['p_tiny', 3100, T5 - 8],
+  ['p_step', 1600, T1 - 20], ['p_step2', 4000, T2 - 16], ['p_thin', 520, T5 - 8],
+  ['p_block', 700, T5 - 20], ['p_crystal', 2000, T4 - 36], ['p_mural', 4800, T2 - 36],
 ];
 /** Sheet ramps: [key, x, lowWalkY, flip] — lowWalkY is the lower end walk height. */
 const RAMPS: [string, number, number, boolean][] = [
   ['p_slope_a', 980, T1, false], ['p_slope_b', 1980, T1, false],
-  ['p_slope_a', 1200, T2, true], ['p_slope_b', 1880, T3, false],
-  ['p_slope_a', 2780, T2, false], ['p_slope_b', 3280, T3, true],
-  ['p_slope_a', 4480, T2, false], ['p_slope_b', 5280, T3, false],
-  ['p_slope_a', 1100, T4, true], ['p_slope_b', 2280, T4, false],
-  ['p_slope_a', 3180, T5, false], ['p_slope_b', 4280, T5, true],
+  ['p_slope_a', 1180, T2, true], ['p_slope_b', 1860, T3, false],
+  ['p_slope_a', 2680, T2, false], ['p_slope_b', 3180, T3, true],
+  ['p_slope_a', 4380, T2, false], ['p_slope_b', 5180, T3, false],
+  ['p_slope_a', 1080, T4, true], ['p_slope_b', 2200, T4, false],
+  ['p_slope_a', 3100, T5, false], ['p_slope_b', 4200, T5, true],
+  ['p_slope_a', 1500, T1, true], ['p_slope_b', 3500, T2, false],
+  ['p_slope_a', 5000, T1, false], ['p_slope_b', 5800, T2, true],
+];
+/** Stepping arcs between tiers: [x0, y0, n, dy, dx, flip] — climb with p_step pieces. */
+const STEPS: [number, number, number, number, number, boolean][] = [
+  [920, T1 - 18, 5, -22, 28, false],
+  [1520, T2 - 18, 5, -22, 30, false],
+  [2320, T3 - 18, 5, -22, 28, true],
+  [2920, T4 - 18, 5, -22, 28, false],
+  [3720, T1 - 18, 4, -24, 32, false],
+  [4520, T2 - 18, 5, -22, 28, true],
+  [5320, T3 - 18, 5, -22, 30, false],
+  [600, T3 - 18, 4, -24, 30, true],
+];
+/** Wind lifts (jet assist columns): [x0, x1, topY, botY] */
+const WINDS: [number, number, number, number][] = [
+  [1000, 1060, T5 - 20, T1 - 10],
+  [2600, 2660, T5 - 20, T2 - 10],
+  [3900, 3960, T4 - 20, T1 - 10],
+  [5100, 5160, T5 - 20, T2 - 10],
+];
+/** Hangar vaults: [leverX, leverY, vaultX, vaultY, side] */
+const VAULTS: [number, number, number, number, number][] = [
+  [1760, T3, 1880, T3, 1],
+  [4120, T4, 4240, T4, -1],
+];
+/** Secret alcoves: [x, walkY, side] */
+const SECRETS: [number, number, number][] = [
+  [3050, T1, 1],
+  [5450, T2, -1],
 ];
 /** Decor props sit flush on walkY: [key, x, walkY, depth, flip?] */
 const PROPS: [string, number, number, number, boolean?][] = [
   ['banner', 400, T1, 1.8], ['banner', 1500, T2, 1.8], ['banner', 2600, T3, 1.8, true],
   ['banner', 3700, T1, 1.8], ['banner', 4900, T4, 1.8], ['banner', 5800, T2, 1.8, true],
+  ['banner', 2200, T5, 1.8], ['banner', 6200, T1, 1.8, true],
   ['col_a', 860, T1, 1.7], ['col_b', 1900, T1, 1.7], ['col_a', 3100, T1, 1.7],
-  ['col_b', 4300, T1, 1.7], ['col_a', 5400, T1, 1.7],
+  ['col_b', 4300, T1, 1.7], ['col_a', 5400, T1, 1.7], ['col_b', 6100, T1, 1.7],
   ['col_b', 1000, T2, 1.7], ['col_a', 2500, T3, 1.7], ['col_b', 4000, T4, 1.7],
+  ['col_a', 1700, T5, 1.7], ['col_b', 3400, T5, 1.7],
   ['p_low', 200, T1 + 4, 1.5], ['p_low2', 1200, T1 + 4, 1.5], ['p_low3', 2400, T1 + 4, 1.5],
   ['p_low', 3600, T1 + 4, 1.5], ['p_low2', 4800, T1 + 4, 1.5], ['p_low', 6000, T1 + 4, 1.5],
 ];
@@ -85,7 +120,6 @@ const FLOWERS: [number, number][] = [
 const GEMS: [number, number, number][] = [
   [600, T2 - 30, 5], [1600, T3 - 30, 4], [2800, T4 - 30, 6], [4000, T5 - 30, 5], [5200, T3 - 30, 4],
 ];
-
 export class Fortress extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups;
   solids!: Phaser.Physics.Arcade.StaticGroup; ones!: Phaser.Physics.Arcade.StaticGroup; flowers!: Phaser.Physics.Arcade.StaticGroup;
@@ -101,6 +135,10 @@ export class Fortress extends Phaser.Scene {
   man: Record<string, { w: number; h: number; top: number; foot?: number; prof?: number[] }> = {};
   surf: { x: number; y: number; prof: number[]; w: number; flip: boolean }[] = [];
   onSlope = false; glows: { o: Phaser.GameObjects.Image; base: number; t: number; sp: number }[] = [];
+  winds: { a: number; b: number; t: number; bt: number; fx: Phaser.GameObjects.Rectangle }[] = [];
+  vaults: { lever: Phaser.GameObjects.Image; gate: Phaser.GameObjects.Rectangle; gateZ: any; chest: Phaser.GameObjects.Image; on: boolean; open: boolean; ly: number; sy: number }[] = [];
+  secrets: { wall: Phaser.GameObjects.Image[]; chest: Phaser.GameObjects.Image; sy: number; found: boolean; open: boolean; ex: number }[] = [];
+  arenaFx: Phaser.GameObjects.Rectangle[] = [];
   constructor() { super('Fortress'); }
   preload() {
     loadFortressPano(this); ftLoad(this);
@@ -195,12 +233,12 @@ export class Fortress extends Phaser.Scene {
   create() {
     this.got = 0; this.gems = 0; this.kills = 0; this.deaths = 0; this.time_ = 0; this.ending = false;
     this.arena = false; this.won = false; this.cpLit = false; this.cpI = 0; this.rects = []; this.enemies = []; this.walls = [];
-    this.dbg = { tiers: [], zones: ['dock', 'gantry', 'spires', 'hangar', 'bridge', 'arena'], portal: 0, ai: 0 };
+    this.dbg = { tiers: [], zones: ['dock', 'gantry', 'spires', 'hangar', 'bridge', 'arena'], portal: 0, ai: 0, wind: 0, vault: 0, secret: 0, ramp: 0 };
     this.man = (this.cache.json.get('ft_plat') as any) || {};
     this.physics.world.setBounds(0, 0, WW, WH + 80); this.physics.world.setBoundsCollision(true, true, false, false);
     this.cameras.main.setBackgroundColor(0x1a0a3a);
     this.bg = new PanoramaBg(this);
-    this.surf = []; this.glows = []; this.onSlope = false;
+    this.surf = []; this.glows = []; this.onSlope = false; this.winds = []; this.vaults = []; this.secrets = []; this.arenaFx = [];
     // deep void under docks (only bands get solid floor)
     this.add.rectangle(0, T1 + 48, WW, WH - T1, 0x0c0618).setOrigin(0, 0).setDepth(0.5);
     this.solids = this.physics.add.staticGroup(); this.ones = this.physics.add.staticGroup(); this.flowers = this.physics.add.staticGroup();
@@ -228,8 +266,66 @@ export class Fortress extends Phaser.Scene {
       this.textures.get('ft_' + k).setFilter(Phaser.Textures.FilterMode.NEAREST);
       this.surf.push({ x, y, prof: pr, w: m.w, flip });
     }
+    // stepping arcs (tier connectors)
+    for (const [x0, y0, n, dy, dx, flip] of STEPS) {
+      for (let i = 0; i < n; i++) {
+        const x = x0 + i * dx * (flip ? -1 : 1), y = y0 + i * dy;
+        this.place(i & 1 ? 'p_step2' : 'p_step', x, y, 2.35);
+      }
+      this.dbg.ramp++;
+    }
     // vignette plats
-    for (const [k, x, y] of PLATS) this.place(k, x, y, 2.4);
+    for (const [k, x, y] of PLATS) {
+      this.place(k, x, y, 2.4);
+      if (k === 'p_crystal' && this.textures.exists('glow')) {
+        const g = this.add.image(x + 40, y - 28, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff6fd8).setScale(0.7).setAlpha(0.35).setDepth(2.45);
+        this.glows.push({ o: g, base: 0.32, t: x, sp: 1.8 });
+        this.tweens.add({ targets: g, scale: { from: 0.55, to: 0.85 }, yoyo: true, repeat: -1, duration: 1100 + (x % 400), ease: 'Sine.inOut' });
+      }
+    }
+    // wind lifts
+    for (const [a, b, top, bot] of WINDS) {
+      const col = this.add.rectangle(a, top, b - a, bot - top, 0x6fe8ff, 0.07).setOrigin(0, 0).setDepth(1.75).setBlendMode(Phaser.BlendModes.ADD);
+      this.glows.push({ o: col as any, base: 0.08, t: a, sp: 2.4 });
+      for (let y = bot - 20; y > top; y -= 48) {
+        const puf = this.add.image((a + b) / 2, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x9af0ff).setScale(0.35, 0.9).setAlpha(0.25).setDepth(1.76);
+        this.tweens.add({ targets: puf, y: y - 40, alpha: { from: 0.3, to: 0.05 }, duration: 900 + (y % 200), repeat: -1, ease: 'Sine.out' });
+      }
+      this.winds.push({ a, b, t: top, bt: bot, fx: col });
+    }
+    // hangar vaults (lever → gate → chest)
+    for (const [lx, ly, vx, vy, side] of VAULTS) {
+      const W = 110, H = 56;
+      this.stripLMR(vx, vx + W, vy, 2.5);
+      const lever = this.textures.exists('ft_deco3')
+        ? this.add.image(lx, ly, 'ft_deco3').setOrigin(0.5, 1).setDepth(3).setScale(0.55)
+        : this.add.image(lx, ly, 'ft_p_tiny').setOrigin(0.5, 1).setDepth(3);
+      const chest = this.textures.exists('ft_gem5')
+        ? this.add.image(vx + W / 2 - side * 16, vy + 1, 'ft_gem5').setOrigin(0.5, 1).setDepth(2.6).setScale(0.7)
+        : this.add.image(vx + W / 2, vy + 1, 'ft_gem0').setOrigin(0.5, 1).setDepth(2.6);
+      const gx = side < 0 ? vx - 6 : vx + W + 6;
+      const gate = this.add.rectangle(gx, vy - H / 2, 10, H, 0x6a3cff, 0.85).setDepth(2.7);
+      const gateZ = this.add.zone(gx, vy - H / 2, 14, H); this.solids.add(gateZ);
+      const lg = this.add.image(lx, ly - 28, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xffd27a).setScale(0.4).setAlpha(0.25).setDepth(2.9);
+      this.glows.push({ o: lg, base: 0.22, t: lx, sp: 2 });
+      this.vaults.push({ lever, gate, gateZ, chest, on: false, open: false, ly, sy: vy });
+    }
+    // secret alcoves behind false walls
+    for (const [x, sy, side] of SECRETS) {
+      const W = 90;
+      this.stripLMR(x, x + W, sy, 2.55);
+      const chest = this.textures.exists('ft_gem3')
+        ? this.add.image(x + W / 2, sy + 1, 'ft_gem3').setOrigin(0.5, 1).setDepth(2.6).setScale(0.65)
+        : this.add.image(x + W / 2, sy + 1, 'ft_gem0').setOrigin(0.5, 1).setDepth(2.6);
+      const gx = side < 0 ? x - 4 : x + W + 4;
+      const ws: Phaser.GameObjects.Image[] = [];
+      for (let i = 0; i < 2; i++) {
+        const w = this.add.image(gx + side * 4, sy + 1 - i * 34, 'ft_p_left').setOrigin(0.5, 1).setScale(0.7).setFlipX(side > 0).setTint(0xb8a0e8).setDepth(9.2);
+        ws.push(w);
+      }
+      this.secrets.push({ wall: ws, chest, sy, found: false, open: false, ex: gx });
+    }
+
     // sheet decor flush on walk surfaces
     for (const row of PROPS) {
       const [k, x, y, d, f] = row as [string, number, number, number, boolean?];
@@ -244,16 +340,33 @@ export class Fortress extends Phaser.Scene {
         this.glows.push({ o: g, base: 0.28, t: x, sp: 1.6 });
       }
     }
-    // set pieces: airships, ring portal, banners
-    if (this.textures.exists('ft_ship0')) this.add.image(2400, T5 - 40, 'ft_ship0').setOrigin(0.5, 1).setDepth(1.5).setScale(0.55).setAlpha(0.9);
-    if (this.textures.exists('ft_ship0')) this.add.image(4800, T4 - 20, 'ft_ship0').setOrigin(0.5, 1).setDepth(1.5).setScale(0.4).setFlipX(true).setAlpha(0.85);
+    // set pieces: airships, ring portals, sheet deco vignettes
+    if (this.textures.exists('ft_ship0')) {
+      const s0 = this.add.image(2400, T5 - 40, 'ft_ship0').setOrigin(0.5, 1).setDepth(1.5).setScale(0.55).setAlpha(0.9);
+      this.tweens.add({ targets: s0, y: s0.y - 6, yoyo: true, repeat: -1, duration: 2200, ease: 'Sine.inOut' });
+      const s1 = this.add.image(4800, T4 - 20, 'ft_ship0').setOrigin(0.5, 1).setDepth(1.5).setScale(0.4).setFlipX(true).setAlpha(0.85);
+      this.tweens.add({ targets: s1, y: s1.y - 5, yoyo: true, repeat: -1, duration: 2600, ease: 'Sine.inOut' });
+    }
     if (this.textures.exists('ft_ring')) {
       const ring = this.add.image(AX0 - 200, T2 - 40, 'ft_ring').setDepth(3).setScale(0.7);
       this.tweens.add({ targets: ring, angle: 360, duration: 12000, repeat: -1, ease: 'Linear' });
+      const rg = this.add.image(AX0 - 200, T2 - 40, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xb04aff).setScale(1.6).setAlpha(0.35).setDepth(2.9);
+      this.glows.push({ o: rg, base: 0.3, t: AX0, sp: 2.2 });
     }
-    if (this.textures.exists('ft_hoop')) this.add.image(3600, T5 + 20, 'ft_hoop').setDepth(1.4).setScale(0.6).setAlpha(0.8);
-    if (this.textures.exists('ft_deco0')) this.add.image(800, T1, 'ft_deco0').setOrigin(0.5, 1).setDepth(2.2).setScale(0.5);
-    if (this.textures.exists('ft_deco1')) this.add.image(3000, T1, 'ft_deco1').setOrigin(0.5, 1).setDepth(2.2).setScale(0.7);
+    if (this.textures.exists('ft_portal0')) {
+      const mid = this.add.image(3000, T3 - 50, 'ft_portal0').setDepth(2.8).setScale(0.55).setAlpha(0.9);
+      this.tweens.add({ targets: mid, angle: -360, duration: 16000, repeat: -1, ease: 'Linear' });
+      (this as any)._midPortal = { x: 3000, y: T3 - 50 };
+    }
+    if (this.textures.exists('ft_hoop')) {
+      const hp = this.add.image(3600, T5 + 20, 'ft_hoop').setDepth(1.4).setScale(0.6).setAlpha(0.8);
+      this.tweens.add({ targets: hp, angle: { from: -8, to: 8 }, yoyo: true, repeat: -1, duration: 1800, ease: 'Sine.inOut' });
+    }
+    for (const [k, x, y, sc] of [['deco0', 800, T1, 0.5], ['deco1', 3000, T1, 0.7], ['deco2', 1700, T2, 0.55], ['deco4', 4200, T3, 0.5], ['deco5', 5500, T1, 0.6], ['deco6', 2300, T4, 0.45], ['deco7', 4700, T5, 0.5], ['deco8', 1200, T5, 0.4]] as [string, number, number, number][]) {
+      if (!this.textures.exists('ft_' + k)) continue;
+      const im = this.add.image(x, y, 'ft_' + k).setOrigin(0.5, 1).setDepth(2.2).setScale(sc);
+      this.tweens.add({ targets: im, y: y - 3, yoyo: true, repeat: -1, duration: 1400 + (x % 500), ease: 'Sine.inOut' });
+    }
     // checkpoints
     this.cpLamps = [];
     for (const [x, y] of this.cps) {
@@ -337,10 +450,20 @@ export class Fortress extends Phaser.Scene {
     const z1 = this.add.zone(AX1 + 10, T1 - 200, 20, 400); this.solids.add(z1); this.walls.push(z1);
     this.rects.push(new Phaser.Geom.Rectangle(AX0 - 20, T1 - 400, 20, 500));
     this.rects.push(new Phaser.Geom.Rectangle(AX1, T1 - 400, 20, 500));
-    audio.sfx('gate'); this.cameras.main.flash(200, 180, 100, 255); this.toast.show('The fortress awakens!', '#ff4fd8');
+    // presentation rails + warning bars
+    for (const x of [AX0 + 40, AX1 - 40]) {
+      const bar = this.add.rectangle(x, T1 - 120, 6, 200, 0xff4fd8, 0.55).setDepth(9).setBlendMode(Phaser.BlendModes.ADD);
+      this.arenaFx.push(bar);
+      this.tweens.add({ targets: bar, alpha: { from: 0.25, to: 0.75 }, yoyo: true, repeat: -1, duration: 420, ease: 'Sine.inOut' });
+    }
+    const warn = this.add.rectangle((AX0 + AX1) / 2, T1 - 180, AX1 - AX0 - 80, 8, 0xffd23f, 0.5).setDepth(9).setBlendMode(Phaser.BlendModes.ADD);
+    this.arenaFx.push(warn);
+    this.tweens.add({ targets: warn, alpha: { from: 0.2, to: 0.7 }, yoyo: true, repeat: 6, duration: 180 });
+    audio.sfx('gate'); this.cameras.main.flash(320, 180, 100, 255); this.cameras.main.shake(280, 0.01);
+    this.toast.show('The fortress awakens!', '#ff4fd8');
     this.boss.wake();
   }
-  unlockArena() { this.walls.forEach(z => z.destroy()); this.walls = []; this.arena = false; }
+  unlockArena() { this.walls.forEach(z => z.destroy()); this.walls = []; this.arenaFx.forEach(r => r.destroy()); this.arenaFx = []; this.arena = false; }
   win() {
     if (this.won) return; this.won = true; this.ending = true; this.unlockArena();
     this.toast.show('Winged Fortress down!', '#ffd23f'); audio.sfx('gate');
@@ -389,10 +512,50 @@ export class Fortress extends Phaser.Scene {
       this.cpLamps[this.cpI].setTint(0x6fe8ff); this.fx.explode(x, y - 40, 0.5);
       this.toast.show('Beacon lit — checkpoint.', '#6fe8ff'); this.cpI++;
     }
-    // ring portal mid-level shortcut
+    // wind lifts — jet assist
+    for (const w of this.winds) {
+      if (p.x > w.a && p.x < w.b && p.y < w.bt && p.y > w.t) {
+        p.body_.setVelocityY(Math.min(p.body_.velocity.y, -170));
+        if (p.hasJet && typeof p.fuel === 'number') p.fuel = Math.min(JET.fuel, p.fuel + dt * 10);
+        this.dbg.wind++;
+      }
+    }
+    // vault levers / chests
+    for (const v of this.vaults) {
+      if (!v.on && Math.abs(p.x - v.lever.x) < 28 && Math.abs(p.y - v.ly) < 40) {
+        v.on = true; this.dbg.vault++; audio.sfx('gate'); this.fx.explode(v.lever.x, v.lever.y - 20, 0.4);
+        this.tweens.add({ targets: v.gate, y: v.gate.y - 70, alpha: 0, duration: 500, onComplete: () => { try { v.gateZ.destroy(); } catch {} } });
+        this.tweens.add({ targets: v.lever, angle: -40, duration: 200 });
+        this.toast.show('Hangar lock released.', '#ffd23f');
+      }
+      if (v.on && !v.open && Math.abs(p.x - v.chest.x) < 28 && Math.abs(p.y - v.sy) < 40) {
+        v.open = true; this.gems += 5; this.hud.setGems(this.gems); audio.sfx('flower', { rate: 1.3 });
+        this.fx.explode(v.chest.x, v.chest.y - 10, 0.55); v.chest.setTint(0x666666);
+        this.toast.show('+5 shards from the vault.', '#6fe8ff');
+      }
+    }
+    // secrets — dash through false wall
+    for (const s of this.secrets) {
+      if (!s.found && Math.abs(p.x - s.ex) < 36 && Math.abs(p.y - s.sy) < 55 && (p.dashing || Math.abs(p.body_.velocity.x) > 90 || Math.abs(p.x - s.chest.x) < 70)) {
+        s.found = true; this.dbg.secret++; audio.sfx('explode');
+        s.wall.forEach(w => this.tweens.add({ targets: w, alpha: 0, x: w.x + (s.ex > s.chest.x ? 20 : -20), duration: 280, onComplete: () => w.destroy() }));
+        this.toast.show('Hidden hangar bay!', '#ff6fd8');
+      }
+      if (s.found && !s.open && Math.abs(p.x - s.chest.x) < 28 && Math.abs(p.y - s.sy) < 40) {
+        s.open = true; this.gems += 8; this.hud.setGems(this.gems); audio.sfx('flower', { rate: 1.4 });
+        this.fx.explode(s.chest.x, s.chest.y - 10, 0.6); s.chest.setTint(0x666666);
+      }
+    }
+    // ring portal near arena
     if (!this.portalUsed && Math.abs(p.x - (AX0 - 200)) < 40 && Math.abs(p.y - (T2 - 40)) < 50) {
       this.portalUsed = true; this.dbg.portal++; audio.sfx('respawn'); this.fx.explode(p.x, p.y - 16, 0.5);
       p.setPosition(AX0 - 150, T1 - 4); p.body_.reset(AX0 - 150, T1 - 4);
+    }
+    // mid-map portal shortcut → hangar T4
+    const mp = (this as any)._midPortal as { x: number; y: number } | undefined;
+    if (mp && !(this as any)._midUsed && Math.abs(p.x - mp.x) < 36 && Math.abs(p.y - mp.y) < 40) {
+      (this as any)._midUsed = true; this.dbg.portal++; audio.sfx('respawn'); this.fx.explode(p.x, p.y - 16, 0.5);
+      p.setPosition(4500, T4 - 4); p.body_.reset(4500, T4 - 4);
     }
     // arena trigger
     if (!this.arena && !this.won && p.x > AX0 - 40) this.lockArena();

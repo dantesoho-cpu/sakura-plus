@@ -9,9 +9,8 @@ export function ftLoad(s: Phaser.Scene) {
   for (const k of FT_EN) if (!s.textures.exists('ft_en_' + k)) s.load.image('ft_en_' + k, `assets/ft/en/${k}.png`);
   if (!s.textures.exists('ft_boss_0')) s.load.image('ft_boss_0', 'assets/ft/boss/boss_0.png');
   for (const k of ['ring', 'hoop']) if (!s.textures.exists('ft_' + k)) s.load.image('ft_' + k, `assets/ft/prop/${k}.png`);
-  for (const k of ['ship0', 'deco0', 'deco1', 'gem0', 'gem1', 'gem3']) {
-    const path = k.startsWith('ship') || k.startsWith('deco') || k.startsWith('gem') ? `assets/ft/prop/${k}.png` : '';
-    if (path && !s.textures.exists('ft_' + k)) s.load.image('ft_' + k, path);
+  for (const k of ['ship0', 'portal0', 'deco0', 'deco1', 'deco2', 'deco3', 'deco4', 'deco5', 'deco6', 'deco7', 'deco8', 'gem0', 'gem1', 'gem3', 'gem5']) {
+    if (!s.textures.exists('ft_' + k)) s.load.image('ft_' + k, `assets/ft/prop/${k}.png`);
   }
 }
 type L = { groundAt(x: number, y: number): number; player: any; fx: Fx };
@@ -145,9 +144,11 @@ export class FtBoss extends Enemy {
   knock() {}
   punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(1.55 * sx, 1.55 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.55, scaleY: 1.55, duration: ms, ease: 'Quad.out' }); }
   wake() {
-    if (this.st !== 'sleep') return; this.st = 'intro'; this.stT = 1.8;
-    this.setPosition(this.hx, this.hy - 160);
-    this.scene.tweens.add({ targets: this, alpha: 1, y: this.hy, duration: 1600, ease: 'Sine.out' });
+    if (this.st !== 'sleep') return; this.st = 'intro'; this.stT = 2.1;
+    this.setPosition(this.hx, this.hy - 200); this.setScale(1.1); this.glowI.setAlpha(0.5).setScale(8);
+    this.scene.tweens.add({ targets: this, alpha: 1, y: this.hy, scaleX: 1.55, scaleY: 1.55, duration: 1800, ease: 'Sine.out' });
+    this.scene.tweens.add({ targets: this.glowI, alpha: 0.35, scale: 6, duration: 1800, ease: 'Sine.out' });
+    this.scene.cameras.main.shake(400, 0.008);
   }
   reset() {
     this.scene.tweens.killTweensOf(this); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false;
