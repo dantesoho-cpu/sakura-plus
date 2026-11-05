@@ -33,9 +33,9 @@ const DEEP: [number, number, number, number][] = [[5760, 7360, 1012, T1]];
 // one-way rock shelves (sheet mossy slab tiled): [x0, x1, y]
 const SHELVES: [number, number, number][] = [
   [0, 760, T2], [900, 1340, T2], [1700, 2180, T2], [2320, 3240, T2], [3240, 3900, T2], [3900, 4300, T2], [4300, 5740, T2], [7400, 8800, T2],
-  [760, 1500, T3], [2320, 2800, T3], [4560, 4700, T3], [5000, 5240, T3], [7300, 7900, T3], [7900, 8500, T3],
-  [1550, 2080, T4], [2600, 3300, T4], [4900, 5600, T4], [6300, 7000, T4], [8100, 8640, T4],
-  [1200, 1700, T5], [2300, 2720, T5], [5200, 5650, T5], [6600, 7000, T5]];
+  [760, 1500, T3], [1680, 2100, T3], [2320, 2800, T3], [3100, 3600, T3], [4560, 4700, T3], [5000, 5240, T3], [5600, 6000, T3], [7300, 7900, T3], [7900, 8500, T3],
+  [900, 1300, T4], [1550, 2080, T4], [2200, 2500, T4], [2600, 3300, T4], [3600, 4100, T4], [4900, 5600, T4], [5900, 6250, T4], [6300, 7000, T4], [7400, 7850, T4], [8100, 8640, T4],
+  [400, 820, T5], [1200, 1700, T5], [1900, 2200, T5], [2300, 2720, T5], [3400, 3800, T5], [5200, 5650, T5], [6000, 6400, T5], [6600, 7000, T5], [7600, 8000, T5]];
 // sheet ramps: [piece, x (left), surface y at the low end, flip]  (walk surface follows the piece's top profile)
 const RAMPS: [string, number, number, boolean][] = [['p_slope_b', 1340, T2, false], ['p_slope_b', 1610, T2, true], ['p_slope_b', 4700, T3, false], ['p_slope_b', 4910, T3, true]];
 // raised walk shelves the ramps lead onto: [x0, x1, y]
@@ -58,7 +58,13 @@ const PLATS: [string, number, number][] = [
   ['p_arch3', 7600, T3 - 70], ['p_slab2', 8000, 760], ['p_slab1', 8080, 710], ['p_mid', 8640, 940], ['p_mid2', 8300, 1110], ['p_slab2', 7700, 1080],
   // polish: intentional stepping stones
   ['p_float', 2150, 700], ['p_small', 3280, 650], ['p_mid', 5550, 940], ['p_float', 7250, 860], ['p_slab1', 8750, 1060],
-  ['p_float', 1050, 1000], ['p_small', 2750, 820], ['p_mid', 4650, 1000], ['p_float', 6450, 780], ['p_slab2', 7900, 1000]];
+  ['p_float', 1050, 1000], ['p_small', 2750, 820], ['p_mid', 4650, 1000], ['p_float', 6450, 780], ['p_slab2', 7900, 1000],
+  // Mania high/mid/low route connectors — intentional stepping arcs between shelf islands
+  ['p_float', 1580, 770], ['p_small', 1820, 720], ['p_mid', 2050, T3], ['p_float', 2950, 780], ['p_small', 3400, 760],
+  ['p_mid', 3800, T3], ['p_float', 5450, 780], ['p_slab1', 5750, T3], ['p_float', 7100, 780],
+  ['p_hang', 500, T5], ['p_hang', 700, T5], ['p_float', 2050, 540], ['p_hang', 3550, T5], ['p_hang', 6100, T5], ['p_hang', 7700, T5],
+  ['p_slab2', 1100, 600], ['p_mid', 2350, 600], ['p_float', 3850, 600], ['p_small', 6050, 600], ['p_mid', 7600, 600],
+  ['p_float', 880, 1110], ['p_mid', 1620, 1110], ['p_small', 4850, 1110], ['p_float', 7550, 1120]];
 // [prop, x (centre), surface y, depth, flip]
 const PROPS: [string, number, number, number, boolean?][] = [
   // Moss Gate
@@ -91,25 +97,33 @@ const PROPS: [string, number, number, number, boolean?][] = [
   ['lantern_a', 6050, T1, 1.6], ['banner_r', 6500, T4, 1.5], ['shrine_mini', 7200, T1, 1.6], ['lantern_b', 8450, T1, 1.6],
   // round4 intentional dress (flush on T1/T2 shelves)
   ['lantern_a', 2180, T2, 1.55], ['banner_r', 3350, T1, 1.45], ['shrine_mini', 4750, T2, 1.5],
-  ['lantern_a', 6280, T1, 1.55], ['cr_a', 7420, T1, 1.6], ['banner_r', 8920, T1, 1.45]];
+  ['lantern_a', 6280, T1, 1.55], ['cr_a', 7420, T1, 1.6], ['banner_r', 8920, T1, 1.45],
+  // Mania route landmarks
+  ['lantern_b', 600, T5, 1.6], ['cr_a', 2000, T5, 1.7], ['lantern_a', 3600, T5, 1.6], ['banner_r', 6200, T5, 1.5], ['lantern_b', 7800, T5, 1.6],
+  ['shrine_mini', 1850, T3, 1.6], ['lantern_post', 3300, T3, 1.6], ['cr_b', 5800, T3, 1.7], ['lantern_a', 2450, T4, 1.6], ['tree', 3800, T4, 1.3],
+  ['fence', 1000, T4, 1.6], ['lantern_b', 7600, T4, 1.6]];
 // waterfalls [piece, x centre, top y, bottom y]; shafts carry bubble lifts
 const FALLS: [string, number, number, number][] = [['wf_a', 840, 860, T1 + 6], ['wf_wide', 2250, 400, T1 + 6], ['wf_b', 3620, 680, T2 + 6], ['wf_a', 4520, 860, T1 + 6], ['wf_wide', 5720, 500, 1016],
   ['wf_b', 7330, 640, 1016], ['wf_a', 8020, 700, T1 + 6], ['wf_wide', (AX0 + AX1) / 2, 720, GA + 6]];
 // bubble lifts [x0, x1, top y, bottom y]
-const LIFTS: [number, number, number, number][] = [[2215, 2285, 440, T1], [7300, 7360, 780, T1], [8000, 8045, 610, T1]];
+const LIFTS: [number, number, number, number][] = [[2215, 2285, 440, T1], [7300, 7360, 780, T1], [8000, 8045, 610, T1], [4520, 4575, 480, T2], [3620, 3670, 650, T2]];
 // currents [x0, x1, y0, y1, push]
 const CURRENTS: [number, number, number, number, number][] = [[5800, 6460, 1080, 1176, 240], [6640, 7280, 1080, 1176, 220]];
 const LOOP = { cx: 6560, cy: 1080, r: 74, x0: 6470, x1: 6492 };
 // lever -> gate vaults [lever x, lever surface y, vault x (left), vault surface y, gate side (-1 left / 1 right)]
 const VAULTS: [number, number, number, number, number][] = [[2640, T5, 3350, T2, -1], [6200, T1, 7000, T1, -1], [4500, T2, 5050, T2, 1]];
 // secret alcoves behind false walls [x (left), surface y, entrance side]
-const SECRETS: [number, number, number][] = [[30, T1, 1], [5480, T4, -1], [3480, T2, 1], [8120, T2, -1]];
+const SECRETS: [number, number, number][] = [[30, T1, 1], [5480, T4, -1], [3480, T2, 1], [8120, T2, -1], [1950, T5, 1], [6000, T5, -1]];
 const FLOWERS: [number, number][] = [[480, T2 - 24], [1450, T5 - 22], [2250, 470], [2700, T4 - 26], [4100, T1 - 24], [5400, T5 - 24], [6560, 1000], [7180, T1 - 24], [8400, T4 - 26], [8300, T1 - 30],
   [980, T4 - 24], [3200, T3 - 24], [5000, T2 - 24], [7800, T5 - 22], [8700, T2 - 24],
-  [700, T1 - 24], [1900, T2 - 24], [3500, T1 - 24], [4600, T3 - 24], [6100, T1 - 24], [7600, T2 - 24], [8500, T3 - 24]];
+  [700, T1 - 24], [1900, T2 - 24], [3500, T1 - 24], [4600, T3 - 24], [6100, T1 - 24], [7600, T2 - 24], [8500, T3 - 24],
+  [550, T5 - 22], [2050, T5 - 22], [3650, T5 - 22], [6150, T5 - 22], [1850, T3 - 24], [3350, T3 - 24], [2450, T4 - 24]];
 // gem arcs [x0, y0, n, kind] — collectible curves following the jump arcs
 const ARCS: [number, number, number, string][] = [[330, 980, 5, 'i_coin'], [600, 900, 6, 'i_gem_b'], [1440, 740, 5, 'i_coin'], [1880, 520, 4, 'i_gem_p'], [2900, 730, 7, 'i_coin'], [3440, 570, 5, 'i_gem_b'],
-  [4300, 930, 8, 'i_coin'], [4800, 730, 5, 'i_gem_p'], [5900, 920, 7, 'i_gem_b'], [6300, 1120, 6, 'i_coin'], [7500, 980, 6, 'i_coin'], [8050, 690, 5, 'i_gem_p'], [1100, T1 - 30, 6, 'i_coin'], [5100, T1 - 30, 6, 'i_coin']];
+  [4300, 930, 8, 'i_coin'], [4800, 730, 5, 'i_gem_p'], [5900, 920, 7, 'i_gem_b'], [6300, 1120, 6, 'i_coin'], [7500, 980, 6, 'i_coin'], [8050, 690, 5, 'i_gem_p'], [1100, T1 - 30, 6, 'i_coin'], [5100, T1 - 30, 6, 'i_coin'],
+  // route markers — high canopy / mid connectors / low hall
+  [500, T5 - 28, 5, 'i_gem_p'], [2000, 530, 5, 'i_coin'], [3600, T5 - 28, 6, 'i_gem_b'], [6100, T5 - 28, 5, 'i_gem_p'], [7700, T5 - 28, 5, 'i_coin'],
+  [1700, T3 - 28, 5, 'i_coin'], [3200, T3 - 28, 6, 'i_gem_b'], [5700, T3 - 28, 5, 'i_coin'], [2400, T4 - 28, 5, 'i_gem_p'], [7500, T4 - 28, 5, 'i_coin']];
 const FOES: [string, number, number][] = [
   // Moss Gate — opening combat + vertical pressure
   ['crab', 420, T2], ['jelly', 860, 980], ['orb', 760, 880], ['mech', 1100, T2], ['crabl', 600, T1], ['jellyp', 1300, 1120], ['mech2', 1800, T1], ['orbs', 1200, 790], ['crab2', 1100, T3], ['jelly', 1800, 610], ['orb', 1450, 450],
@@ -343,7 +357,13 @@ export class Shrine extends Phaser.Scene {
         this.tweens.add({ targets: st, x: x + 90, alpha: 0, duration: 700, onComplete: () => st.destroy() }); } }
     this.bgp.update(dt);
     for (const a of this.anim) { a.t += dt; a.im.setTexture(a.k + (Math.floor(a.t * a.fps) % a.n)); }
-    for (const g of this.glows) { g.t += dt; g.o.setAlpha(g.base * (0.75 + 0.25 * Math.sin(g.t * g.sp))); }
+    { const cx = this.cameras.main.scrollX + 240; let gi = 0;
+      for (const g of this.glows) { g.t += dt;
+        const sf = (g.o as any).scrollFactorX; const wx = (sf === 0) ? cx : (g.o.x ?? 0);
+        const near = sf === 0 || Math.abs(wx - cx) < 700;
+        if (!near) { if (g.o.alpha) g.o.setAlpha(0); continue; }
+        if ((gi++ & 1) === 1 && !(g as any).__flick) continue;
+        g.o.setAlpha(g.base * (0.75 + 0.25 * Math.sin(g.t * g.sp))); } }
     // sub-zones: name card + colour grade + vignette depth
     { let zi = 0; for (let i = 0; i < ZONES.length; i++) if (p.x >= ZONES[i][0]) zi = i; if (zi !== this.zone) { this.zone = zi; const [, n, c] = ZONES[zi]; this.dbg.zones.push(n); if (zi > 0) this.toast.show(n, '#bff4ff');
       const from = Phaser.Display.Color.ValueToColor(this.grade.fillColor), to = Phaser.Display.Color.ValueToColor(c); this.tweens.addCounter({ from: 0, to: 100, duration: 1200, onUpdate: tw => { const o = Phaser.Display.Color.Interpolate.ColorWithColor(from, to, 100, tw.getValue() as number); this.grade.setFillStyle(Phaser.Display.Color.GetColor(o.r, o.g, o.b), 0.16); } });
