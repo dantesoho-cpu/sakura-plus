@@ -42,8 +42,9 @@ const PLATS: [string, number, number][] = [
   ['pr_04', 2880, 0], ['pr_15', 3300, 392], ['pr_05', 3450, 330]];
 const SIGNS: [string, number, number, number][] = [['tiles_10', 300, GY, 0xff4fd8], ['tiles_25', 1100, GY - 10, 0x3ff3ff], ['tiles_40', 1660, GY, 0xff4fd8], ['tiles_38', 2600, GY - 6, 0x3ff3ff], ['tiles_39', 3160, GY, 0xffd23f], ['tiles_41', 3700, GY, 0xff4fd8], ['tiles_21', 960, 320, 0x3ff3ff], ['tiles_35', 2600, 330, 0xff4fd8]];
 const FLOWERS: [number, number][] = [...TIER_FLOWERS];
-const FOES: [string, number, number][] = [['assault', 520, GY], ['drone', 700, 330], ['sentry', 828, 392], ['assault', 1040, GY], ['drone', 1300, 300], ['assault', 1620, GY], ['shield', 1780, GY],
-  ['drone', 2000, 300], ['assault', 2300, GY], ['heavy', 2420, GY], ['drone', 2700, 300], ['shield', 2820, GY], ['scout', 2980, GY], ['assault', 3120, GY], ['drone', 3220, 310], ['assault', 3350, GY], ['drone', 3400, 320], ['heavy', 3520, GY], ...TIER_FOES];
+const FOES: [string, number, number][] = [['assault', 520, GY], ['drone', 700, 330], ['sentry', 828, 392], ['mine', 920, 360], ['assault', 1040, GY], ['drone', 1300, 300], ['lancer', 1480, GY], ['assault', 1620, GY], ['shield', 1780, GY],
+  ['drone', 2000, 300], ['scout', 2140, GY], ['assault', 2300, GY], ['heavy', 2420, GY], ['drone', 2700, 300], ['shield', 2820, GY], ['scout', 2980, GY], ['assault', 3120, GY], ['drone', 3220, 310], ['assault', 3350, GY], ['drone', 3400, 320], ['heavy', 3520, GY],
+  ['lancer', 3920, GY], ['mine', 4100, 360], ['assault', 4280, GY], ['drone', 4500, 300], ...TIER_FOES];
 export class Level2 extends Phaser.Scene {
   life!: Life; amb!: Ambient; groundVar = 0;
   scam!: SpeedCam; culler!: Cull; clite!: CanvasLite;

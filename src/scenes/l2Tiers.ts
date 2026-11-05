@@ -7,9 +7,11 @@ import PROF from './l2CurveProf.json';
 export const MID = 210, UP = -20, SKY = -250, TOP = -440;
 // [x0, x1, y] runs of deck pieces (one-way), auto-tiled from sheet deck/bridge crops
 export const RUNS: [number, number, number][] = [
-  [560, 1180, MID], [1400, 2160, MID], [2380, 3080, MID], [3300, 4080, MID], [4300, 4560, MID],
+  [560, 1180, MID], [1320, 2160, MID], [2380, 3080, MID], [3300, 4080, MID], [4300, 4560, MID],
   [1180, 1880, UP], [2240, 2900, UP], [3160, 3940, UP], [4140, 4480, UP],
-  [4600, 4990, SKY]];
+  [4600, 4990, SKY],
+  // short mid pads so climb-tower approaches don't look like missing deck seams
+  [1188, 1272, MID], [2168, 2320, MID], [3088, 3240, MID]];
 // climb towers: [x, yTop, yBot] solid columns with alternating ledges on both sides
 export const TOWERS: [number, number, number][] = [[1280, UP, 300], [2270, UP, 330], [3190, UP, 300], [4580, SKY, 330], [5010, SKY, 330]];
 // lifts: [x, yLow, yHigh]
@@ -23,7 +25,11 @@ export const TIER_FOES: [string, number, number][] = [['assault', 900, MID], ['d
   ['assault', 4400, 440], ['shield', 4700, 440], ['drone', 4950, 330],
   // sheet-robot variety per tier: scouts low/rooftop, mines on skyways/spire, lancers on skyway/rooftop
   ['scout', 1150, 440], ['scout', 2550, 440], ['scout', 3700, 440], ['mine', 1300, MID - 70], ['lancer', 2450, MID], ['mine', 3250, MID - 70],
-  ['scout', 1760, UP], ['mine', 2400, UP - 70], ['lancer', 3700, UP], ['mine', 4850, SKY - 70]];
+  ['scout', 1760, UP], ['mine', 2400, UP - 70], ['lancer', 3700, UP], ['mine', 4850, SKY - 70],
+  // pacing fills: mid-gap skyway + rooftop approach + street mid-beats
+  ['assault', 1450, MID], ['drone', 2550, MID - 90], ['shield', 3400, MID], ['sentry', 4200, MID],
+  ['assault', 2100, UP], ['drone', 3300, UP - 90], ['lancer', 4300, UP],
+  ['scout', 1900, 440], ['mine', 3100, 360], ['heavy', 4000, 440]];
 // curved / sloped sheet-style pieces: [key, left x, surface y (bottom for ground pieces, top for 'overhang')]; walkable via fine one-way step strips following the art's top silhouette
 export const CURVES: [string, number, number][] = [['qramp', 990, 440], ['arch', 1960, 440], ['hill', 3870, 440], ['pipe', 2960, 440], ['slope', 3560, 440], ['overhang', 2160, MID], ['hill', 4700, 440]];
 const DECKS = ['deck_glass_12', 'bridge_16', 'deck_neon_12', 'deck_vent_12'];

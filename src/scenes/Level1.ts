@@ -96,16 +96,18 @@ export class Level1 extends Phaser.Scene {
     this.add.rectangle(x0, yt + 6, x1 - x0, 2, 0x2c1a1e).setOrigin(0).setDepth(2.9);
     let last = -1;
     for (let i = 0; i < n; i++) { const v = r(); let f = v < 0.09 && i > 1 && i < n - 2 && last !== 4 ? 4 : v < 0.24 ? 3 : Math.floor(r() * 3); if (f === last && f < 3) f = (f + 1) % 3; last = f;
-      const im = this.add.image(x0 + i * 16, yt - 1 + (r() < 0.3 ? 1 : 0), 'pr_bridge_parts', 'p' + f).setOrigin(0).setDepth(3); if (r() < 0.4) im.setFlipX(true); }
-    const posts = [x0 + 1]; for (let px = x0 + 44 + Math.floor(r() * 20); px < x1 - 30; px += 44 + Math.floor(r() * 28)) posts.push(px); posts.push(x1 - 5);
-    posts.forEach(px => this.add.image(px, yt + 4, 'pr_bridge_parts', 'post').setOrigin(0, 1).setDepth(3.2));
+      // plant flush to walk y; tiny sag mid-span only (ends stay locked to platform lip)
+      const sag = (i > 1 && i < n - 2 && r() < 0.35) ? 1 : 0;
+      const im = this.add.image(x0 + i * 16, yt + sag, 'pr_bridge_parts', 'p' + f).setOrigin(0).setDepth(3); if (r() < 0.4) im.setFlipX(true); }
+    const posts = [x0 + 8]; for (let px = x0 + 48 + Math.floor(r() * 16); px < x1 - 36; px += 48 + Math.floor(r() * 20)) posts.push(px); posts.push(x1 - 12);
+    posts.forEach(px => this.add.image(px, yt + 1, 'pr_bridge_parts', 'post').setOrigin(0, 1).setDepth(3.2));
     // ropes are static: draw once and bake to a texture (Graphics re-strokes every frame on the canvas renderer)
     const g = this.make.graphics({}, false), ox = x0 - 4, oy = yt - 24, bw = x1 - x0 + 12, bk = 'rope_' + x0;
     for (const [dy, sag] of [[-14, 4], [-8, 2]]) for (let i = 0; i < posts.length - 1; i++) { const a = posts[i] + 2 - ox, b = posts[i + 1] + 2 - ox, sg = sag + (b - a) / 30, yy = yt + dy - oy;
       const pts = new Phaser.Curves.QuadraticBezier(new V(a, yy), new V((a + b) / 2, yy + sg * 2), new V(b, yy)).getPoints(Math.max(8, Math.round((b - a) / 4)));
       g.lineStyle(2, 0x2c1a1e).strokePoints(pts); g.lineStyle(1, 0xba9668).strokePoints(pts); }
     if (!this.textures.exists(bk)) g.generateTexture(bk, bw, 40); g.destroy(); this.add.image(ox, oy, bk).setOrigin(0, 0).setDepth(3.1);
-    this.add.image(x0 - 8, yt + 20, 'pr_bridge_parts', 'capL').setOrigin(0, 1).setDepth(3.3); this.add.image(x1 - 2, yt + 20, 'pr_bridge_parts', 'capR').setOrigin(0, 1).setDepth(3.3);
+    this.add.image(x0 - 6, yt + 18, 'pr_bridge_parts', 'capL').setOrigin(0, 1).setDepth(3.3); this.add.image(x1 - 4, yt + 18, 'pr_bridge_parts', 'capR').setOrigin(0, 1).setDepth(3.3);
   }
   create() {
     const M = LEVEL1.map((r, y) => y === 46 ? r.slice(0, 186) + r.slice(186, 200).replace(/=/g, '.') + r.slice(200) : r), MW = M[0].length, MH = M.length, worldW = MW * TS, worldH = MH * TS;
@@ -213,6 +215,20 @@ export class Level1 extends Phaser.Scene {
         this.add.image(cx, gy + 1, 'pr_torii11').setOrigin(0.5, 1).setDepth(-3);
         this.gateFx = this.add.tileSprite(cx - 8, gy - 52, 16, 52, 'waterfall').setOrigin(0).setTint(0x66e0ff).setBlendMode(Phaser.BlendModes.ADD).setDepth(7); }
     }));
+    // intentional gap fillers (early valley + mid gaps + pre-arena approach) — ground-snapped
+    const FILL: [string, number][] = [
+      ['d', 520], ['b', 780], ['t', 1100], ['d', 1400],
+      ['b', 2320], ['d', 3680], ['t', 4080],
+      ['b', 6600], ['d', 6900], ['t', 7200],
+    ];
+    let fB = nB, fD = nD, fT = nT;
+    for (const [k, x] of FILL) {
+      const g = this.groundAt(x, 0); if (!(g > 40)) continue;
+      const gy = g;
+      if (k === 'b') this.addE(fB++ % 3 === 1 ? new ShieldTrooper(this, x, gy, this.fx, this.egun) : new GroundBot(this, x, gy, this.fx));
+      else if (k === 'd') this.addE(fD++ % 3 === 1 ? new WaspBomber(this, x, gy - 40, this.fx, this.egun) : new ScoutDrone(this, x, gy - 48, this.fx));
+      else this.addE(fT++ % 4 === 2 ? new Sentry(this, x, gy, this.fx, this.egun) : new Turret(this, x, gy, this.fx, this.egun));
+    }
     // water in pits (lakes)
     for (let x = 0; x < MW; x++) if (!S(x, MH - 1) && M[MH - 1][x] !== '#') { let e = x; while (e < MW && !S(e, MH - 1)) e++;
       this.waters.push(this.add.tileSprite(x * TS, (MH - 4) * TS + 6, (e - x) * TS, 4 * TS, 'water').setOrigin(0).setDepth(3).setAlpha(0.9)); x = e; }

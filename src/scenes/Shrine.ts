@@ -99,9 +99,9 @@ const LIFTS: [number, number, number, number][] = [[2215, 2285, 440, T1], [7300,
 const CURRENTS: [number, number, number, number, number][] = [[5800, 6460, 1080, 1176, 240], [6640, 7280, 1080, 1176, 220]];
 const LOOP = { cx: 6560, cy: 1080, r: 74, x0: 6470, x1: 6492 };
 // lever -> gate vaults [lever x, lever surface y, vault x (left), vault surface y, gate side (-1 left / 1 right)]
-const VAULTS: [number, number, number, number, number][] = [[2640, T5, 3350, T2, -1], [6200, T1, 7000, T1, -1]];
+const VAULTS: [number, number, number, number, number][] = [[2640, T5, 3350, T2, -1], [6200, T1, 7000, T1, -1], [4500, T2, 5050, T2, 1]];
 // secret alcoves behind false walls [x (left), surface y, entrance side]
-const SECRETS: [number, number, number][] = [[30, T1, 1], [5480, T4, -1]];
+const SECRETS: [number, number, number][] = [[30, T1, 1], [5480, T4, -1], [3480, T2, 1], [8120, T2, -1]];
 const FLOWERS: [number, number][] = [[480, T2 - 24], [1450, T5 - 22], [2250, 470], [2700, T4 - 26], [4100, T1 - 24], [5400, T5 - 24], [6560, 1000], [7180, T1 - 24], [8400, T4 - 26], [8300, T1 - 30],
   [980, T4 - 24], [3200, T3 - 24], [5000, T2 - 24], [7800, T5 - 22], [8700, T2 - 24],
   [700, T1 - 24], [1900, T2 - 24], [3500, T1 - 24], [4600, T3 - 24], [6100, T1 - 24], [7600, T2 - 24], [8500, T3 - 24]];
@@ -127,7 +127,10 @@ const FOES: [string, number, number][] = [
   ['mech2', 8750, T2], ['crab2', 8680, T1],
   // polish: fill sparse shelves / shafts
   ['jelly', 950, 700], ['orb', 2100, 750], ['crab', 3550, T1], ['jellyp', 4800, 1050],
-  ['orbs', 5800, 700], ['mech', 7350, T1], ['jellyb', 8150, 780]];
+  ['orbs', 5800, 700], ['mech', 7350, T1], ['jellyb', 8150, 780],
+  // pacing: Falls→Terraces bridge + Crystal approach
+  ['orb', 3750, 720], ['mech', 3900, T2], ['jelly', 4000, 900], ['crabl', 3820, T1],
+  ['orbs', 7500, 540], ['crab', 7600, T2], ['jellyp', 8450, 1000]];
 const ZONES: [number, string, number][] = [[0, 'Moss Gate', 0x1a5a6a], [1900, 'Falls of Ame', 0x1a4a8a], [3900, 'Lantern Terraces', 0x5a2a6a], [5700, 'Sunken Halls', 0x0a3a7a], [7400, 'Crystal Deep', 0x2a3a9a], [AX0 - 200, "Warden's Hollow", 0x1a2a5a]];
 export class Shrine extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; scam!: SpeedCam; bgp!: SheetParallax;
@@ -155,7 +158,13 @@ export class Shrine extends Phaser.Scene {
   plat(k: string, x: number, sy: number, d = 2) { const m = this.m(k); const im = this.add.image(x, sy - (m.top || 0) * S, 'sh_' + k).setOrigin(0, 0).setScale(S).setDepth(d); this.addRect(x + 3, sy, m.w * S - 6, 10, true); return im; }
   /** the sheet's mossy slab tiled along [a,b] at y (alternate flips hide the repeat) */
   tileTop(a: number, b: number, y: number, d = 2) { const gm = this.m('p_long'), gw = gm.w * S - 8;
-    for (let x = a - 4, j = 0; x < b - 4; x += gw, j++) { const w = Math.min(gw + 8, b + 4 - x); this.add.image(x, y - (gm.top || 0) * S, 'sh_p_long').setOrigin(0, 0).setScale(S).setDepth(d).setFlipX(!!(j & 1) && w > gw).setCrop(0, 0, w / S, gm.h); } }
+    for (let x = a - 4, j = 0; x < b - 4; x += gw, j++) { const w = Math.min(gw + 8, b + 4 - x); this.add.image(x, y - (gm.top || 0) * S, 'sh_p_long').setOrigin(0, 0).setScale(S).setDepth(d).setFlipX(!!(j & 1) && w > gw).setCrop(0, 0, w / S, gm.h); }
+    // sheet end-caps hide the cut edges of the tiled moss slab
+    if (this.textures.exists('sh_p_left')) {
+      const lm = this.m('p_left');
+      this.add.image(a - 2, y + (lm.h - 1 - lm.foot) * S, 'sh_p_left').setOrigin(0.5, 1).setScale(S * 0.85).setDepth(d + 0.05);
+      this.add.image(b + 2, y + (lm.h - 1 - lm.foot) * S, 'sh_p_left').setOrigin(0.5, 1).setScale(S * 0.85).setFlipX(true).setDepth(d + 0.05);
+    } }
   /** walk-surface y of the sheet ramps at x (or Infinity) */
   rampY(x: number) { for (const r of this.surf) { if (x < r.x || x > r.x + r.w) continue; let u = (x - r.x) / S; if (r.flip) u = r.w / S - u; const i = Math.min(r.prof.length - 1, Math.max(0, Math.round(u / 4))); return r.y + r.prof[i] * S; } return Infinity; }
   slopeSnap() { const p = this.player, b = p?.body_; this.onSlope = false; if (!b || !b.enable || b.velocity.y < 0 || this.looping >= 0) return;
