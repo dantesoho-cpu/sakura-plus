@@ -23,13 +23,13 @@ export class Victory extends Phaser.Scene {
       } });
     } });
     const st = { fontFamily: 'monospace', fontStyle: 'bold', fontSize: '16px', color: '#ffd23f', stroke: '#1a0f2e', strokeThickness: 4 };
-    const title = this.add.text(240, d.ch === 2 ? 44 : 60, `CHAPTER ${d.ch || 1} COMPLETE`, st).setOrigin(0.5).setDepth(50).setAlpha(0);
+    const title = this.add.text(240, (d.ch || 1) >= 2 ? 44 : 60, `CHAPTER ${d.ch || 1} COMPLETE`, st).setOrigin(0.5).setDepth(50).setAlpha(0);
     const m = Math.floor(d.time / 60), s = String(Math.floor(d.time % 60)).padStart(2, '0');
-    const stats = this.add.text(240, d.ch === 2 ? 116 : 112, `TIME ${m}:${s}\nMEMORIES ${d.got}/10\n${d.ch === 2 ? `SHARDS ${d.gems || 0}\nKAIJU UNIT DOWN\n` : ''}KUROGEN DOWNED ${d.kills}\nFALLS ${d.deaths}`, { ...st, fontSize: '10px', color: '#fff', align: 'center', lineSpacing: 4 }).setOrigin(0.5).setDepth(50).setAlpha(0);
-    this.prompt = this.add.text(240, d.ch === 2 ? 200 : 180, d.ch === 2 ? 'ENTER restart   ·   T title' : 'ENTER continue to NEO-KYO   ·   R replay   ·   T title', { ...st, fontSize: '10px' }).setOrigin(0.5).setDepth(50).setAlpha(0);
+    const stats = this.add.text(240, (d.ch || 1) >= 2 ? 116 : 112, `TIME ${m}:${s}\nMEMORIES ${d.got}/10\n${(d.ch || 1) >= 2 ? `SHARDS ${d.gems || 0}\n${d.ch === 2 ? 'ABYSS WARDEN' : 'KAIJU UNIT'} DOWN\n` : ''}KUROGEN DOWNED ${d.kills}\nFALLS ${d.deaths}`, { ...st, fontSize: '10px', color: '#fff', align: 'center', lineSpacing: 4 }).setOrigin(0.5).setDepth(50).setAlpha(0);
+    this.prompt = this.add.text(240, (d.ch || 1) >= 2 ? 200 : 180, d.ch === 3 ? 'ENTER restart   ·   T title' : d.ch === 2 ? 'ENTER continue to NEO-KYO   ·   R replay   ·   T title' : 'ENTER continue to the SHRINE CAVE   ·   R replay   ·   T title', { ...st, fontSize: '10px' }).setOrigin(0.5).setDepth(50).setAlpha(0);
     this.tweens.add({ targets: title, alpha: 1, duration: 800, delay: 600 }); this.tweens.add({ targets: stats, alpha: 1, duration: 800, delay: 1400 });
     this.time.delayedCall(2200, () => { this.ready = true;
-      this.input.keyboard!.once('keydown-ENTER', () => this.scene.start(d.ch === 2 ? 'Level2' : 'Transit')); this.input.keyboard!.once('keydown-R', () => this.scene.start(d.ch === 2 ? 'Level2' : 'Level1')); this.input.keyboard!.once('keydown-T', () => this.scene.start('Title')); this.input.once('pointerdown', () => this.scene.start(d.ch === 2 ? 'Level2' : 'Transit')); });
+      const nx = d.ch === 3 ? 'Level2' : d.ch === 2 ? 'Transit' : 'Shrine', re = d.ch === 3 ? 'Level2' : d.ch === 2 ? 'Shrine' : 'Level1'; this.input.keyboard!.once('keydown-ENTER', () => this.scene.start(nx)); this.input.keyboard!.once('keydown-R', () => this.scene.start(re)); this.input.keyboard!.once('keydown-T', () => this.scene.start('Title')); this.input.once('pointerdown', () => this.scene.start(nx)); });
     saveBest(d.ch || 1, d.time, d.got); (window as any).__victory = { ...d };
     this.cameras.main.fadeIn(600, 255, 230, 240);
   }

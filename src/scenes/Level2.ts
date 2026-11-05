@@ -161,7 +161,7 @@ export class Level2 extends Phaser.Scene {
   unlockArena() { this.arena = false; for (const z of this.walls) z.destroy(); this.walls = []; this.cameras.main.setBounds(0, TOP, WW, WH - TOP); this.arenaFx.setFillStyle(0xff4fd8, 0); this.arenaFx2.setFillStyle(0xff4fd8, 0); this.gateCols.forEach(c => c.setAlpha(0)); this.hud.draw(-1, -1); }
   win() { if (this.won) return; this.won = true; this.unlockArena(); this.enemies.filter(e => e.kind === 'escort').forEach(e => e.active && !e.dead && e.die()); this.egun.shots.getChildren().forEach((o: any) => o.active && this.egun.kill(o));
     this.toast.show('The Kaiju Unit falls. Neo-Kyo breathes again.', '#ffd23f'); this.ending = true; this.player.resetInput();
-    this.time.delayedCall(2600, () => { this.cameras.main.fadeOut(800, 255, 230, 240); this.time.delayedCall(850, () => this.scene.start('Victory', { time: this.time_, got: this.got, kills: this.kills, deaths: this.deaths, ch: 2, gems: this.env.dbg.got })); }); }
+    this.time.delayedCall(2600, () => { this.cameras.main.fadeOut(800, 255, 230, 240); this.time.delayedCall(850, () => this.scene.start('Victory', { time: this.time_, got: this.got, kills: this.kills, deaths: this.deaths, ch: 3, gems: this.env.dbg.got })); }); }
   /** top surface y at/below (x, y0), -1 if none */
   groundAt(x: number, y0: number) { let best = -1;
     for (const b of [...this.solids.getChildren(), ...this.ones.getChildren()] as any[]) { const r = b.body; if (x >= r.x && x <= r.right && r.y >= y0 && (best < 0 || r.y < best)) best = r.y; }

@@ -32,7 +32,7 @@ export class Title extends Phaser.Scene {
     const K = this.input.keyboard!;
     K.on('keydown-UP', () => this.move(-1)); K.on('keydown-DOWN', () => this.move(1)); K.on('keydown-W', () => this.move(-1)); K.on('keydown-S', () => this.move(1));
     K.on('keydown-ENTER', () => this.pick()); K.on('keydown-SPACE', () => this.pick());
-    K.once('keydown-TWO', () => this.goto('Level2')); if (/[?&]lvl=2/.test(location.search)) this.time.delayedCall(50, () => this.scene.start('Level2'));
+    K.once('keydown-TWO', () => this.goto('Level2')); K.once('keydown-THREE', () => this.goto('Shrine')); { const m = /[?&]lvl=(\w+)/.exec(location.search)?.[1]; const to = m === '2' || m === '3' || m === 'nk' ? 'Level2' : m === 'sh' || m === 'shrine' ? 'Shrine' : ''; if (to) this.time.delayedCall(50, () => this.scene.start(to)); }
     this.move(0); (window as any).__title = this; this.cameras.main.fadeIn(300);
   }
   move(d: number) { if (this.gone) return; const n = this.items.length, prev = this.sel; this.sel = (this.sel + d + n) % n; if (d && prev !== this.sel) audio.sfx('menu', { rate: 1.4, vol: 0.5 });

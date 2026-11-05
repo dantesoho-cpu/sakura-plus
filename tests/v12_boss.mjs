@@ -22,5 +22,5 @@ const won = await p.evaluate(() => ({ won: window.__lvl.won, arena: window.__lvl
 await p.evaluate(() => window.__step(120)); await p.evaluate(() => { window.__game.loop.wake(); }); await p.waitForTimeout(3500);
 const vic = await p.evaluate(() => ({ v: window.__victory || null, active: window.__game.scene.isActive('Victory') })); await p.screenshot({ path: 'audit/v12/boss/06_victory.png' });
 const r = { s0, s1, hpShot, s2, won, vic, errs }; console.log(JSON.stringify(r));
-const ok = s0.arena && s1.awake && hpShot < 90 && Object.keys(s2.attacks).length >= 4 && s2.slams > 0 && s2.phase2 && won.won && vic.active && vic.v?.ch === 2 && errs.length === 0;
+const ok = s0.arena && s1.awake && hpShot < 90 && Object.keys(s2.attacks).length >= 4 && s2.slams > 0 && s2.phase2 && won.won && vic.active && vic.v?.ch === 3 && errs.length === 0;
 console.log(ok ? 'PASS' : 'FAIL'); await b.close(); process.exit(ok ? 0 : 1);

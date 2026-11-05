@@ -46,6 +46,7 @@ export class Boot extends Phaser.Scene {
     this.load.spritesheet('slopes', 'assets/tiles/slopes.png', { frameWidth: 16, frameHeight: 16 });
     this.load.image('ui_logo', 'assets/ui_logo2.png'); this.load.image('intro_p1', 'assets/intro/pano1.png'); this.load.image('intro_p2', 'assets/intro/pano2.png'); for (const n of [1, 2]) for (let k = 0; k < 3; k++) this.load.image(`intro_p${n}_spk${k}`, `assets/intro/pano${n}_spk${k}.png`); this.load.image('water', 'assets/fx/water.png');
     this.load.image('strip2', 'assets/bg/strip2.png');
+    for (let i = 1; i <= 3; i++) this.load.image('px_l1_L' + i, `assets/px/l1_L${i}.png`);
     for (const k of ['far_mtn', 'mid_hills', 'near_forest', 'fg', 'lake']) this.load.image('g2_' + k, `assets/gen2/L_${k}.png`);
     for (let i = 0; i < 17; i++) this.load.image('g2cloud' + i, `assets/gen2/cloud${i}.png`);
     for (let i = 0; i < 25; i++) this.load.image('pp' + i, `assets/gen2/pp${i}.png`);

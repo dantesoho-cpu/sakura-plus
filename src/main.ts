@@ -6,6 +6,7 @@ import { Intro } from './scenes/Intro';
 import { Title } from './scenes/Title';
 import { Level1 } from './scenes/Level1';
 import { Level2 } from './scenes/Level2';
+import { Shrine } from './scenes/Shrine';
 import { Pause } from './scenes/Pause';
 import { Transit } from './scenes/Transit';
 import { Victory } from './scenes/Victory';
@@ -20,7 +21,7 @@ const game = new Phaser.Game({
   physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   fps: { target: 60, smoothStep: true },
-  scene: [Boot, TestRoom, Title, LevelSelect, Intro, Level1, Level2, Pause, Victory, Transit],
+  scene: [Boot, TestRoom, Title, LevelSelect, Intro, Level1, Shrine, Level2, Pause, Victory, Transit],
 });
 setupTouch(); setupPad();
 (window as any).__game = game; (window as any).__HI = HI;
