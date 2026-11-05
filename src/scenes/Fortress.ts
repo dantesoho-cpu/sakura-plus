@@ -10,7 +10,7 @@ import { Hud } from '../systems/Hud';
 import { Toast } from '../systems/Toast';
 import { FEEL } from '../tuning';
 import { SpeedCam } from '../systems/SpeedCam';
-import { ParallaxStack, loadFortressParallax } from '../render/ParallaxStack';
+import { PanoramaBg, loadFortressPano } from '../render/PanoramaBg';
 import { FtDrone, FtOrb, FtWalker, FtAvian, FtBoss, ftLoad } from '../entities/Fortress';
 import type { Enemy } from '../entities/Enemy';
 // AIR FORTRESS (chapter 4) — after Neo-Kyo. Sheet art via public/assets/ft/*. Sonic-Mania-style 5-tier sky docks.
@@ -78,7 +78,7 @@ const GEMS: [number, number, number][] = [
 export class Fortress extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups;
   solids!: Phaser.Physics.Arcade.StaticGroup; ones!: Phaser.Physics.Arcade.StaticGroup; flowers!: Phaser.Physics.Arcade.StaticGroup;
-  bg!: ParallaxStack; enemyGroup!: Phaser.Physics.Arcade.Group; scam!: SpeedCam;
+  bg!: PanoramaBg; enemyGroup!: Phaser.Physics.Arcade.Group; scam!: SpeedCam;
   got = 0; gems = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 100, y: T1 - 4 }; safe = { x: 100, y: T1 - 4 };
   lookX = 0; lookY = 0; rapT = 0; powT = 0; ending = false; cpLit = false; cpI = 0;
   boss!: FtBoss; arena = false; won = false; walls: Phaser.GameObjects.Zone[] = [];
@@ -90,7 +90,7 @@ export class Fortress extends Phaser.Scene {
   man: Record<string, { w: number; h: number; top: number }> = {};
   constructor() { super('Fortress'); }
   preload() {
-    loadFortressParallax(this); ftLoad(this);
+    loadFortressPano(this); ftLoad(this);
     this.load.json('ft_plat', 'assets/ft/plat/plat.json');
     for (const n of PLAT_KEYS) this.load.image('ft_' + n, `assets/ft/plat/${n}.png`);
   }
@@ -127,7 +127,7 @@ export class Fortress extends Phaser.Scene {
     this.man = (this.cache.json.get('ft_plat') as any) || {};
     this.physics.world.setBounds(0, 0, WW, WH + 80); this.physics.world.setBoundsCollision(true, true, false, false);
     this.cameras.main.setBackgroundColor(0x1a0a3a);
-    this.bg = new ParallaxStack(this);
+    this.bg = new PanoramaBg(this);
     // ground band under T1 so voids don't read empty
     this.add.rectangle(0, T1, WW, WH - T1 + 40, 0x1a1030).setOrigin(0, 0).setDepth(1);
     this.add.rectangle(0, T1 - 2, WW, 3, 0x6fe8ff, 0.35).setOrigin(0, 0).setDepth(1.1);

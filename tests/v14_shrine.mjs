@@ -51,5 +51,5 @@ await p.evaluate(() => window.__game.loop.wake()); await p.evaluate(() => window
 R.ls = await p.evaluate(() => window.__ls.cards.map(c => c.list.filter(o => o.text).map(o => o.text).slice(0, 2).join(' ')));
 const ok = R.land.length === 0 && R.zones.length >= 6 && R.tiers.length === 5 && R.flush.length === 0 && R.ramp.n > 0 && R.ramp.y < T2 - 20 && R.lift.y < 700 && R.lift.n > 0 && R.swim.n > 0 && R.swim.vy < 0 && R.current.dx > 60 && R.loop.n > 0 && R.loop.x > 6600
   && R.vaults.every(v => v.before === false && v.on && v.open) && R.secrets.every(s => s.found && s.open) && Object.values(R.ai).every(a => a.fired > 0 || a.moved > 8) && R.water > 0 && R.portal.n > 0 && R.arena && R.bossSize[0] >= 250
-  && R.boss.fan > 0 && R.boss.dive > 0 && R.boss.spiral > 0 && R.boss.summon > 0 && R.victory === 2 && R.ls.length === 3 && /SHRINE/.test(R.ls[1]) && errs.length === 0;
+  && R.boss.fan > 0 && R.boss.dive > 0 && R.boss.spiral > 0 && R.boss.summon > 0 && R.victory === 2 && R.ls.length >= 3 && /SHRINE/.test(R.ls[1]) && /FORTRESS|AIR/.test(R.ls.join(' ')) && errs.length === 0;
 console.log(JSON.stringify({ ...R, errs: errs.slice(0, 5) })); console.log(ok ? 'PASS' : 'FAIL'); await b.close(); process.exit(ok ? 0 : 1);

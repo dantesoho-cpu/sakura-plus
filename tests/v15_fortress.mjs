@@ -36,7 +36,10 @@ for (const [n, x, y] of shots) {
   if (s.y - y < -2 || s.y - y > 12 || !s.down) R.land.push(`${n}:y${s.y}`);
   await p.screenshot({ path: `${D}/${n}.png` });
 }
-R.planes = await p.evaluate(() => window.__lvl.bg.layers.map(l => ({ key: l.key, f: l.f })));
+R.pano = await p.evaluate(() => {
+  const b = window.__lvl.bg;
+  return { mode: b.mode, key: b.key, dw: Math.round(b.dw), dh: Math.round(b.dh), fx: +b.fx.toFixed(4), fy: +b.fy.toFixed(4), layers: (b.layers || []).length };
+});
 R.tiers = await p.evaluate(() => [...window.__lvl.dbg.tiers].sort((a,b)=>a-b));
 // walk zones
 for (const [x, y] of [[600, T1], [1800, T1], [3000, T2], [4200, T1], [5400, T1]]) {
@@ -93,9 +96,9 @@ await p.evaluate(() => { window.__game.loop.wake(); window.__game.scene.getScene
 await p.waitForTimeout(1600);
 await p.screenshot({ path: `${D}/15_level_select.png` });
 R.ls = await p.evaluate(() => (window.__ls?.cards || []).map(c => c.list.filter(o => o.text).map(o => o.text).slice(0, 2).join(' ')));
-const factorsOk = R.planes?.length === 5
-  && R.planes.every((pl, i) => Math.abs(pl.f - [0.05, 0.15, 0.30, 0.50, 0.80][i]) < 0.001)
-  && R.planes[0].key === 'ft_sky';
+const factorsOk = R.pano?.mode === 'pano' && R.pano?.key === 'ft_pano'
+  && R.pano.layers === 0 && R.pano.dw > 480 && R.pano.dh >= 270
+  && R.pano.fx > 0 && R.pano.fx < 1;
 const aiOk = Object.values(R.ai).every(a => a !== 'missing' && (a.fired > 0 || a.moved > 4));
 const ok = factorsOk && R.land.length === 0 && R.tiers.length >= 3 && R.zones.length >= 4
   && aiOk && R.portal.n > 0 && R.arena && R.bossSize[0] >= 200
