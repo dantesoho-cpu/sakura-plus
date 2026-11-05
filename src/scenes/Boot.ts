@@ -64,6 +64,6 @@ export class Boot extends Phaser.Scene {
     makeCombatTextures(this);
     for (const i of [0, 1, 2]) this.anims.create({ key: 'wf_basin' + i, frames: this.anims.generateFrameNumbers('wf_basin' + i, {}), frameRate: 6, repeat: -1 });
     this.anims.create({ key: 'boss_idle', frames: this.anims.generateFrameNumbers('boss', { frames: [0, 1, 2, 1] }), frameRate: 8, repeat: -1 });
-    this.scene.start(location.search.includes('test') ? 'TestRoom' : 'Title');
+    this.scene.start(/[?&](test|lvl=test)(&|$)/.test(location.search) ? 'TestRoom' : 'Title');
   }
 }

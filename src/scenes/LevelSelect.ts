@@ -7,7 +7,8 @@ import { isTouch } from '../systems/Touch';
 // Level select: two chapter cards with in-game preview art, best time / memories (saved by Victory), ←→ choose · ENTER play · ESC back.
 export const LEVELS = [{ key: 'Level1', ch: 1, name: 'AKARI VALLEY', sub: 'blossom ruins · falls', thumb: 'ui_thumb_l1', col: 0xff7ac8 },
   { key: 'Shrine', ch: 2, name: 'SHRINE CAVE', sub: 'sunken torii · WARDEN', thumb: 'ui_thumb_sh', col: 0x6fe8ff },
-  { key: 'Level2', ch: 3, name: 'NEO-KYO', sub: 'neon rooftops · KAIJU', thumb: 'ui_thumb_l2', col: 0xff4fd8 }];
+  { key: 'Level2', ch: 3, name: 'NEO-KYO', sub: 'neon rooftops · KAIJU', thumb: 'ui_thumb_l2', col: 0xff4fd8 },
+  { key: 'Fortress', ch: 4, name: 'AIR FORTRESS', sub: 'sky docks · WINGED SHIP', thumb: 'ui_thumb_ft', col: 0xb04aff }];
 // v13: Neo-Kyo moved from chapter 2 to 3 — carry its saved best over once
 try { if (!localStorage.getItem('sakura.bestmig')) { const o = localStorage.getItem('sakura.best.2'); if (o) { localStorage.setItem('sakura.best.3', o); localStorage.removeItem('sakura.best.2'); } localStorage.setItem('sakura.bestmig', '1'); } } catch { /* private mode */ }
 export function bestOf(ch: number): { time: number; got: number } | null { try { return JSON.parse(localStorage.getItem('sakura.best.' + ch) || 'null'); } catch { return null; } }
@@ -15,22 +16,22 @@ export function saveBest(ch: number, time: number, got: number) { try { const b 
 export class LevelSelect extends Phaser.Scene {
   bg!: Parallax; petals!: Petals; sel = 0; cards: Phaser.GameObjects.Container[] = []; t = 0; gone = false; frames: Phaser.GameObjects.Rectangle[] = [];
   constructor() { super('LevelSelect'); }
-  preload() { this.load.image('ui_thumb_l1', 'assets/ui/thumb_l1.png'); this.load.image('ui_thumb_l2', 'assets/ui/thumb_l2.png'); this.load.image('ui_thumb_sh', 'assets/ui/thumb_sh.png'); }
+  preload() { this.load.image('ui_thumb_l1', 'assets/ui/thumb_l1.png'); this.load.image('ui_thumb_l2', 'assets/ui/thumb_l2.png'); this.load.image('ui_thumb_sh', 'assets/ui/thumb_sh.png'); this.load.image('ui_thumb_ft', 'assets/ui/thumb_ft.png'); }
   create() {
     this.gone = false; this.cards = []; this.frames = []; this.t = 0;
     this.bg = new Parallax(this); this.petals = new Petals(this);
     this.add.rectangle(240, 135, 480, 270, 0x1a0f2e, 0.35).setScrollFactor(0).setDepth(45);
     const st = { fontFamily: 'monospace', fontStyle: 'bold', fontSize: '14px', color: '#ffd23f', stroke: '#1a0f2e', strokeThickness: 4 };
     this.add.text(240, 26, 'SELECT CHAPTER', st).setOrigin(0.5).setScrollFactor(0).setDepth(50);
-    LEVELS.forEach((L, i) => { const x = 88 + i * 152, b = bestOf(L.ch);
-      const fr = this.add.rectangle(0, 0, 144, 150, 0x1a0f2e, 0.92).setStrokeStyle(2, L.col); this.frames.push(fr);
-      const im = this.add.image(0, -24, L.thumb).setDisplaySize(132, 80);
-      const t1 = this.add.text(-66, 22, `CHAPTER ${L.ch}`, { ...st, fontSize: '8px', color: '#c9b8e8', strokeThickness: 2 });
-      const t2 = this.add.text(-66, 32, L.name, { ...st, fontSize: '11px', strokeThickness: 3 });
-      const t3 = this.add.text(-66, 48, L.sub, { ...st, fontSize: '8px', fontStyle: 'normal', color: '#fff', strokeThickness: 2 });
+    LEVELS.forEach((L, i) => { const x = 62 + i * 118, b = bestOf(L.ch);
+      const fr = this.add.rectangle(0, 0, 108, 150, 0x1a0f2e, 0.92).setStrokeStyle(2, L.col); this.frames.push(fr);
+      const im = this.add.image(0, -24, L.thumb).setDisplaySize(96, 58);
+      const t1 = this.add.text(-48, 18, `CHAPTER ${L.ch}`, { ...st, fontSize: '8px', color: '#c9b8e8', strokeThickness: 2 });
+      const t2 = this.add.text(-48, 28, L.name, { ...st, fontSize: '9px', strokeThickness: 3 });
+      const t3 = this.add.text(-48, 42, L.sub, { ...st, fontSize: '8px', fontStyle: 'normal', color: '#fff', strokeThickness: 2 });
       const bt = b ? `BEST ${Math.floor(b.time / 60)}:${String(Math.floor(b.time % 60)).padStart(2, '0')} · ✿ ${b.got}/10` : 'NOT CLEARED';
-      const t4 = this.add.text(-66, 60, bt, { ...st, fontSize: '8px', color: b ? '#ffd23f' : '#8a7aa8', strokeThickness: 2 });
-      const c = this.add.container(x, 128, [fr, im, t1, t2, t3, t4]).setScrollFactor(0).setDepth(50).setSize(144, 150).setInteractive({ useHandCursor: true });
+      const t4 = this.add.text(-48, 54, bt, { ...st, fontSize: '8px', color: b ? '#ffd23f' : '#8a7aa8', strokeThickness: 2 });
+      const c = this.add.container(x, 128, [fr, im, t1, t2, t3, t4]).setScrollFactor(0).setDepth(50).setSize(108, 150).setInteractive({ useHandCursor: true });
       c.on('pointerover', () => this.choose(i)); c.on('pointerdown', () => { this.choose(i); this.play(); });
       c.setAlpha(0).y += 20; this.tweens.add({ targets: c, alpha: 1, y: 128, duration: 380, delay: 80 + i * 110, ease: 'Back.out' }); this.cards.push(c); });
     { const h = this.add.text(240, 230, '', { ...st, fontSize: '8px', fontStyle: 'normal', color: '#fff', strokeThickness: 2 }).setOrigin(0.5).setScrollFactor(0).setDepth(50); (window as any).__lsHint = h;
