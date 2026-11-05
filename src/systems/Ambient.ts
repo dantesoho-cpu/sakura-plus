@@ -9,12 +9,12 @@ export class Ambient {
   fg: F[] = []; far: { im: Phaser.GameObjects.Image; t: number; base: number; x: number }[] = []; win: { r: Phaser.GameObjects.Rectangle; t: number; sp: number }[] = []; dbg = { fg: 0, far: 0, win: 0, frames: 0 };
   constructor(public s: Phaser.Scene, public mode: 'l1' | 'l2', farDepth: number) {
     const R = Math.random;
-    for (let i = 0; i < (mode === 'l1' ? 6 : 5); i++) { const s0 = mode === 'l1' ? 2.4 + R() * 1.8 : 1.6 + R() * 2.2;
+    for (let i = 0; i < (mode === 'l1' ? 6 : 2); i++) { const s0 = mode === 'l1' ? 2.4 + R() * 1.8 : 1.6 + R() * 2.2;
       const im = s.add.image(0, 0, mode === 'l1' ? 'petal_soft' : 'glow').setDepth(30).setScrollFactor(0).setScale(s0)
         .setTint(mode === 'l1' ? [0xffb8dc, 0xff9ccc, 0xffd6ea][i % 3] : [0xff4fd8, 0x3ff3ff, 0x9a6bff][i % 3]).setAlpha(mode === 'l1' ? 0.42 : 0.16);
       if (mode === 'l2') im.setBlendMode(Phaser.BlendModes.ADD);
       this.fg.push({ im, x: R() * W, y: R() * H, vx: mode === 'l1' ? 10 + R() * 14 : (R() - 0.5) * 6, vy: mode === 'l1' ? 14 + R() * 12 : (R() - 0.5) * 4, t: R() * 9, s: s0 }); this.dbg.fg++; }
-    for (let i = 0; i < 3; i++) { const im = s.add.image(0, 0, 'glow').setScrollFactor(0).setDepth(farDepth).setBlendMode(Phaser.BlendModes.ADD).setOrigin(0.5, mode === 'l1' ? 0 : 1)
+    for (let i = 0; i < (mode === 'l1' ? 3 : 2); i++) { const im = s.add.image(0, 0, 'glow').setScrollFactor(0).setDepth(farDepth).setBlendMode(Phaser.BlendModes.ADD).setOrigin(0.5, mode === 'l1' ? 0 : 1)
         .setDisplaySize(mode === 'l1' ? 46 : 22, 320).setTint(mode === 'l1' ? 0xfff0c8 : 0x7ff6ff).setAlpha(0);
       this.far.push({ im, t: R() * 9, base: mode === 'l1' ? 0.09 : 0.11, x: 90 + i * 150 + R() * 40 }); this.dbg.far++; }
     if (mode === 'l2') for (let i = 0; i < 20; i++) { const r = s.add.rectangle(R() * W, 70 + R() * 90, 1, 1 + (R() * 2 | 0), [0xffe08a, 0x9ff0ff, 0xff9af0][i % 3]).setScrollFactor(0).setDepth(farDepth + 0.2).setAlpha(0);

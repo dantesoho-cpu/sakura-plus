@@ -9,7 +9,7 @@ export class CanvasLite {
     this.heavy = this.on || s.children.list.length > 1600;
     this.dbg.on = this.on; this.dbg.heavy = this.heavy; (window as any).__clite = this;
     // orphan ADD glows (alpha<=0.35, not tweening) are pure overdraw — zero them on every renderer
-    { let n = 0; for (const o of s.children.list as any[]) if (o instanceof Phaser.GameObjects.Image && o.blendMode === Phaser.BlendModes.ADD && o.alpha <= 0.35 && o.alpha > 0 && !s.tweens.isTweening(o)) { o.setAlpha(0); n++; } this.dbg.glows = n; (window as any).__cliteGlows = n; }
+    { let n = 0; for (const o of s.children.list as any[]) if (o instanceof Phaser.GameObjects.Image && o.blendMode === Phaser.BlendModes.ADD && o.alpha <= 0.35 && o.alpha > 0 && !s.tweens.isTweening(o)) { o.setVisible(false); o.setActive(false); n++; } this.dbg.glows = n; (window as any).__cliteGlows = n; }
     if (!this.heavy) return;
     for (const o of s.children.list as any[]) if (o instanceof Phaser.GameObjects.Particles.ParticleEmitter && !skip.includes(o) && o.emitting && !o.follow && o.frequency >= 0) {
       if (o.frequency > 0) o.frequency *= this.on ? 4 : 2;

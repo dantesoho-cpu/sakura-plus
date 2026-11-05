@@ -97,8 +97,9 @@ export class Level2 extends Phaser.Scene {
     this.bg[3].setTint(0xb4b0d0); this.bg[4].setTint(0x9c98c0); this.add.rectangle(240, 135, 480, 270, 0x1c1650, 0.16).setScrollFactor(0).setDepth(-10.5);
     this.solids = this.physics.add.staticGroup(); this.ones = this.physics.add.staticGroup(); this.flowers = this.physics.add.staticGroup();
     for (const [a, b] of GROUND) { for (let x = a, j = 0; x < b; x += 140, j++) { const w = Math.min(140, b - x), h = ((x * 2654435761) >>> 0) % 7; const im = this.add.image(x, GY - 1, "l2r_ground").setOrigin(0, 0).setDepth(2).setCrop(0, 0, w, 96); if (w === 140 && (h & 1)) im.setFlipX(true); im.setTint([0xffffff, 0xf2eeff, 0xe6e2fa, 0xfff4fb][h % 4]); this.groundVar = (this.groundVar || 0) + 1; } this.addRect(a, GY, b - a, WH - GY + 60, false); }
-    // signs behind platforms, flickering neon: base glow + random dropouts
-    for (const [k, x, by, c] of SIGNS) { const im = this.add.image(x, by, 'l2_' + k).setOrigin(0.5, 1).setDepth(1);
+    // signs behind platforms, flickering neon (every other — ADD budget)
+    for (let si = 0; si < SIGNS.length; si++) { const [k, x, by, c] = SIGNS[si]; const im = this.add.image(x, by, 'l2_' + k).setOrigin(0.5, 1).setDepth(1);
+      if (si & 1) continue;
       const gl = this.add.image(x, by - im.height / 2, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(c).setScale(Math.max(im.width, im.height) / 60).setAlpha(0.35).setDepth(1.1);
       this.neon.push({ o: gl, im, base: 0.35, t: Math.random() * 9, flick: true, wx: x }); }
     for (const [k, x, y] of PLATS) this.place(k, x, y); this.tiers = new Tiers(this, GY);
@@ -114,8 +115,7 @@ export class Level2 extends Phaser.Scene {
     this.add.rectangle(this.cpX, GY - 30, 4, 60, 0x2a2060).setDepth(1.5); this.cpLamp = this.add.image(this.cpX, GY - 62, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x666688).setScale(0.4).setDepth(1.6);
     // systems
     this.fx = new Fx(this); this.gun = new Blaster(this, 'p', 'shot'); this.egun = new Blaster(this, 'e', 'ebolt', { cooldown: 0, speed: 150, life: 3 });
-    for (const [x, y] of FLOWERS) { const f = this.flowers.create(x, y, 'petal') as any; f.setScale(2).setDepth(6); f.refreshBody(); this.tweens.add({ targets: f, y: y - 4, yoyo: true, repeat: -1, duration: 900 + Math.random() * 400, ease: 'Sine.inOut' });
-      this.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff8fd0).setScale(0.3).setAlpha(0.4).setDepth(5.9); }
+    for (const [x, y] of FLOWERS) { const f = this.flowers.create(x, y, 'petal') as any; f.setScale(2).setDepth(6); f.refreshBody(); this.tweens.add({ targets: f, y: y - 4, yoyo: true, repeat: -1, duration: 900 + Math.random() * 400, ease: 'Sine.inOut' }); }
     this.pk = new Pickups(this, (x, y) => this.groundAt(x, y)); this.pk.add('heart', 2330, 330); this.pk.add('rapid', 1770, 250); this.pk.add('power', 3080, 236);
     this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun; this.player.hasJet = true; this.cannon = new Cannon(this, this.player, () => this.enemies, () => this.egun.shots.getChildren().forEach((o: any) => { if (o.active) this.egun.kill(o); })); this.pk.add('cannon', 1140, GY - 8); this.pk.add('cannon', 2900, GY - 8); this.ia = new Interact(this, GY, LW); this.env = new Env(this, GY, LW); this.extra = new Extra(this, GY, LW); (window as any).__extra = this.extra; this.amb = new Ambient(this, 'l2', -13.5); (window as any).__amb = this.amb; this.tiers.bind(); this.dress = new Dress(this, GY, LW, PLATS); for (const [x, y, n] of TIER_GEMS) this.env.arc(x, y, n); this.cannon.onBlast = () => { const wv = this.cameras.main.worldView; for (const b of this.ia.brk) if (b.im.active && b.im.x > wv.x && b.im.x < wv.right) this.ia.shatter(b); };
     this.player.beam = new Beam(this, this.fx, () => this.enemies, (x, y) => !!this.solid.getTileAtWorldXY(x, y)); this.player.beam.owner = this.player; this.safe = { ...this.spawn };
@@ -134,7 +134,7 @@ export class Level2 extends Phaser.Scene {
     this.gateCols = []; for (const gx of [AX0, AX1]) for (let i = 0; i < 6; i++) { const c = this.add.image(gx, GY - i * 34, 'l2f_' + ['25', '26', '27'][i % 3]).setOrigin(0.5, 1).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0).setDepth(9).setTint(0xff9af0); this.gateCols.push(c); }
     for (const [k, x, sc] of [['07', AX0 + 30, 1], ['08', AX0 + 80, 1], ['05', AX1 - 70, 0.9], ['07', AX1 - 30, 1], ['08', AX0 + 290, 0.9], ['09', AX1 - 190, 1]] as [string, number, number][]) { const im = this.add.image(x, GY + 1, 'l2i_' + k).setOrigin(0.5, 1).setDepth(1.5).setScale(sc); if (k === '09') { im.y = GY - 90; this.tweens.add({ targets: im, y: GY - 100, yoyo: true, repeat: -1, duration: 1400, ease: 'Sine.inOut' }); }
       const gl = this.add.image(x, im.y - im.displayHeight / 2, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(k === '08' ? 0xff9a3f : 0x3ff3ff).setAlpha(0.3).setScale(0.6).setDepth(1.4); this.neon.push({ o: gl, base: 0.3, t: Math.random() * 9, wx: x }); }
-    for (let x = AX0 + 40; x < AX1 - 10; x += 96) { const bar = this.add.image(x, GY - 150 - (x % 3) * 20, 'l2i_06').setDepth(1.3).setAlpha(0.85); this.neon.push({ o: bar, base: 0.85, t: x, wx: x }); }
+    for (let x = AX0 + 40; x < AX1 - 10; x += 160) { const bar = this.add.image(x, GY - 150 - (x % 3) * 20, 'l2i_06').setDepth(1.3).setAlpha(0.85); this.neon.push({ o: bar, base: 0.85, t: x, wx: x }); }
     const walk = (e: any) => e.kind !== 'drone' && e.kind !== 'boss' && e.kind !== 'escort';
     this.physics.add.collider(this.enemyGroup, this.solids, undefined, walk); this.physics.add.collider(this.enemyGroup, this.ones, undefined, walk);
     this.physics.add.overlap(this.gun.shots, this.enemyGroup, (s: any, e: any) => { if (!s.active || e.dead || s.lastE === e) return; s.lastE = e; const d = s.body.velocity.x > 0 ? 1 : -1;
