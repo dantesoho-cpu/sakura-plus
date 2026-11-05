@@ -128,7 +128,7 @@ const FOES: [string, number, number][] = [
   // Moss Gate — opening combat + vertical pressure
   ['crab', 420, T2], ['jelly', 860, 980], ['orb', 760, 880], ['mech', 1100, T2], ['crabl', 600, T1], ['jellyp', 1300, 1120], ['mech2', 1800, T1], ['orbs', 1200, 790], ['crab2', 1100, T3], ['jelly', 1800, 610], ['orb', 1450, 450],
   // Falls of Ame — shaft guards + bridge watch
-  ['mech', 2000, T2], ['jellyb', 2250, 900], ['crab', 2700, T2], ['crabs', 2600, T3], ['orb', 2900, 620], ['jellyp', 2600, 1120], ['mechl', 3000, T1], ['mech2', 2900, T4], ['jelly', 3500, 800],
+  ['mech', 2000, T2], ['jellyb', 2250, 900], ['crab', 2700, T2], ['crabs', 2600, T3], ['orb', 2900, 620], ['jellyp', 2600, 1120], ['mechl', 2920, T1], ['mech2', 2900, T4], ['jelly', 3500, 800],
   ['orbs', 2450, 560], ['crab2', 3350, T2], ['jelly', 3100, 700],
   // Lantern Terraces — stair ambush + canopy snipers
   ['crab', 4100, T2], ['orbs', 4450, 840], ['mech', 4900, T2], ['crab2', 5100, T3], ['jellyp', 4900, 600], ['mechs', 5300, T4], ['orb', 5400, 450], ['crabl', 4600, T1], ['mech2', 5400, T1],
@@ -183,9 +183,12 @@ export class Shrine extends Phaser.Scene {
     } }
   /** walk-surface y of the sheet ramps at x (or Infinity) */
   rampY(x: number) { for (const r of this.surf) { if (x < r.x || x > r.x + r.w) continue; let u = (x - r.x) / S; if (r.flip) u = r.w / S - u; const i = Math.min(r.prof.length - 1, Math.max(0, Math.round(u / 4))); return r.y + r.prof[i] * S; } return Infinity; }
-  slopeSnap() { const p = this.player, b = p?.body_; this.onSlope = false; if (!b || !b.enable || b.velocity.y < 0 || this.looping >= 0) return;
-    const feet = b.bottom; let sy = Infinity; for (const x of [b.left + 2, b.right - 2, b.center.x]) sy = Math.min(sy, this.rampY(x)); if (sy === Infinity) return;
-    const dy = sy - feet; if (dy > -12 && dy < 6) { b.y += dy; b.velocity.y = 0; b.blocked.down = b.touching.down = true; this.onSlope = true; } }
+  slopeSnap() { const p = this.player, b = p?.body_; const was = this.onSlope; this.onSlope = false; if (!b || !b.enable || b.velocity.y < 0 || this.looping >= 0) return;
+    const feet = b.bottom, lead = Math.min(10, 4 + Math.abs(b.velocity.x) * 0.04);
+    const xs = [b.left + 2 - (b.velocity.x < 0 ? lead : 0), b.center.x, b.right - 2 + (b.velocity.x > 0 ? lead : 0)];
+    let sy = Infinity; for (const x of xs) sy = Math.min(sy, this.rampY(x)); if (sy === Infinity) return;
+    const lo = was ? -14 : -12, hi = was ? 8 : 6; const dy = sy - feet;
+    if (dy > lo && dy < hi) { b.y += dy; b.velocity.y = 0; b.blocked.down = b.touching.down = true; this.onSlope = true; } }
   /** vault: arch lintel + sheet columns; a lever-raised gate (or a false wall) seals one side; chest inside */
   vault(x: number, sy: number, side: number, secret: boolean) { const W = 96, H = 64, colM = this.m('col'), am = this.m('p_arch_top');
     this.addRect(x - 10, sy - H - 14, W + 20, 16, false); this.add.image(x + W / 2, sy - H - 18, 'sh_p_arch_top').setOrigin(0.5, 0).setScale((W + 24) / am.w, S).setDepth(6.6);
@@ -348,7 +351,7 @@ export class Shrine extends Phaser.Scene {
     if (this.looping >= 0) this.loopStep(dt); else p.update(dt);
     if (this.deep && this.looping < 0) { const b = p.body_; b.velocity.x *= 0.94; b.velocity.y = Phaser.Math.Clamp(b.velocity.y * 0.9, -240, 60); }
     // bubble lifts + currents + the current loop
-    { const b = p.body_; let inLift = false; for (const [a, c, t, bt] of LIFTS) if (p.x > a && p.x < c && p.y > t && p.y < bt + 4) { b.setVelocityY(Math.max(b.velocity.y - 1700 * dt, -250)); if (p.y < t + 30) b.setVelocityY(Math.min(b.velocity.y, -160)); p.y -= (p.y < t + 30 ? 90 : 170) * dt; this.dbg.lift++; inLift = true; }
+    { const b = p.body_; let inLift = false; for (const [a, c, t, bt] of LIFTS) if (p.x > a && p.x < c && p.y > t && p.y < bt + 4) { b.setVelocityY(Math.max(b.velocity.y - 1900 * dt, -280)); if (p.y < t + 36) b.setVelocityY(Math.min(b.velocity.y, -180)); p.y -= (p.y < t + 36 ? 110 : 190) * dt; p.boostT = Math.max(p.boostT, 0.12); p.airJumps = Math.max(p.airJumps, 1); this.dbg.lift++; inLift = true; }
       b.checkCollision.up = !inLift;
       let inCur = false; for (const [a, c, t, bt, f] of CURRENTS) if (this.looping < 0 && p.x > a && p.x < c && p.y > t && p.y < bt + 4) { p.x += f * 0.6 * dt; b.velocity.x = Phaser.Math.Clamp(b.velocity.x + f * 3 * dt, -200, f * 1.2); inCur = true; this.dbg.current++; }
       if (this.looping < 0 && p.x > LOOP.x0 && p.x < LOOP.x1 && p.y > LOOP.cy + LOOP.r - 30 && p.y < LOOP.cy + LOOP.r + 36 && (b.velocity.x > 10 || inCur)) { this.looping = 0; this.dbg.loop++; p.locked = true; audio.sfx('dash'); } }

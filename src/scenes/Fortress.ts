@@ -208,13 +208,13 @@ export class Fortress extends Phaser.Scene {
     // live gameplay roles: spawn entities, skip decorative duplicate for enemies/turrets when AI spawned
     if (role === 'turret' || role === 'en_mech') {
       if (this.liveTur < 14 && this.egun) {
-        // seat on nearest one-way / solid top — layout turrets often hang in empty air over the arena
+        // seat on nearest one-way / solid top (Arcade body.y/top is the top edge, not center)
         let sy = p.y, best = 1e9;
         const seatOf = (g: Phaser.Physics.Arcade.StaticGroup) => {
           for (const z of g.getChildren() as Phaser.GameObjects.Zone[]) {
             const b = z.body as Phaser.Physics.Arcade.StaticBody; if (!b) continue;
-            if (p.x < b.x - b.width / 2 - 10 || p.x > b.x + b.width / 2 + 10) continue;
-            const top = b.y - b.height / 2, d = Math.abs(top - p.y);
+            if (p.x < b.left - 10 || p.x > b.right + 10) continue;
+            const top = b.top, d = Math.abs(top - p.y);
             if (d < best && d < 60) { best = d; sy = top; }
           }
         };
@@ -333,13 +333,14 @@ export class Fortress extends Phaser.Scene {
     return Infinity;
   }
   slopeSnap() {
-    const p = this.player, b = p?.body_; this.onSlope = false;
+    const p = this.player, b = p?.body_; const was = this.onSlope; this.onSlope = false;
     if (!b || !b.enable || b.velocity.y < 0) return;
-    const feet = b.bottom; let sy = Infinity;
-    for (const x of [b.left + 2, b.right - 2, b.center.x]) sy = Math.min(sy, this.rampY(x));
+    const feet = b.bottom, lead = Math.min(10, 4 + Math.abs(b.velocity.x) * 0.04);
+    const xs = [b.left + 2 - (b.velocity.x < 0 ? lead : 0), b.center.x, b.right - 2 + (b.velocity.x > 0 ? lead : 0)];
+    let sy = Infinity; for (const x of xs) sy = Math.min(sy, this.rampY(x));
     if (sy === Infinity) return;
-    const dy = sy - feet;
-    if (dy > -12 && dy < 6) { b.y += dy; b.velocity.y = 0; b.blocked.down = b.touching.down = true; this.onSlope = true; }
+    const lo = was ? -14 : -12, hi = was ? 8 : 6; const dy = sy - feet;
+    if (dy > lo && dy < hi) { b.y += dy; b.velocity.y = 0; b.blocked.down = b.touching.down = true; this.onSlope = true; }
   }
   /** Settle onto nearby deck tops when Arcade misses a one-frame contact (land-probe stability). */
   shelfSnap() {
@@ -353,14 +354,14 @@ export class Fortress extends Phaser.Scene {
     };
     for (const z of this.ones.getChildren() as Phaser.GameObjects.Zone[]) {
       const sb = z.body as Phaser.Physics.Arcade.StaticBody;
-      if (b.right < sb.x + 1 || b.x > sb.right - 1) continue;
-      consider(sb.y);
+      if (b.right < sb.left + 1 || b.left > sb.right - 1) continue;
+      consider(sb.top);
     }
     for (const z of this.solids.getChildren() as Phaser.GameObjects.Zone[]) {
       const sb = z.body as Phaser.Physics.Arcade.StaticBody;
       if (sb.height > 64) continue; // skip tall gates/walls
-      if (b.right < sb.x + 1 || b.x > sb.right - 1) continue;
-      consider(sb.y);
+      if (b.right < sb.left + 1 || b.left > sb.right - 1) continue;
+      consider(sb.top);
     }
     if (best === Infinity) return;
     const dy = best - feet;
