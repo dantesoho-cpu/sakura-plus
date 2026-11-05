@@ -267,8 +267,9 @@ export class Level1 extends Phaser.Scene {
     this.buildSurfaceSkin(at, MW);
     this.placeDeco(at, S);
     this.placeGen2(at, S);
+    this.placeRoutes(); // before placePlats so random sheet pads can't stack on Mania steppers
     this.placePlats(at, S);
-    this.placeRoutes();
+    this.snapGrounded();
     this.anchorProps();
     this.pk = new Pickups(this, (x, y) => this.groundAt(x, y));
     (this.flowers.getChildren() as any[]).forEach((f, i) => { if (i % 2 === 0) return; const kind: PK = (['heart', 'rapid', 'heart', 'power', 'heart'] as PK[])[(i - 1) / 2 % 5];
@@ -452,12 +453,26 @@ export class Level1 extends Phaser.Scene {
       if (cx > (ARENA.x0 - 4) * TS && cx < (ARENA.x1 + 4) * TS) continue; // keep boss arena clear
       const q = PLAT.find(z => z.k === k); if (!q) continue;
       const med = walkMed(q.p);
-      // skip if another plat already occupies this pad
+      // skip if another plat already occupies this pad (AABB, not just walk-median — tall pieces fool median)
       const L = cx - q.w / 2, R = cx + q.w / 2;
-      if (this.plats.some(p => R > p.L + 8 && L < p.L + p.w - 8 && Math.abs((p.T + walkMed(p.p)) - walkY) < 28)) continue;
+      if (this.plats.some(p => {
+        const ox = Math.min(R, p.L + p.w) - Math.max(L, p.L); if (ox < 20) return false;
+        const pWalk = p.T + walkMed(p.p);
+        return Math.abs(pWalk - walkY) < 48 || (p.T < walkY + 28 && p.T + Math.max(28, p.w * 0.4) > walkY - 32);
+      })) continue;
       this.addPlat(k, cx, walkY - med + q.h, false, -1.8); n++;
     }
     (window as any).__routes1 = n;
+  }
+  /** re-seat map turrets/bots onto skinned ground so they don't hover over slopes */
+  snapGrounded() {
+    const seat = new Set(['turret', 'bot', 'trooper', 'sentry']);
+    for (const e of this.enemies as any[]) {
+      if (!e || e.dead || !seat.has(e.kind)) continue;
+      const g = this.groundAt(e.x, e.y - 4); if (!(g > 40)) continue;
+      const dy = g - e.y; if (Math.abs(dy) < 3 || Math.abs(dy) > 56) continue;
+      e.y = g; e.b?.reset?.(e.x, g);
+    }
   }
 
   placePlats(at: (x: number, y: number) => string, S: (x: number, y: number) => boolean) {
@@ -494,10 +509,10 @@ export class Level1 extends Phaser.Scene {
       let e = x; while (S(e, y) && !S(e, y - 1)) e++; const run = e - x, top = y * TS;
       for (let cx = (x + 3) * TS + rnd() * 40; cx < (e - 3) * TS; ) {
         const t = Math.floor(cx / TS); if (run < 6 || banned(t)) { cx += 160; continue; }
-        if (rnd() < 0.45) { let q = nextT(), ok = false; for (let k = 0; k < 6 && !(ok = cx + q.w / 2 < e * TS - 8 && clear(cx - q.w / 2, top - q.h, cx + q.w / 2, top - 1) && (q.w < 150 || deep(q, cx, y))); k++) { backT(q); q = nextT(); } if (ok) { this.groundPlat(q, cx, top); cx += q.w + 60 + rnd() * 90; continue; } }
+        if (rnd() < 0.45) { let q = nextT(), ok = false; for (let k = 0; k < 6 && !(ok = cx + q.w / 2 < e * TS - 8 && clear(cx - q.w / 2, top - q.h, cx + q.w / 2, top - 1) && (q.w < 150 || deep(q, cx, y)) && !occ(cx - q.w / 2, cx + q.w / 2, top - q.h, top)); k++) { backT(q); q = nextT(); } if (ok) { this.groundPlat(q, cx, top); cx += q.w + 60 + rnd() * 90; continue; } }
         const lift = 52 + Math.floor(rnd() * 3) * 18; const b = top - lift; let q = nextF(), ok = false;
-        for (let tries = 0; tries < 6 && !(ok = clear(cx - q.w / 2, b - q.h, cx + q.w / 2, top - 1) && cx + q.w / 2 < e * TS - 8); tries++) { backF(q); q = nextF(); }
-        if (ok) { this.addPlat(q.k, cx, b, rnd() < 0.5, -2); cx += q.w + 50 + rnd() * 90; } else { const q2 = PLAT.filter(z => z.h < 40 && z.w >= 30 && z.w <= q.w); const s2 = q2[Math.floor(rnd() * q2.length)]; if (s2 && clear(cx - s2.w / 2, b - s2.h, cx + s2.w / 2, top - 1)) { this.addPlat(s2.k, cx, b, rnd() < 0.5, -2); cx += s2.w + 60; } else cx += 40; }
+        for (let tries = 0; tries < 6 && !(ok = clear(cx - q.w / 2, b - q.h, cx + q.w / 2, top - 1) && cx + q.w / 2 < e * TS - 8 && !occ(cx - q.w / 2, cx + q.w / 2, b - q.h, b)); tries++) { backF(q); q = nextF(); }
+        if (ok) { this.addPlat(q.k, cx, b, rnd() < 0.5, -2); cx += q.w + 50 + rnd() * 90; } else { const q2 = PLAT.filter(z => z.h < 40 && z.w >= 30 && z.w <= q.w); const s2 = q2[Math.floor(rnd() * q2.length)]; if (s2 && clear(cx - s2.w / 2, b - s2.h, cx + s2.w / 2, top - 1) && !occ(cx - s2.w / 2, cx + s2.w / 2, b - s2.h, b)) { this.addPlat(s2.k, cx, b, rnd() < 0.5, -2); cx += s2.w + 60; } else cx += 40; }
       }
       x = e; } }
     { const used = new Set(this.plats.map(q => q.k)); fill(PLAT.filter(z => !used.has(z.k) && !hill(z))); }
