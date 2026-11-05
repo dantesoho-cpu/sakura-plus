@@ -1,0 +1,17 @@
+{
+  "when": "2026-11-05T03:42:00-07:00",
+  "zone": "America/Phoenix",
+  "live_url": "https://dantesoho-cpu.github.io/sakura-plus/",
+  "bundle": "index-CRUZpm4C.js",
+  "sha256": "92968cf9f7745182d076d9c8e1c839d1f9d3af918d2ff7a791f737f2ca0f7d62",
+  "prior_bundle": "index-DekCysFG.js",
+  "actions_run": 42012700468,
+  "publish_commits": ["d0092bae", "240fa1dc", "470feb9c"],
+  "sakura_commits": ["17ea6997", "e9f1a102", "37409af4", "5bb9b2b3"],
+  "markers": ["snapGrounded", "4088,4220"],
+  "fixes": [
+    "L1 placeRoutes before placePlats + AABB occ + snapGrounded",
+    "L2 sentry 4400 MID, assault 1980 UP, MID/UP connectors, thin LOW vig",
+    "Fortress FtTurret seat on nearest one/solid or skip"
+  ]
+}
