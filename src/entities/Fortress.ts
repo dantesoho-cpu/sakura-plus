@@ -130,26 +130,43 @@ export class FtAvian extends Enemy {
 }
 
 const BOSS_HP = 48;
-/** Winged Air-Fortress ship boss — hover, fan, dive, missile rain. */
+/** Winged Air-Fortress ship boss — 3-phase hover/fan/dive/rain/beam with sheet9 telegraphs + defeat. */
 export class FtBoss extends Enemy {
   kind = 'boss'; maxHp = BOSS_HP; awake = false; st = 'sleep'; stT = 0; hx: number; hy: number; n = 0;
-  dbg: Record<string, number> = { fan: 0, dive: 0, rain: 0, beam: 0 };
+  dbg: Record<string, number> = { fan: 0, dive: 0, rain: 0, beam: 0, shift: 0 };
   onDead: () => void = () => {}; tx = 0; ty = 0; glowI: Phaser.GameObjects.Image;
+  lastPhase = 1; shieldT = 0;
+  // sheet9 burst/beam/bolt crops (tx2/fx atlas → ft_s9_XXX)
+  static BURST = ['ft_s9_006', 'ft_s9_007', 'ft_s9_008', 'ft_s9_010', 'ft_s9_026', 'ft_s9_040', 'ft_s9_041', 'ft_s9_044'];
+  static BEAM = ['ft_s9_000', 'ft_s9_001', 'ft_s9_002', 'ft_s9_003', 'ft_s9_004', 'ft_s9_005'];
+  static BOLT = ['ft_s9_014', 'ft_s9_028', 'ft_s9_029', 'ft_s9_032', 'ft_s9_033', 'ft_s9_039'];
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx, public gun: Blaster, public groundY: number) {
     super(s, x, y, 'ft_boss_0', BOSS_HP, fx); this.hx = x; this.hy = y; this.setOrigin(0.5, 0.5);
-    // impose: scale up ~1.6× native sheet cut
     this.setScale(1.85); this.b.setSize(this.width * 0.7, this.height * 0.55);
     this.setAlpha(0); this.setDepth(8.5);
     this.glowI = s.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xb04aff).setScale(6).setAlpha(0).setDepth(8.4);
   }
-  get p2() { return this.hp <= this.maxHp / 2; }
+  get phase() { return this.hp > this.maxHp * 0.66 ? 1 : this.hp > this.maxHp * 0.33 ? 2 : 3; }
+  get p2() { return this.phase >= 2; }
+  s9(keys: string[], x: number, y: number, from = 0.5, to = 2.4, ms = 420, ang = 0) {
+    const pool = keys.filter(k => this.scene.textures.exists(k)); if (!pool.length) { this.fx.explode(x, y, 0.5); return null; }
+    const k = pool[Math.floor(Math.random() * pool.length)];
+    const im = this.scene.add.image(x, y, k).setBlendMode(Phaser.BlendModes.ADD).setScale(from).setDepth(14).setAngle(ang).setAlpha(0.95);
+    this.scene.tweens.add({ targets: im, scale: to, alpha: 0, angle: ang + 35, duration: ms, ease: 'Cubic.out', onComplete: () => im.destroy() }); return im;
+  }
   hit(dmg: number, dir: number) {
-    if (!this.awake || this.dead || this.st === 'dying') return;
-    const was = this.p2; super.hit(dmg, dir);
-    if (!was && this.p2 && !this.dead) { this.st = 'rain'; this.stT = 2.6; this.scene.cameras.main.flash(220, 180, 100, 255); audio.sfx('gate'); }
+    if (!this.awake || this.dead || this.st === 'dying' || this.shieldT > 0) return;
+    super.hit(dmg, dir);
   }
   knock() {}
   punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(1.85 * sx, 1.85 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.85, scaleY: 1.85, duration: ms, ease: 'Quad.out' }); }
+  phaseShift(ph: number) {
+    const s: any = this.scene, cam = s.cameras.main; this.dbg.shift++; this.st = 'hover'; this.stT = 1.5; this.shieldT = 1.15; this.b.setVelocity(0, 0);
+    cam.flash(240, ph === 3 ? 255 : 180, 100, 255, true); cam.shake(400, 0.011); audio.sfx('gate');
+    s.toast?.show(ph === 2 ? 'WINGED FORTRESS — SHIELDS CRACK' : 'WINGED FORTRESS — CORE MELT', ph === 3 ? '#ffd23f' : '#ff4fd8');
+    for (let i = 0; i < 5; i++) s.time.delayedCall(i * 80, () => this.s9(FtBoss.BURST, this.x + Phaser.Math.Between(-40, 40), this.y + Phaser.Math.Between(-20, 20), 0.5, 3 + i * 0.3, 560));
+    this.s9(FtBoss.BEAM, this.x, this.y, 0.4, 2.8, 700, 90);
+  }
   wake() {
     if (this.st !== 'sleep') return; this.st = 'intro'; this.stT = 2.1;
     this.setPosition(this.hx, this.hy - 200); this.setScale(1.85); this.glowI.setAlpha(0.55).setScale(9);
@@ -157,9 +174,10 @@ export class FtBoss extends Enemy {
     this.scene.tweens.add({ targets: this.glowI, alpha: 0.38, scale: 6.5, duration: 1800, ease: 'Sine.out' });
     this.scene.cameras.main.shake(420, 0.009);
     this.scene.time.delayedCall(200, () => { try { (this.scene as any).toast?.show?.('WINGED FORTRESS', '#ff4fd8'); } catch {} });
+    for (let i = 0; i < 4; i++) this.scene.time.delayedCall(i * 180, () => this.s9(FtBoss.BURST, this.hx + (i - 1.5) * 50, this.hy - 40, 0.4, 2.2, 500));
   }
   reset() {
-    this.scene.tweens.killTweensOf(this); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false;
+    this.scene.tweens.killTweensOf(this); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false; this.lastPhase = 1; this.shieldT = 0;
     this.setAlpha(0).setScale(1.85).setAngle(0); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.glowI.setAlpha(0);
   }
   tick(dt: number, px: number, py: number) {
@@ -167,33 +185,50 @@ export class FtBoss extends Enemy {
     this.glowI.setPosition(this.x, this.y).setAlpha(this.alpha * (0.22 + 0.1 * Math.sin(this.t * 3.5)));
     if (this.st === 'sleep' || this.st === 'dying') { this.b.setVelocity(0, 0); return; }
     this.stT -= dt;
+    if (this.shieldT > 0) { this.shieldT -= dt; this.setTint(Math.floor(this.shieldT * 14) % 2 ? 0xffffff : 0xff4fd8); if (this.shieldT <= 0) this.clearTint(); }
+    if (this.awake && this.phase > this.lastPhase) { this.lastPhase = this.phase; this.phaseShift(this.phase); }
     if (this.st === 'intro') { this.b.setVelocity(0, 0); if (this.stT <= 0) { this.st = 'hover'; this.stT = 1.0; this.awake = true; } return; }
     this.face(Math.sign(px - this.x) || this.faceDir);
     const mv = (x: number, y: number, k: number, m: number) => this.b.setVelocity(Phaser.Math.Clamp((x - this.x) * k, -m, m), Phaser.Math.Clamp((y - this.y) * k, -m, m));
+    const spd = this.phase === 3 ? 150 : this.phase === 2 ? 130 : 95;
     if (this.st === 'hover') {
-      mv(px + Math.sin(this.t * 0.7) * 100, this.groundY - 130 + Math.sin(this.t * 1.4) * 16, 1.5, this.p2 ? 130 : 95);
+      mv(px + Math.sin(this.t * 0.7) * 100, this.groundY - 130 + Math.sin(this.t * 1.4) * 16, 1.5, spd);
       this.setAngle(Phaser.Math.Clamp(this.b.velocity.x * 0.06, -6, 6));
       if (this.stT <= 0) {
-        this.n++; const ph = this.n % (this.p2 ? 4 : 3);
-        if (ph === 0) { this.st = 'aim'; this.stT = 0.55; this.telegraph(0.55); this.tx = px; this.ty = Math.min(py - 10, this.groundY - 40); }
-        else if (this.p2 && ph === 3) { this.st = 'rain'; this.stT = 2.4; }
-        else if (ph === 2) {
-          this.dbg.beam++; const a = Math.atan2(py - this.y, px - this.x);
-          for (let i = -1; i <= 1; i++) this.gun.fireVel(this.x, this.y + 10, Math.cos(a) * 200, Math.sin(a) * 200 + i * 30, { tex: 'ebolt', trail: 0x6fe8ff, life: 2.2 });
-          audio.sfx('eshot', { rate: 0.7 }); this.punch(1.2, 0.8); this.stT = this.p2 ? 1.0 : 1.4;
+        this.n++; const cycle = this.phase === 3 ? 5 : this.phase === 2 ? 4 : 3; const ph = this.n % cycle;
+        if (ph === 0) { this.st = 'aim'; this.stT = this.phase === 3 ? 0.4 : 0.55; this.telegraph(this.stT); this.tx = px; this.ty = Math.min(py - 10, this.groundY - 40); this.s9(FtBoss.BOLT, this.x, this.y + 10, 0.4, 1.6, this.stT * 1000); }
+        else if (this.phase >= 2 && ph === cycle - 1) { this.st = 'rainTele'; this.stT = 0.55; this.telegraph(0.55); this.s9(FtBoss.BURST, this.x, this.y - 20, 0.5, 2.0, 550); }
+        else if (ph === 2 || (this.phase === 3 && ph === 3)) {
+          this.st = 'beamTele'; this.stT = 0.5; this.telegraph(0.5); this.tx = px; this.ty = py;
+          const a = Math.atan2(py - this.y, px - this.x);
+          this.s9(FtBoss.BEAM, this.x + Math.cos(a) * 40, this.y + Math.sin(a) * 40, 0.35, 1.8, 500, Phaser.Math.RadToDeg(a) + 90);
         } else {
-          this.dbg.fan++; const a = Math.atan2(py - 10 - this.y, px - this.x);
-          for (let i = -3; i <= 3; i++) this.gun.fireVel(this.x, this.y + 8, Math.cos(a + i * 0.18) * 150, Math.sin(a + i * 0.18) * 150, { tex: 'ebolt', trail: 0xff4fd8, life: 2.5, pulse: true });
-          audio.sfx('eshot', { rate: 0.85 }); this.punch(1.18, 0.82); this.stT = this.p2 ? 1.1 : 1.5;
+          this.st = 'fanTele'; this.stT = 0.45; this.telegraph(0.45); this.tx = px; this.ty = py - 10;
+          this.s9(FtBoss.BURST, this.x, this.y + 8, 0.35, 1.5, 450);
         }
       }
       return;
     }
-    if (this.st === 'aim') { this.b.setVelocity(0, 0); this.setAngle(Math.sin(this.t * 40) * 2); if (this.stT <= 0) { this.st = 'dive'; this.stT = 0.85; this.dbg.dive++; audio.sfx('dash'); } return; }
+    if (this.st === 'fanTele') { this.b.setVelocity(0, 0); if (this.stT <= 0) {
+      this.dbg.fan++; const a = Math.atan2(this.ty - this.y, this.tx - this.x); const n = this.phase === 3 ? 9 : 7;
+      for (let i = -(n - 1) / 2; i <= (n - 1) / 2; i++) this.gun.fireVel(this.x, this.y + 8, Math.cos(a + i * 0.18) * 150, Math.sin(a + i * 0.18) * 150, { tex: 'ebolt', trail: 0xff4fd8, life: 2.5, pulse: true });
+      audio.sfx('eshot', { rate: 0.85 }); this.punch(1.18, 0.82); this.s9(FtBoss.BURST, this.x, this.y + 8, 0.5, 1.8, 300);
+      this.st = 'hover'; this.stT = this.phase === 3 ? 0.9 : this.phase === 2 ? 1.1 : 1.5;
+    } return; }
+    if (this.st === 'beamTele') { this.b.setVelocity(0, 0); if (this.stT <= 0) {
+      this.dbg.beam++; const a = Math.atan2(this.ty - this.y, this.tx - this.x);
+      for (let i = -1; i <= 1; i++) this.gun.fireVel(this.x, this.y + 10, Math.cos(a) * 200, Math.sin(a) * 200 + i * 30, { tex: 'ebolt', trail: 0x6fe8ff, life: 2.2 });
+      if (this.phase >= 3) for (const o of [-0.35, 0.35]) this.gun.fireVel(this.x, this.y + 10, Math.cos(a + o) * 180, Math.sin(a + o) * 180, { tex: 'ebolt', trail: 0xffd23f, life: 2.2 });
+      audio.sfx('eshot', { rate: 0.7 }); this.punch(1.2, 0.8); this.s9(FtBoss.BEAM, this.x, this.y, 0.5, 2.2, 360, Phaser.Math.RadToDeg(a) + 90);
+      this.st = 'hover'; this.stT = this.phase === 3 ? 0.85 : 1.2;
+    } return; }
+    if (this.st === 'rainTele') { this.b.setVelocity(0, 0); if (this.stT <= 0) { this.st = 'rain'; this.stT = this.phase === 3 ? 2.8 : 2.4; } return; }
+    if (this.st === 'aim') { this.b.setVelocity(0, 0); this.setAngle(Math.sin(this.t * 40) * 2); if (this.stT <= 0) { this.st = 'dive'; this.stT = 0.85; this.dbg.dive++; audio.sfx('dash'); this.s9(FtBoss.BOLT, this.x, this.y, 0.5, 1.8, 280); } return; }
     if (this.st === 'dive') {
       mv(this.tx, this.ty, 5.5, 340);
       if (this.stT <= 0 || Math.hypot(this.tx - this.x, this.ty - this.y) < 10) {
         this.st = 'hover'; this.stT = 1; this.scene.cameras.main.shake(160, 0.007); this.fx.explode(this.x, this.y + 24, 0.7);
+        this.s9(FtBoss.BURST, this.x, this.y + 24, 0.6, 2.6, 420);
       }
       return;
     }
@@ -201,10 +236,11 @@ export class FtBoss extends Enemy {
       mv(this.scene.cameras.main.worldView.centerX, this.groundY - 150, 2, 110); this.setAngle(0);
       if (Math.floor((this.stT + dt) * 4) !== Math.floor(this.stT * 4)) {
         this.dbg.rain++;
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < (this.phase === 3 ? 7 : 5); i++) {
           const sx = this.x + (i - 2) * 36 + Phaser.Math.Between(-8, 8);
           this.gun.fireVel(sx, this.y + 20, (Math.random() - 0.5) * 40, 160 + Math.random() * 40, { tex: 'ebolt', trail: 0xffd23f, life: 2.8 });
         }
+        this.s9(FtBoss.BOLT, this.x + Phaser.Math.Between(-60, 60), this.y + 16, 0.35, 1.4, 280);
         audio.sfx('eshot', { rate: 1.5, vol: 0.45 });
       }
       if (this.stT <= 0) { this.st = 'hover'; this.stT = 1; }
@@ -214,12 +250,21 @@ export class FtBoss extends Enemy {
     if (this.st === 'dying' || this.dead) return; this.st = 'dying'; this.awake = false; this.dead = true;
     this.b.setVelocity(0, 0); this.b.enable = false; this.scene.tweens.killTweensOf(this);
     const s = this.scene; audio.sfx('explode');
-    for (let i = 0; i < 10; i++) s.time.delayedCall(i * 140, () => { if (this.active) this.fx.explode(this.x + Phaser.Math.Between(-80, 80), this.y + Phaser.Math.Between(-30, 30), 0.9); });
-    // fire win immediately so victory is not stuck if the death tween is interrupted
-    s.time.delayedCall(400, () => { try { this.onDead(); } catch {} });
+    for (let i = 0; i < 14; i++) s.time.delayedCall(i * 120, () => { if (!this.active) return;
+      const ex = this.x + Phaser.Math.Between(-90, 90), ey = this.y + Phaser.Math.Between(-40, 40);
+      this.fx.explode(ex, ey, 0.95); this.s9(FtBoss.BURST, ex, ey, 0.55, 3.0, 520);
+      if (i % 3 === 0) this.s9(FtBoss.BEAM, ex, ey, 0.4, 2.2, 480, Phaser.Math.Between(0, 180));
+      audio.sfx('explode', { rate: 0.75 + Math.random() * 0.35, vol: 0.5 }); this.setTintFill(i % 2 ? 0xffffff : 0xff4fd8);
+    });
+    s.time.delayedCall(500, () => { try { this.onDead(); } catch {} });
     s.tweens.add({
-      targets: this, y: this.y + 80, alpha: 0, angle: 12, duration: 1800, ease: 'Quad.in',
-      onComplete: () => { try { this.glowI.destroy(); } catch {} try { this.aura.destroy(); } catch {} try { this.tele.destroy(); } catch {} this.emit('destroyed', this); this.destroy(); },
+      targets: this, y: this.y + 90, alpha: 0, angle: 14, duration: 2000, ease: 'Quad.in',
+      onComplete: () => {
+        this.s9(FtBoss.BURST, this.x, this.y, 1, 6, 900); this.s9(FtBoss.BEAM, this.x, this.y, 0.8, 4, 800, 90);
+        s.cameras.main.flash(340, 255, 220, 200); this.fx.shake(560, 0.018);
+        try { this.glowI.destroy(); } catch {} try { this.aura.destroy(); } catch {} try { this.tele.destroy(); } catch {}
+        this.emit('destroyed', this); this.destroy();
+      },
     });
   }
 }
