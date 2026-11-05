@@ -13,6 +13,8 @@ export class Title extends Phaser.Scene {
   create() {
     this.gone = false; this.sel = 0; this.t = 0; this.items = [];
     this.bg = new Parallax(this); this.petals = new Petals(this);
+    { const v = this.add.graphics().setScrollFactor(0).setDepth(48); v.fillStyle(0x0a0618, 0.35); v.fillRect(0, 0, 480, 270); v.fillStyle(0x0a0618, 0); /* plate behind menu */
+      const g = this.add.graphics().setScrollFactor(0).setDepth(49); g.fillStyle(0x1a0f2e, 0.55).fillRoundedRect(150, 152, 180, 70, 6); g.lineStyle(1, 0xff7ac8, 0.4).strokeRoundedRect(150, 152, 180, 70, 6); }
     const glow = this.add.image(240, 88, 'glow').setScrollFactor(0).setDepth(49).setTint(0xff7ac8).setBlendMode(Phaser.BlendModes.ADD).setScale(5, 2.2).setAlpha(0.35);
     this.tweens.add({ targets: glow, alpha: 0.18, yoyo: true, repeat: -1, duration: 1800, ease: 'Sine.inOut' });
     const logo = this.add.image(240, 80, 'ui_logo').setScrollFactor(0).setDepth(50).setAlpha(0).setScale(0.9);

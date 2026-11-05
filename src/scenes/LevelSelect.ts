@@ -43,8 +43,8 @@ export class LevelSelect extends Phaser.Scene {
     this.choose(0, true); (window as any).__ls = this; this.cameras.main.fadeIn(260);
   }
   choose(i: number, quiet = false) { if (this.gone) return; const n = LEVELS.length; i = (i + n) % n; if (i !== this.sel && !quiet) audio.sfx('menu', { rate: 1.4, vol: 0.5 }); this.sel = i;
-    this.cards.forEach((c, k) => { this.tweens.add({ targets: c, scale: k === i ? 1.06 : 0.92, duration: 140, ease: 'Quad.out' }); this.frames[k].setStrokeStyle(k === i ? 3 : 1, k === i ? LEVELS[k].col : 0x5a4a7a); }); }
-  play() { if (this.gone) return; this.gone = true; audio.sfx('menu'); const k = LEVELS[this.sel].key; this.cameras.main.flash(120, 255, 220, 240); this.cameras.main.fadeOut(300); this.time.delayedCall(320, () => this.scene.start(k)); }
-  back() { if (this.gone) return; this.gone = true; this.cameras.main.fadeOut(220); this.time.delayedCall(240, () => this.scene.start('Title')); }
+    this.cards.forEach((c, k) => { this.tweens.add({ targets: c, scale: k === i ? 1.08 : 0.9, alpha: k === i ? 1 : 0.72, duration: 160, ease: 'Quad.out' }); this.frames[k].setStrokeStyle(k === i ? 3 : 1, k === i ? LEVELS[k].col : 0x5a4a7a).setFillStyle(0x1a0f2e, k === i ? 0.96 : 0.82); }); }
+  play() { if (this.gone) return; this.gone = true; audio.sfx('menu'); audio.sfx('whoosh', { vol: 0.45 }); const k = LEVELS[this.sel].key; this.cameras.main.flash(140, 255, 220, 240); this.cameras.main.fadeOut(340, 26, 12, 40); this.time.delayedCall(320, () => this.scene.start(k)); }
+  back() { if (this.gone) return; this.gone = true; audio.sfx('menu', { rate: 0.9 }); this.cameras.main.fadeOut(240, 26, 12, 40); this.time.delayedCall(260, () => this.scene.start('Title')); }
   update(_t: number, d: number) { const dt = d / 1000; this.t += dt; this.cameras.main.scrollX += 14 * dt; this.bg.update(dt); this.petals.update(dt); this.frames[this.sel]?.setAlpha(0.85 + 0.15 * Math.sin(this.t * 5)); }
 }
