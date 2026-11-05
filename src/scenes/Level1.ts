@@ -46,6 +46,38 @@ export const MEMORIES = [
 export const SLOPES: Record<string, number> = { '/': 0, '\\': 1, u: 2, U: 3, n: 4, N: 5 };
 export const slopeH = (f: number, c: number) => [15 - c, c, 16 - (c + 1) / 2, 8 - (c + 1) / 2, c / 2, 8 + c / 2][f];
 const ARENA = { x0: 404, x1: 470 };
+
+// Mania-style tiered routes (walk Y): low float · mid shelf · high ledge · canopy — sheet steppers bridging intentional gaps
+const L1R = { LOW: 640, MID: 512, HIGH: 384, CAN: 288 };
+const ROUTE_STEPS: [string, number, number][] = [
+  // mid corridor (above meadow, under high shelves)
+  ['sp21', 240, L1R.MID], ['sp20', 480, L1R.MID], ['sp23', 760, L1R.MID], ['sp21', 1040, L1R.MID],
+  ['sp20', 1360, L1R.MID], ['sp23', 1760, L1R.MID], ['sp21', 2080, L1R.MID], ['sp20', 2480, L1R.MID],
+  ['sp23', 2880, L1R.MID], ['sp21', 3280, L1R.MID], ['sp20', 3680, L1R.MID], ['sp23', 4080, L1R.MID],
+  ['sp21', 4480, L1R.MID], ['sp20', 4880, L1R.MID], ['sp23', 5280, L1R.MID], ['sp21', 5680, L1R.MID],
+  ['sp20', 6080, L1R.MID],
+  // high ledge route
+  ['sp26', 320, L1R.HIGH], ['sp60', 560, L1R.HIGH], ['sp21', 840, L1R.HIGH], ['sp26', 1160, L1R.HIGH],
+  ['sp60', 1480, L1R.HIGH], ['sp21', 1840, L1R.HIGH], ['sp26', 2200, L1R.HIGH], ['sp60', 2560, L1R.HIGH],
+  ['sp21', 2960, L1R.HIGH], ['sp26', 3360, L1R.HIGH], ['sp60', 3760, L1R.HIGH], ['sp21', 4160, L1R.HIGH],
+  ['sp26', 4560, L1R.HIGH], ['sp60', 5000, L1R.HIGH], ['sp21', 5400, L1R.HIGH], ['sp26', 5800, L1R.HIGH],
+  // canopy secrets
+  ['sp41', 400, L1R.CAN], ['sp71', 720, L1R.CAN], ['sp41', 1100, L1R.CAN], ['sp71', 1520, L1R.CAN],
+  ['sp41', 1960, L1R.CAN], ['sp71', 2400, L1R.CAN], ['sp41', 2900, L1R.CAN], ['sp71', 3400, L1R.CAN],
+  ['sp41', 3900, L1R.CAN], ['sp71', 4500, L1R.CAN], ['sp41', 5100, L1R.CAN], ['sp71', 5700, L1R.CAN],
+  // low float pads over pits / between hills
+  ['sp23', 360, L1R.LOW], ['sp20', 900, L1R.LOW], ['sp23', 1600, L1R.LOW], ['sp20', 2300, L1R.LOW],
+  ['sp23', 3100, L1R.LOW], ['sp20', 3900, L1R.LOW], ['sp23', 4700, L1R.LOW], ['sp20', 5500, L1R.LOW],
+  // vertical stair stacks (ground→mid→high→canopy) at climb beacons
+  ['sp21', 600, L1R.LOW - 56], ['sp21', 600, L1R.MID - 56], ['sp21', 600, L1R.HIGH - 56],
+  ['sp21', 2000, L1R.LOW - 56], ['sp21', 2000, L1R.MID - 56], ['sp21', 2000, L1R.HIGH - 56],
+  ['sp21', 3600, L1R.LOW - 56], ['sp21', 3600, L1R.MID - 56], ['sp21', 3600, L1R.HIGH - 56],
+  ['sp21', 5200, L1R.LOW - 56], ['sp21', 5200, L1R.MID - 56], ['sp21', 5200, L1R.HIGH - 56],
+];
+const ROUTE_PICKS: [PK, number, number][] = [
+  ['heart', 480, L1R.MID - 18], ['power', 1480, L1R.HIGH - 18], ['heart', 2560, L1R.CAN - 18],
+  ['rapid', 3360, L1R.HIGH - 18], ['heart', 4500, L1R.CAN - 18], ['power', 5400, L1R.MID - 18],
+];
 export class Level1 extends Phaser.Scene {
   extra!: L1Extra; amb!: Ambient;
   scam!: SpeedCam; culler!: Cull; clite!: CanvasLite;
@@ -236,6 +268,7 @@ export class Level1 extends Phaser.Scene {
     this.placeDeco(at, S);
     this.placeGen2(at, S);
     this.placePlats(at, S);
+    this.placeRoutes();
     this.anchorProps();
     this.pk = new Pickups(this, (x, y) => this.groundAt(x, y));
     (this.flowers.getChildren() as any[]).forEach((f, i) => { if (i % 2 === 0) return; const kind: PK = (['heart', 'rapid', 'heart', 'power', 'heart'] as PK[])[(i - 1) / 2 % 5];
@@ -246,6 +279,7 @@ export class Level1 extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, worldW, worldH + 400);
     this.player = new Player(this, this.spawn.x, this.spawn.y); this.player.gun = this.gun; this.cannon = new Cannon(this, this.player, () => [...new Set([...this.enemies, ...(this.boss ? [this.boss] : [])])], () => this.egun.shots.getChildren().forEach((o: any) => { if (o.active) this.egun.kill(o); }));
     for (const cx of [this.spawn.x + 900, this.spawn.x + 4200]) { for (let dx = 0; dx < 400; dx += 16) { const g = this.groundAt(cx + dx, 0), g2 = this.groundAt(cx + dx + 24, 0), g3 = this.groundAt(cx + dx - 24, 0); if (g > 0 && g === g2 && g === g3) { this.pk.add('cannon', cx + dx, g - 8); break; } } }
+    for (const [kind, x, y] of ROUTE_PICKS) this.pk.add(kind, x, y);
     this.player.beam = new Beam(this, this.fx, () => this.enemyGroup.getChildren() as any, (x, y) => !!this.solid.getTileAtWorldXY(x, y)?.collides); this.player.beam.owner = this.player; this.safe = { ...this.spawn };
     this.physics.add.collider(this.player, this.solid); this.physics.add.collider(this.player, this.oneway); this.physics.add.collider(this.player, deckL);
     this.physics.world.on('worldstep', () => { this.slopeSnap(); this.botPlats(); });
@@ -409,6 +443,23 @@ export class Level1 extends Phaser.Scene {
     this.cull(this.add.image(L, T, 'pl_' + k).setOrigin(0).setFlipX(flip).setDepth(d));
     const i = this.plats.push({ L, T, w: q.w, p: flip ? [...q.p].reverse() : q.p, k }) - 1;
     for (let b = Math.floor(L / 128); b <= Math.floor((L + q.w) / 128); b++) { if (!this.platB.has(b)) this.platB.set(b, []); this.platB.get(b)!.push(i); } }
+
+  /** intentional Mania route steppers — place by walk-surface Y using sheet profiles */
+  placeRoutes() {
+    const walkMed = (prof: number[]) => { const v = prof.filter(t => t >= 0).slice().sort((a, b) => a - b); return v[v.length >> 1] ?? 6; };
+    let n = 0;
+    for (const [k, cx, walkY] of ROUTE_STEPS) {
+      if (cx > (ARENA.x0 - 4) * TS && cx < (ARENA.x1 + 4) * TS) continue; // keep boss arena clear
+      const q = PLAT.find(z => z.k === k); if (!q) continue;
+      const med = walkMed(q.p);
+      // skip if another plat already occupies this pad
+      const L = cx - q.w / 2, R = cx + q.w / 2;
+      if (this.plats.some(p => R > p.L + 8 && L < p.L + p.w - 8 && Math.abs((p.T + walkMed(p.p)) - walkY) < 28)) continue;
+      this.addPlat(k, cx, walkY - med + q.h, false, -1.8); n++;
+    }
+    (window as any).__routes1 = n;
+  }
+
   placePlats(at: (x: number, y: number) => string, S: (x: number, y: number) => boolean) {
     let seed = 4242; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     const M = LEVEL1, MW = M[0].length;
