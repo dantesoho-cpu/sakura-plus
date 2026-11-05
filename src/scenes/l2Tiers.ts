@@ -47,7 +47,7 @@ export class Tiers {
       for (let px = x0 + 60; px < x1 - 40; px += 200 + Math.floor(rnd() * 80)) { const h = below - y - 20; if (h < 40) continue; const id = ['09', '20', '29'][Math.floor(rnd() * 3)];
         sc.add.tileSprite(px, y + 18, id === '09' ? 51 : 40, h, 'l2t_' + id).setOrigin(0.5, 0).setDepth(0.9).setTint(0x4a4490).setAlpha(1); }
       // edge neon trims
-      for (const ex of [x0 + 4, x1 - 4]) { const g = sc.add.image(ex, y + 4, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(ri % 2 ? 0xff4fd8 : 0x3ff3ff).setScale(0.3).setAlpha(0.6).setDepth(2.1); s.neon.push({ o: g, base: 0.55, t: rnd() * 9 }); } });
+      for (const ex of [x0 + 4, x1 - 4]) { const g = sc.add.image(ex, y + 4, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(ri % 2 ? 0xff4fd8 : 0x3ff3ff).setScale(0.3).setAlpha(0.6).setDepth(2.1); s.neon.push({ o: g, base: 0.55, t: rnd() * 9, wx: ex }); } });
     for (const [k, x, sy] of CURVES) { const P: any = (PROF as any)[k]; const y0 = k === 'overhang' ? sy - P.top[Math.floor(P.w / 2)] : sy - P.h + 2;
       sc.add.image(x, y0, 'l2c_' + k).setOrigin(0, 0).setDepth(2.2);
       const raw: number[] = P.top; const sm: number[] = raw.map((_: number, i: number) => { const w = raw.slice(Math.max(0, i - 5), i + 6).filter((v: number) => v >= 0).sort((a: number, b: number) => a - b); return w.length ? w[Math.floor(w.length / 2)] : -1; });
@@ -68,13 +68,13 @@ export class Tiers {
     RUNS.forEach(([x0, x1, y], ri) => { const L = x1 - x0; const beats = L > 700 ? [0.22, 0.48, 0.74] : L > 500 ? [0.28, 0.55, 0.78] : L > 320 ? [0.35, 0.7] : [0.5];
       beats.forEach((f, bi) => { let cx = Math.round(x0 + L * f); if (TOWERS.some(([tx]) => Math.abs(tx - cx) < 70)) cx += 90; if (cx < x0 + 50 || cx > x1 - 50) return;
         for (const [dx, id, sc0] of VIG[(ri + bi) % VIG.length]) { const im = sc.add.image(cx + dx, y + 1, 'l2e_' + String(id).padStart(2, '0')).setOrigin(0.5, 1).setDepth(1.95).setScale(sc0); if ((ri + bi) % 3 === 0) im.setFlipX(true); vg.push({ x: cx + dx, y, k: id }); }
-        const gl = sc.add.image(cx, y - 30, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint((ri + bi) % 2 ? 0xffb0f0 : 0x8ff6ff).setScale(0.55).setAlpha(0.35).setDepth(1.9); s.neon.push({ o: gl, base: 0.35, t: ri + bi });
+        const gl = sc.add.image(cx, y - 30, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint((ri + bi) % 2 ? 0xffb0f0 : 0x8ff6ff).setScale(0.55).setAlpha(0.35).setDepth(1.9); s.neon.push({ o: gl, base: 0.35, t: ri + bi, wx: cx });
         (this.dbg as any).vignettes++; }); });
     // climb towers: solid column (sheet pylon crop tiled), ledges alternating left/right every 64px — wall-jump or ledge-hop up
     TOWERS.forEach(([x, yt, yb], ti) => { const w = 40; sc.add.tileSprite(x, yt, 51, yb - yt, 'l2t_09').setOrigin(0.5, 0).setDepth(2.4);
       const cap = sc.add.image(x, yt + 2, 'l2p_deck_neon_3').setOrigin(0.5, 1).setDepth(2.5); s.addRect(x - w / 2, yt + 10, w, yb - yt - 10, false); s.addRect(x - 24, yt, 48, 10, true); this.dbg.towers++; void cap;
       let side = ti % 2 ? 1 : -1; for (let y = yb - 50; y > yt + 30; y -= 62) { const lx = x + side * (w / 2 + 22); sc.add.image(lx, y - 1, 'l2p_deck_glass_3').setOrigin(0.5, 0).setDepth(2.45); s.addRect(lx - 22, y, 44, 10, true); side *= -1; this.dbg.ledges++; }
-      const lamp = sc.add.image(x, yt - 10, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff4fd8).setScale(0.5).setAlpha(0.5).setDepth(2.6); s.neon.push({ o: lamp, base: 0.5, t: ti }); });
+      const lamp = sc.add.image(x, yt - 10, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff4fd8).setScale(0.5).setAlpha(0.5).setDepth(2.6); s.neon.push({ o: lamp, base: 0.5, t: ti, wx: x }); });
     // vertical lifts (sheet neon deck crop) with a beam rail
     this.liftGroup = sc.physics.add.group({ allowGravity: false, immovable: true });
     for (const [x, y0, y1] of LIFTS) { sc.add.rectangle(x, (y0 + y1) / 2 + 6, 2, y0 - y1, 0x3ff3ff, 0.25).setDepth(1.95).setBlendMode(Phaser.BlendModes.ADD);

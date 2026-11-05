@@ -1,24 +1,27 @@
 import Phaser from 'phaser';
-// Canvas-renderer budget (TV browsers without WebGL): halves ambient particle emission, caps alive particles,
-// and culls ambient emitters whose learned home box is off-screen. WebGL is untouched.
+// Draw/CPU budget: always strip orphan static ADD glows; on Canvas also throttle ambient emitters + spatial-cull them.
+// WebGL keeps gameplay FX (skip list) and only applies a light particle cap when the scene is heavy.
 export class CanvasLite {
-  on: boolean; t = 0; homes: { e: any; x0: number; x1: number; y0: number; y1: number }[] = []; learned = false; age = 0;
-  dbg = { emitters: 0, culled: 0, alive: 0, on: false };
+  on: boolean; heavy: boolean; t = 0; homes: { e: any; x0: number; x1: number; y0: number; y1: number }[] = []; learned = false; age = 0;
+  dbg = { emitters: 0, culled: 0, alive: 0, on: false, heavy: false, glows: 0 };
   constructor(public s: Phaser.Scene, public skip: any[] = []) {
-    this.on = s.game.renderer.type === Phaser.CANVAS; this.dbg.on = this.on; (window as any).__clite = this;
-    if (!this.on) return;
-    { let n = 0; for (const o of s.children.list as any[]) if (o instanceof Phaser.GameObjects.Image && o.blendMode === Phaser.BlendModes.ADD && o.alpha <= 0.3 && o.alpha > 0 && !s.tweens.isTweening(o)) { o.setAlpha(0); n++; } (window as any).__cliteGlows = n; }
+    this.on = s.game.renderer.type === Phaser.CANVAS;
+    this.heavy = this.on || s.children.list.length > 1600;
+    this.dbg.on = this.on; this.dbg.heavy = this.heavy; (window as any).__clite = this;
+    // orphan ADD glows (alpha<=0.35, not tweening) are pure overdraw — zero them on every renderer
+    { let n = 0; for (const o of s.children.list as any[]) if (o instanceof Phaser.GameObjects.Image && o.blendMode === Phaser.BlendModes.ADD && o.alpha <= 0.35 && o.alpha > 0 && !s.tweens.isTweening(o)) { o.setAlpha(0); n++; } this.dbg.glows = n; (window as any).__cliteGlows = n; }
+    if (!this.heavy) return;
     for (const o of s.children.list as any[]) if (o instanceof Phaser.GameObjects.Particles.ParticleEmitter && !skip.includes(o) && o.emitting && !o.follow && o.frequency >= 0) {
-      if (o.frequency > 0) o.frequency *= 4;
-      o.maxAliveParticles = Math.min(o.maxAliveParticles || 16, 16);
+      if (o.frequency > 0) o.frequency *= this.on ? 4 : 2;
+      o.maxAliveParticles = Math.min(o.maxAliveParticles || 32, this.on ? 16 : 24);
       this.homes.push({ e: o, x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9 });
     }
     this.dbg.emitters = this.homes.length;
   }
   update(dt: number) {
-    if (!this.on) return;
+    if (!this.heavy || !this.homes.length) return;
     this.age += dt;
-    if (!this.learned) { // learn each emitter's spatial footprint from its live particles during the first 2.5s
+    if (!this.learned) {
       for (const h of this.homes) h.e.forEachAlive((p: any) => { if (p.x < h.x0) h.x0 = p.x; if (p.x > h.x1) h.x1 = p.x; if (p.y < h.y0) h.y0 = p.y; if (p.y > h.y1) h.y1 = p.y; }, null);
       if (this.age > 2.5) { this.learned = true; this.homes = this.homes.filter(h => h.x1 >= h.x0 && h.x1 - h.x0 < 1400); }
       return;

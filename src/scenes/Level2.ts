@@ -84,7 +84,7 @@ export class Level2 extends Phaser.Scene {
     if (k === 'stairs_4') { this.add.image(x, GY, 'l2p_' + k).setOrigin(0, 1).setDepth(2); const y0 = GY - h;
       for (let i = 0; i < 4; i++) this.addRect(x + i * 16, y0 + 52 - i * 16 + 4, i === 3 ? w - i * 16 : 32 + 0, GY - (y0 + 52 - i * 16 + 4), false); return; }
     this.add.image(x, sy - top, 'l2p_' + k).setOrigin(0, 0).setDepth(2); this.addRect(x + 2, sy, w - 4, 10, true);
-    if (k.startsWith('deck_neon')) { const g = this.add.rectangle(x + w / 2, sy + 2, w - 6, 4, 0xff4fd8, 0.5).setBlendMode(Phaser.BlendModes.ADD).setDepth(2.1); this.neon.push({ o: g, base: 0.5, t: Math.random() * 9 }); }
+    if (k.startsWith('deck_neon')) { const g = this.add.rectangle(x + w / 2, sy + 2, w - 6, 4, 0xff4fd8, 0.5).setBlendMode(Phaser.BlendModes.ADD).setDepth(2.1); this.neon.push({ o: g, base: 0.5, t: Math.random() * 9, wx: x + w / 2 }); }
   }
   create() {
     // L2 uses sheet-cropped FX/pickup art under the shared keys; restored for L1 on shutdown
@@ -100,13 +100,13 @@ export class Level2 extends Phaser.Scene {
     // signs behind platforms, flickering neon: base glow + random dropouts
     for (const [k, x, by, c] of SIGNS) { const im = this.add.image(x, by, 'l2_' + k).setOrigin(0.5, 1).setDepth(1);
       const gl = this.add.image(x, by - im.height / 2, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(c).setScale(Math.max(im.width, im.height) / 60).setAlpha(0.35).setDepth(1.1);
-      this.neon.push({ o: gl, im, base: 0.35, t: Math.random() * 9, flick: true }); }
+      this.neon.push({ o: gl, im, base: 0.35, t: Math.random() * 9, flick: true, wx: x }); }
     for (const [k, x, y] of PLATS) this.place(k, x, y); this.tiers = new Tiers(this, GY);
     // train on an elevated rail behind the play layer (loops the whole street); hover cars cross at parallax depths
     this.rail = this.add.rectangle(0, 0, 480, 2, 0x3ff3ff, 0.45).setOrigin(0, 0).setScrollFactor(0).setDepth(-12.6).setBlendMode(Phaser.BlendModes.ADD);
     this.train = this.add.image(0, 0, 'l2_veh_01').setOrigin(0, 1).setScale(0.6).setScrollFactor(0).setDepth(-12.5).setTint(0xd8d0f0); this.trainX = 0;
     const ck = ['veh_02', 'veh_03', 'veh_04', 'veh_06', 'veh_07', 'veh_09', 'veh_10', 'veh_13'];
-    for (let i = 0; i < 8; i++) { const dir = i % 2 ? -1 : 1, sf = [0.3, 0.5, 0.75][i % 3];
+    for (let i = 0; i < 5; i++) { const dir = i % 2 ? -1 : 1, sf = [0.3, 0.5, 0.75][i % 3];
       const c = this.add.image(Phaser.Math.Between(0, 480), [70, 100, 140][i % 3] + Phaser.Math.Between(-10, 10), 'l2_' + ck[i]).setScrollFactor(0).setDepth(-12 + (i % 3) * 2 + 0.5).setFlipX(dir < 0).setScale(sf + 0.25) as any;
       c.dir = dir; c.sp = 30 + sf * 70 + Math.random() * 20; c.sf = sf; c.wx = Math.random() * 900; c.by = c.y; c.t = Math.random() * 6; this.cars.push(c);
       c.lt = this.add.image(c.x, c.y, 'glow').setScrollFactor(0).setBlendMode(Phaser.BlendModes.ADD).setTint(i % 2 ? 0xff4fd8 : 0x3ff3ff).setScale(0.25).setAlpha(0.5).setDepth(c.depth - 0.1); }
@@ -133,8 +133,8 @@ export class Level2 extends Phaser.Scene {
     this.arenaFx = this.add.rectangle(AX0, GY - 135, 6, 270, 0xff4fd8, 0).setDepth(9).setBlendMode(Phaser.BlendModes.ADD); this.arenaFx2 = this.add.rectangle(AX1, GY - 135, 6, 270, 0xff4fd8, 0).setDepth(9).setBlendMode(Phaser.BlendModes.ADD);
     this.gateCols = []; for (const gx of [AX0, AX1]) for (let i = 0; i < 6; i++) { const c = this.add.image(gx, GY - i * 34, 'l2f_' + ['25', '26', '27'][i % 3]).setOrigin(0.5, 1).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0).setDepth(9).setTint(0xff9af0); this.gateCols.push(c); }
     for (const [k, x, sc] of [['07', AX0 + 30, 1], ['08', AX0 + 80, 1], ['05', AX1 - 70, 0.9], ['07', AX1 - 30, 1], ['08', AX0 + 290, 0.9], ['09', AX1 - 190, 1]] as [string, number, number][]) { const im = this.add.image(x, GY + 1, 'l2i_' + k).setOrigin(0.5, 1).setDepth(1.5).setScale(sc); if (k === '09') { im.y = GY - 90; this.tweens.add({ targets: im, y: GY - 100, yoyo: true, repeat: -1, duration: 1400, ease: 'Sine.inOut' }); }
-      const gl = this.add.image(x, im.y - im.displayHeight / 2, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(k === '08' ? 0xff9a3f : 0x3ff3ff).setAlpha(0.3).setScale(0.6).setDepth(1.4); this.neon.push({ o: gl, base: 0.3, t: Math.random() * 9 }); }
-    for (let x = AX0 + 40; x < AX1 - 10; x += 96) { const bar = this.add.image(x, GY - 150 - (x % 3) * 20, 'l2i_06').setDepth(1.3).setAlpha(0.85); this.neon.push({ o: bar, base: 0.85, t: x }); }
+      const gl = this.add.image(x, im.y - im.displayHeight / 2, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(k === '08' ? 0xff9a3f : 0x3ff3ff).setAlpha(0.3).setScale(0.6).setDepth(1.4); this.neon.push({ o: gl, base: 0.3, t: Math.random() * 9, wx: x }); }
+    for (let x = AX0 + 40; x < AX1 - 10; x += 96) { const bar = this.add.image(x, GY - 150 - (x % 3) * 20, 'l2i_06').setDepth(1.3).setAlpha(0.85); this.neon.push({ o: bar, base: 0.85, t: x, wx: x }); }
     const walk = (e: any) => e.kind !== 'drone' && e.kind !== 'boss' && e.kind !== 'escort';
     this.physics.add.collider(this.enemyGroup, this.solids, undefined, walk); this.physics.add.collider(this.enemyGroup, this.ones, undefined, walk);
     this.physics.add.overlap(this.gun.shots, this.enemyGroup, (s: any, e: any) => { if (!s.active || e.dead || s.lastE === e) return; s.lastE = e; const d = s.body.velocity.x > 0 ? 1 : -1;
@@ -194,9 +194,13 @@ export class Level2 extends Phaser.Scene {
     if (touch.respawnP) { touch.respawnP = false; this.checkpoint(); }
     p.update(dt);
     this.bgDt += dt; if (!this.bgHook) { this.bgHook = true; cam.on('prerender', this.syncBg, this); this.events.once('shutdown', () => { cam.off('prerender', this.syncBg, this); this.bgHook = false; }); }
-    for (const n of this.neon) { n.t += dt; let a = n.base * (0.85 + 0.15 * Math.sin(n.t * 6));
-      if (n.flick) { const ph = n.t % 4.3; if ((ph > 3.6 && ph < 3.7) || (ph > 3.78 && ph < 3.85)) a = 0.04; n.im.setAlpha(a < 0.1 ? 0.55 : 1); }
-      n.o.setAlpha(a); }
+    { const cx = cam.scrollX + 240; let ni = 0;
+      for (const n of this.neon) { n.t += dt; const near = n.wx === undefined || Math.abs(n.wx - cx) < 560;
+        if (!near) { if (n.o.alpha) n.o.setAlpha(0); if (n.im && n.im.alpha !== 1) n.im.setAlpha(1); continue; }
+        if (((ni++) & 1) && !n.flick) continue; // odd frames: skip non-flicker neon
+        let a = n.base * (0.85 + 0.15 * Math.sin(n.t * 6));
+        if (n.flick) { const ph = n.t % 4.3; if ((ph > 3.6 && ph < 3.7) || (ph > 3.78 && ph < 3.85)) a = 0.04; n.im.setAlpha(a < 0.1 ? 0.55 : 1); }
+        n.o.setAlpha(a); } }
     this.amb.update(dt); this.cannon.update(dt); this.ia.update(dt); this.env.update(dt); this.dress.update(dt); this.extra.update(dt); this.tiers.update(dt);
     this.pk.update(dt, p, k => this.take(k)); this.rapT = Math.max(0, this.rapT - dt); this.powT = Math.max(0, this.powT - dt); this.gun.rapid = this.rapT; p.beam.boost = this.powT > 0 ? 1.8 : 1;
     { const C = FEEL.cam, b = p.body_; this.lookX = Phaser.Math.Linear(this.lookX, p.facing * C.lookX * (Math.abs(b.velocity.x) > 40 ? 1 : 0.4), C.lookLerp); this.lookY = Phaser.Math.Linear(this.lookY, b.velocity.y > 300 ? C.lookFallY : 0, 0.06);

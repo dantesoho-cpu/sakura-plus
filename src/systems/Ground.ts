@@ -19,7 +19,7 @@ export function groundProps(s: Phaser.Scene, groundAt: (x: number, y: number) =>
     if (minGap > -1) { o.y = Math.ceil(o.y + minGap + 1); out.fixed++;
       // recompute footprint after the drop
       fx0 = 1e9; fx1 = -1e9; const t2 = o.y - fh * sc; for (let x = 0; x < fw; x += 2) { const lo = cols[x]; if (lo < 0) continue; const wx = o.flipX ? left + (fw - 1 - x) * sx : left + x * sx, by = t2 + (lo + 1) * sc, g = groundAt(wx, by - 10); if (g >= 0 && by >= g - 2 && by - g < 40) { fx0 = Math.min(fx0, wx); fx1 = Math.max(fx1, wx); gy = g; } } }
-    const fwid = fx1 - fx0; if (fwid >= 10 && o.depth > -15 && o.alpha > 0.5) { const sh = s.add.image((fx0 + fx1) / 2, gy + 1, 'cshadow').setDisplaySize(fwid * 1.15 + 6, Math.min(8, 3 + fwid * 0.06)).setDepth(o.depth - 0.01).setAlpha(o.alpha); sh.setScrollFactor(1); out.shadows++; }
+    const fwid = fx1 - fx0; if (fwid >= 10 && o.depth > -15 && o.alpha > 0.5 && out.shadows < 64) { const sh = s.add.image((fx0 + fx1) / 2, gy + 1, 'cshadow').setDisplaySize(fwid * 1.15 + 6, Math.min(8, 3 + fwid * 0.06)).setDepth(o.depth - 0.01).setAlpha(o.alpha); sh.setScrollFactor(1); out.shadows++; }
   }
   (window as any).__ground = out; return out;
 }

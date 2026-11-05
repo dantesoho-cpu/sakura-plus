@@ -9,7 +9,7 @@ export class Ambient {
   fg: F[] = []; far: { im: Phaser.GameObjects.Image; t: number; base: number; x: number }[] = []; win: { r: Phaser.GameObjects.Rectangle; t: number; sp: number }[] = []; dbg = { fg: 0, far: 0, win: 0, frames: 0 };
   constructor(public s: Phaser.Scene, public mode: 'l1' | 'l2', farDepth: number) {
     const R = Math.random;
-    for (let i = 0; i < (mode === 'l1' ? 6 : 7); i++) { const s0 = mode === 'l1' ? 2.4 + R() * 1.8 : 1.6 + R() * 2.2;
+    for (let i = 0; i < (mode === 'l1' ? 6 : 5); i++) { const s0 = mode === 'l1' ? 2.4 + R() * 1.8 : 1.6 + R() * 2.2;
       const im = s.add.image(0, 0, mode === 'l1' ? 'petal_soft' : 'glow').setDepth(30).setScrollFactor(0).setScale(s0)
         .setTint(mode === 'l1' ? [0xffb8dc, 0xff9ccc, 0xffd6ea][i % 3] : [0xff4fd8, 0x3ff3ff, 0x9a6bff][i % 3]).setAlpha(mode === 'l1' ? 0.42 : 0.16);
       if (mode === 'l2') im.setBlendMode(Phaser.BlendModes.ADD);
@@ -17,7 +17,7 @@ export class Ambient {
     for (let i = 0; i < 3; i++) { const im = s.add.image(0, 0, 'glow').setScrollFactor(0).setDepth(farDepth).setBlendMode(Phaser.BlendModes.ADD).setOrigin(0.5, mode === 'l1' ? 0 : 1)
         .setDisplaySize(mode === 'l1' ? 46 : 22, 320).setTint(mode === 'l1' ? 0xfff0c8 : 0x7ff6ff).setAlpha(0);
       this.far.push({ im, t: R() * 9, base: mode === 'l1' ? 0.09 : 0.11, x: 90 + i * 150 + R() * 40 }); this.dbg.far++; }
-    if (mode === 'l2') for (let i = 0; i < 46; i++) { const r = s.add.rectangle(R() * W, 70 + R() * 90, 1, 1 + (R() * 2 | 0), [0xffe08a, 0x9ff0ff, 0xff9af0][i % 3]).setScrollFactor(0).setDepth(farDepth + 0.2).setAlpha(0);
+    if (mode === 'l2') for (let i = 0; i < 20; i++) { const r = s.add.rectangle(R() * W, 70 + R() * 90, 1, 1 + (R() * 2 | 0), [0xffe08a, 0x9ff0ff, 0xff9af0][i % 3]).setScrollFactor(0).setDepth(farDepth + 0.2).setAlpha(0);
       this.win.push({ r, t: R() * 20, sp: 0.4 + R() * 1.6 }); this.dbg.win++; }
   }
   update(dt: number) { const c = this.s.cameras.main; this.dbg.frames++;
@@ -27,6 +27,6 @@ export class Ambient {
     for (const l of this.far) { l.t += dt; const x = ((l.x - c.scrollX * 0.04) % (W + 80) + W + 80) % (W + 80) - 40;
       if (this.mode === 'l1') l.im.setPosition(x, -20).setAngle(-18 + Math.sin(l.t * 0.2) * 3).setAlpha(l.base * (0.6 + 0.4 * Math.sin(l.t * 0.5)));
       else l.im.setPosition(x, 200).setAngle(Math.sin(l.t * 0.35) * 28).setAlpha(l.base * (0.7 + 0.3 * Math.sin(l.t * 1.7))); }
-    for (const w of this.win) { w.t += dt * w.sp; w.r.setAlpha(Math.sin(w.t) > 0.55 ? 0.85 : Math.sin(w.t) > 0.3 ? 0.35 : 0); }
+    if ((this.dbg.frames & 1) === 0) for (const w of this.win) { w.t += dt * w.sp * 2; w.r.setAlpha(Math.sin(w.t) > 0.55 ? 0.85 : Math.sin(w.t) > 0.3 ? 0.35 : 0); }
   }
 }
