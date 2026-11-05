@@ -20,8 +20,10 @@ export class Pickups {
       im.halo.setPosition(im.x, im.y - 6).setAlpha(0.25 + 0.12 * Math.sin(im.t * 6));
       if (Math.abs(p.x - im.x) < 12 && p.y > im.y - 30 && p.y < im.y + 22 && take(im.kind)) {
         this.got[im.kind]++; audio.sfx(im.kind === 'heart' ? 'heal' : 'power');
-        const r = this.s.add.ellipse(im.x, im.y - 6, 6, 6).setStrokeStyle(2, im.kind === 'heart' ? 0xff4f8f : im.kind === 'rapid' ? 0x3ff3ff : 0xffd23f).setDepth(12).setBlendMode(Phaser.BlendModes.ADD);
-        this.s.tweens.add({ targets: r, scale: 5, alpha: 0, duration: 300, onComplete: () => r.destroy() });
+        const tint = im.kind === 'heart' ? 0xff4f8f : im.kind === 'rapid' ? 0x3ff3ff : im.kind === 'cannon' ? 0xff7a2f : 0xffd23f;
+        const fx = (this.s as any).fx; if (fx?.sparkle) fx.sparkle(im.x, im.y - 6, tint);
+        else { const r = this.s.add.ellipse(im.x, im.y - 6, 6, 6).setStrokeStyle(2, tint).setDepth(12).setBlendMode(Phaser.BlendModes.ADD);
+          this.s.tweens.add({ targets: r, scale: 5, alpha: 0, duration: 300, onComplete: () => r.destroy() }); }
         im.halo.destroy(); im.destroy(); }
     }
     this.list = this.list.filter(i => i.active);

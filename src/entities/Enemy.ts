@@ -32,7 +32,7 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.impact(dir, dmg); this.dbgImpacts++;
     if (this.hp <= 0) this.die(); else {
       this.fx.hitStop(FEEL.ehit.stop + Math.min(48, (dmg - 1) * 14));
-      this.scene.cameras.main.shake(dmg >= 3 ? 100 : 55, dmg >= 3 ? 0.005 : 0.0022);
+      const big = dmg >= 3; this.fx.shake(big ? FEEL.ehit.bigMs : FEEL.ehit.shakeMs, big ? FEEL.ehit.bigI : FEEL.ehit.shakeI);
     }
   }
   /** layered hit feedback: additive sheet flash (random angle/scale so repeats vary) + a short directional streak + ring */
