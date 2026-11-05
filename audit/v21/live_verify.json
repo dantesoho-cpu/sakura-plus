@@ -1,0 +1,19 @@
+{
+  "bundle": "index-DekCysFG.js",
+  "sha256": "7b44d37f08f443e7b809fd430df05ab98b06c26315ed454c83c536e2e6afd356",
+  "local_match": true,
+  "prior_reported": [
+    "index-CXP7hcJB.js (stale live_verify note only)",
+    "index-DXCysyj-.js (was actually live)"
+  ],
+  "now_live": "index-DekCysFG.js",
+  "playthrough": "ok_no_errors",
+  "routes1": 60,
+  "l2": {
+    "runs": 23,
+    "towers": 10,
+    "lifts": 8,
+    "megas": 14
+  },
+  "checked_at_phoenix": "2026-11-05 ~03:27 America/Phoenix"
+}
