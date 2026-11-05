@@ -39,7 +39,11 @@ const PLATS: [string, number, number][] = [
   ['pl_08', 420, 404], ['pl_07', 560, 356], ['pl_02', 780, 392], ['pl_01', 1200, 404],
   ['pl_16', 1480, 0], ['pl_10', 1620, 330], ['pl_12', 1900, 392], ['pl_21', 1840, 404],
   ['pr_11', 2120, 0], ['pl_15', 2400, 340], ['pl_23', 2470, 404], ['pr_03', 2750, 340],
-  ['pr_04', 2880, 0], ['pr_15', 3300, 392], ['pr_05', 3450, 330]];
+  ['pr_04', 2880, 0], ['pr_15', 3300, 392], ['pr_05', 3450, 330],
+  // Mania street→low→mid approach pads
+  ['pl_08', 680, 404], ['pl_07', 980, 372], ['pl_10', 2100, 372], ['pl_12', 3200, 372],
+  ['pl_08', 4100, 404], ['pl_07', 4600, 372], ['pr_03', 5050, 360],
+  ['pl_21', 1050, 340], ['pl_23', 2550, 340], ['pl_01', 3750, 340]];
 const SIGNS: [string, number, number, number][] = [['tiles_10', 300, GY, 0xff4fd8], ['tiles_25', 1100, GY - 10, 0x3ff3ff], ['tiles_40', 1660, GY, 0xff4fd8], ['tiles_38', 2600, GY - 6, 0x3ff3ff], ['tiles_39', 3160, GY, 0xffd23f], ['tiles_41', 3700, GY, 0xff4fd8], ['tiles_21', 960, 320, 0x3ff3ff], ['tiles_35', 2600, 330, 0xff4fd8]];
 const FLOWERS: [number, number][] = [...TIER_FLOWERS];
 const FOES: [string, number, number][] = [['assault', 520, GY], ['drone', 700, 330], ['sentry', 828, 392], ['mine', 920, 360], ['assault', 1040, GY], ['drone', 1300, 300], ['lancer', 1480, GY], ['assault', 1620, GY], ['shield', 1780, GY],

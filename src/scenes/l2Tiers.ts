@@ -6,20 +6,26 @@ import PROF from './l2CurveProf.json';
 // Routes link via mega springs, vertical lifts, ledge-stacked climb towers (wall-jumpable) and drop gaps.
 export const MID = 210, UP = -20, SKY = -250, TOP = -440;
 // [x0, x1, y] runs of deck pieces (one-way), auto-tiled from sheet deck/bridge crops
+// street-canopy lane between GY and MID for Mania low route
+export const LOW = 340;
 export const RUNS: [number, number, number][] = [
   [560, 1180, MID], [1320, 2160, MID], [2380, 3080, MID], [3300, 4080, MID], [4300, 4560, MID],
   [1180, 1880, UP], [2240, 2900, UP], [3160, 3940, UP], [4140, 4480, UP],
   [4600, 4990, SKY],
   // short mid pads so climb-tower approaches don't look like missing deck seams
-  [1188, 1272, MID], [2168, 2320, MID], [3088, 3240, MID]];
+  [1188, 1272, MID], [2168, 2320, MID], [3088, 3240, MID],
+  // Mania low canopy lane + UP/SKY connectors
+  [640, 1080, LOW], [1480, 1980, LOW], [2480, 3000, LOW], [3480, 4020, LOW], [4380, 4880, LOW],
+  [1888, 2060, UP], [2908, 3080, UP], [3948, 4120, UP],
+  [4488, 4580, SKY], [4996, 5120, SKY]];
 // climb towers: [x, yTop, yBot] solid columns with alternating ledges on both sides
-export const TOWERS: [number, number, number][] = [[1280, UP, 300], [2270, UP, 330], [3190, UP, 300], [4580, SKY, 330], [5010, SKY, 330]];
+export const TOWERS: [number, number, number][] = [[1280, UP, 300], [2270, UP, 330], [3190, UP, 300], [4580, SKY, 330], [5010, SKY, 330], [900, MID, 404], [2700, MID, 404], [3900, MID, 404], [1600, LOW, 404], [3500, LOW, 404]];
 // lifts: [x, yLow, yHigh]
-export const LIFTS: [number, number, number][] = [[4270, 404, MID + 4], [1905, MID + 4, UP + 4], [4510, UP + 4, SKY + 4]];
+export const LIFTS: [number, number, number][] = [[4270, 404, MID + 4], [1905, MID + 4, UP + 4], [4510, UP + 4, SKY + 4], [820, 404, LOW + 4], [1720, LOW + 4, MID + 4], [2620, 404, LOW + 4], [3620, LOW + 4, MID + 4], [4820, MID + 4, UP + 4]];
 // mega springs on lower street launching to mid, and on mid launching to upper: [x, y, power]
-export const MEGA: [number, number, number][] = [[600, 440, 820], [1340, 440, 820], [2440, 440, 820], [3340, 440, 820], [4200, 440, 820], [3040, MID, 820], [4060, MID, 820], [1150, MID, 820]];
-export const TIER_FLOWERS: [number, number][] = [[700, MID - 20], [1800, MID - 20], [2700, MID - 20], [3700, MID - 20], [1500, UP - 20], [2600, UP - 20], [3600, UP - 20], [4800, SKY - 20], [4300, 404], [4700, 404]];
-export const TIER_GEMS: [number, number, number][] = [[800, MID - 40, 5], [1600, MID - 40, 4], [2500, MID - 40, 5], [3500, MID - 40, 5], [1300, UP - 60, 4], [1650, UP - 40, 5], [2450, UP - 40, 5], [3400, UP - 40, 5], [3800, UP - 40, 4], [4700, SKY - 40, 6], [4850, SKY - 60, 5], [4400, 400, 5], [4900, 400, 5]];
+export const MEGA: [number, number, number][] = [[600, 440, 820], [1340, 440, 820], [2440, 440, 820], [3340, 440, 820], [4200, 440, 820], [3040, MID, 820], [4060, MID, 820], [1150, MID, 820], [900, LOW, 720], [2800, LOW, 720], [4000, LOW, 720], [1700, UP, 820], [3600, UP, 820], [4800, SKY + 40, 600]];
+export const TIER_FLOWERS: [number, number][] = [[700, MID - 20], [1800, MID - 20], [2700, MID - 20], [3700, MID - 20], [1500, UP - 20], [2600, UP - 20], [3600, UP - 20], [4800, SKY - 20], [4300, 404], [4700, 404], [800, LOW - 20], [2600, LOW - 20], [4000, LOW - 20], [5050, SKY - 20]];
+export const TIER_GEMS: [number, number, number][] = [[800, MID - 40, 5], [1600, MID - 40, 4], [2500, MID - 40, 5], [3500, MID - 40, 5], [1300, UP - 60, 4], [1650, UP - 40, 5], [2450, UP - 40, 5], [3400, UP - 40, 5], [3800, UP - 40, 4], [4700, SKY - 40, 6], [4850, SKY - 60, 5], [4400, 400, 5], [4900, 400, 5], [860, LOW - 40, 4], [1900, LOW - 40, 5], [2900, LOW - 40, 4], [4100, LOW - 40, 5], [5080, SKY - 50, 6], [2000, UP - 50, 5]];
 export const TIER_FOES: [string, number, number][] = [['assault', 900, MID], ['drone', 1100, MID - 90], ['shield', 1700, MID], ['assault', 2000, MID], ['heavy', 2700, MID], ['sentry', 3000, MID], ['assault', 3600, MID], ['drone', 3800, MID - 90],
   ['assault', 1500, UP], ['drone', 1700, UP - 90], ['sentry', 2500, UP], ['assault', 2800, UP], ['shield', 3500, UP], ['drone', 3900, UP - 100], ['heavy', 4800, SKY], ['drone', 4700, SKY - 80],
   ['assault', 4400, 440], ['shield', 4700, 440], ['drone', 4950, 330],
@@ -40,7 +46,7 @@ export class Tiers {
   constructor(public s: any, GY: number) {
     const sc = s as Phaser.Scene; let seed = 4242; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     // skyway runs: tile decks/bridges; support pylons (sheet tiles_09/20/29, dim, behind) drop toward the tier below
-    RUNS.forEach(([x0, x1, y], ri) => { let x = x0; const below = y === MID ? GY : y === UP ? MID : UP;
+    RUNS.forEach(([x0, x1, y], ri) => { let x = x0; const below = y === LOW ? GY : y === MID ? LOW : y === UP ? MID : UP;
       while (x < x1 - 40) { const k = DECKS[(ri + Math.floor(rnd() * 4)) % DECKS.length]; const w = k.startsWith('bridge') ? 256 : 192, ww = Math.min(w, x1 - x);
         const im = sc.add.image(x, y - 1, 'l2p_' + k).setOrigin(0, 0).setDepth(2); if (ww < w) im.setCrop(0, 0, ww, im.height); x += ww; }
       s.addRect(x0 + 2, y, x1 - x0 - 4, 10, true); this.dbg.runs++;
