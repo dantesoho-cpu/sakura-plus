@@ -124,7 +124,7 @@ export class Fortress extends Phaser.Scene {
   rects: Phaser.Geom.Rectangle[] = [];
   solid = { getTileAtWorldXY: (x: number, y: number) => (this.rects.some(r => r.contains(x, y)) ? { collides: true } : null) };
   dbg: any = { tiers: [] as number[], zones: [] as string[], portal: 0, ai: 0 }; portalUsed = false;
-  cps: [number, number][] = [[1800, T1], [3600, T1], [5200, T1]];
+  cps: [number, number][] = [[1800, T1], [3600, T1], [5200, T1], [6000, T1]]; // v24: pre-arena beacon
   cpLamps: Phaser.GameObjects.Image[] = [];
   man: Record<string, Frame> = {};
   surf: { x: number; y: number; prof: number[]; w: number; flip: boolean }[] = [];
@@ -593,7 +593,7 @@ export class Fortress extends Phaser.Scene {
     this.enemies.push(this.boss); this.enemyGroup.add(this.boss);
     this.boss.onDead = () => this.win();
     for (const g of ((this as any)._gems || [])) this.physics.add.overlap(this.player, g, () => {
-      if (!g.active) return; g.destroy(); this.gems++; audio.sfx('flower', { rate: 1.2 }); this.fx.explode(g.x, g.y, 0.3);
+      if (!g.active) return; g.destroy(); this.gems++; audio.sfx('flower', { rate: 1.2 }); this.fx.sparkle(g.x, g.y, 0x3ff3ff); this.fx.explode(g.x, g.y, 0.3);
     });
     this.physics.add.collider(this.player, this.solids); this.physics.add.collider(this.player, this.ones);
     this.physics.add.collider(this.enemyGroup, this.solids, undefined, (e: any) => e.kind === 'bot');
@@ -611,7 +611,7 @@ export class Fortress extends Phaser.Scene {
       if (this.player.damage(e.x)) hurt();
     });
     this.physics.add.overlap(this.player, this.flowers, (_p, f: any) => {
-      if (!f.active) return; f.destroy(); this.got++; audio.sfx('flower'); this.fx.explode(f.x, f.y, 0.4); this.hud.setMem(this.got);
+      if (!f.active) return; f.destroy(); this.got++; audio.sfx('flower'); this.fx.sparkle(f.x, f.y, 0xffd6f0); this.fx.explode(f.x, f.y, 0.4); this.hud.setMem(this.got);
     });
     const cam = this.cameras.main; cam.setBounds(0, 0, WW, WH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30);
     this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this);
@@ -764,7 +764,7 @@ export class Fortress extends Phaser.Scene {
       const c = this.collects[i]; if (!c.active) { this.collects.splice(i, 1); continue; }
       if (Math.abs(p.x - c.x) < 22 && Math.abs(p.y - c.y) < 28) {
         c.destroy(); this.collects.splice(i, 1); this.gems++; this.got++;
-        audio.sfx('flower', { rate: 1.25 }); this.burstFx(c.x, c.y - 8); this.hud.setGems(this.gems); this.hud.setMem(this.got);
+        audio.sfx('flower', { rate: 1.25 }); this.fx.sparkle(c.x, c.y - 8, 0xffd23f); this.burstFx(c.x, c.y - 8); this.hud.setGems(this.gems); this.hud.setMem(this.got);
       }
     }
     // sheet6 buttons open paired energy gates

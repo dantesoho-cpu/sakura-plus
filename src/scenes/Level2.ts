@@ -47,7 +47,7 @@ const PLATS: [string, number, number][] = [
 const SIGNS: [string, number, number, number][] = [['tiles_10', 300, GY, 0xff4fd8], ['tiles_25', 1100, GY - 10, 0x3ff3ff], ['tiles_40', 1660, GY, 0xff4fd8], ['tiles_38', 2600, GY - 6, 0x3ff3ff], ['tiles_39', 3160, GY, 0xffd23f], ['tiles_41', 3700, GY, 0xff4fd8], ['tiles_21', 960, 320, 0x3ff3ff], ['tiles_35', 2600, 330, 0xff4fd8]];
 const FLOWERS: [number, number][] = [...TIER_FLOWERS];
 const FOES: [string, number, number][] = [['assault', 520, GY], ['drone', 700, 330], ['sentry', 828, 392], ['mine', 920, 360], ['assault', 1040, GY], ['drone', 1300, 300], ['lancer', 1480, GY], ['assault', 1620, GY], ['shield', 1780, GY],
-  ['drone', 2000, 300], ['scout', 2140, GY], ['assault', 2300, GY], ['heavy', 2420, GY], ['drone', 2700, 300], ['shield', 2820, GY], ['scout', 2980, GY], ['assault', 3120, GY], ['drone', 3220, 310], ['assault', 3350, GY], ['drone', 3400, 320], ['heavy', 3520, GY],
+  ['drone', 2000, 300], ['scout', 2140, GY], ['assault', 2300, GY], ['heavy', 2420, GY], ['shield', 2820, GY], ['assault', 3120, GY], ['assault', 3350, GY], ['heavy', 3520, GY],
   ['lancer', 3920, GY], ['mine', 4100, 360], ['assault', 4280, GY], ['drone', 4500, 300], ...TIER_FOES];
 export class Level2 extends Phaser.Scene {
   life!: Life; amb!: Ambient; groundVar = 0;
@@ -55,7 +55,7 @@ export class Level2 extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; ia!: Interact; extra!: Extra; env!: Env; dress!: Dress;
   solids!: Phaser.Physics.Arcade.StaticGroup; ones!: Phaser.Physics.Arcade.StaticGroup; flowers!: Phaser.Physics.Arcade.StaticGroup;
   bg: Phaser.GameObjects.TileSprite[] = []; cars: any[] = []; train!: Phaser.GameObjects.Image; neon: any[] = [];
-  got = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 80, y: GY }; safe = { x: 80, y: GY }; lookX = 0; lookY = 0; ending = false; cpX = 1960; cpLit = false;
+  got = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 80, y: GY }; safe = { x: 80, y: GY }; lookX = 0; lookY = 0; ending = false; cpX = 1960; cpLit = false; cps: [number, number][] = [[1960, GY], [3400, GY], [4480, GY]]; cpI = 0; cpLamps: Phaser.GameObjects.Image[] = [];
   rail!: Phaser.GameObjects.Rectangle; trainX = 0; enemyGroup!: Phaser.Physics.Arcade.Group;
   onSlope = false; rects: Phaser.Geom.Rectangle[] = [];
   // Beam / enemy code asks `solid.getTileAtWorldXY(x,y)?.collides` — emulate over our solid rects.
@@ -94,7 +94,7 @@ export class Level2 extends Phaser.Scene {
     // L2 uses sheet-cropped FX/pickup art under the shared keys; restored for L1 on shutdown
     const tm = this.textures; for (const k of Level2.SWAP) if (tm.exists('l2s_' + k) && !tm.exists(k + '__l1')) { tm.renameTexture(k, k + '__l1'); tm.renameTexture('l2s_' + k, k); }
     this.events.once('shutdown', () => { for (const k of Level2.SWAP) if (tm.exists(k + '__l1')) { tm.renameTexture(k, 'l2s_' + k); tm.renameTexture(k + '__l1', k); } });
-    this.got = 0; this.kills = 0; this.time_ = 0; this.ending = false; this.cpLit = false; this.rects = []; this.neon = []; this.cars = []; this.bg = [];
+    this.got = 0; this.kills = 0; this.time_ = 0; this.ending = false; this.cpLit = false; this.cpI = 0; this.cpLamps = []; this.rects = []; this.neon = []; this.cars = []; this.bg = [];
     this.physics.world.setBounds(0, TOP, WW, WH + 200 - TOP); this.physics.world.setBoundsCollision(true, true, false, false);
     this.add.rectangle(240, 135, 480, 270, 0x2a2a8a).setScrollFactor(0).setDepth(-20);
     BG.forEach(([k, y], i) => { const t = this.textures.get(k).getSourceImage(); this.bg.push(this.add.tileSprite(0, y, 480, t.height, k).setOrigin(0, 0).setScrollFactor(0).setDepth(-15 + i)); });
@@ -115,8 +115,13 @@ export class Level2 extends Phaser.Scene {
       const c = this.add.image(Phaser.Math.Between(0, 480), [70, 100, 140][i % 3] + Phaser.Math.Between(-10, 10), 'l2_' + ck[i]).setScrollFactor(0).setDepth(-12 + (i % 3) * 2 + 0.5).setFlipX(dir < 0).setScale(sf + 0.25) as any;
       c.dir = dir; c.sp = 30 + sf * 70 + Math.random() * 20; c.sf = sf; c.wx = Math.random() * 900; c.by = c.y; c.t = Math.random() * 6; this.cars.push(c);
       c.lt = this.add.image(c.x, c.y, 'glow').setScrollFactor(0).setBlendMode(Phaser.BlendModes.ADD).setTint(i % 2 ? 0xff4fd8 : 0x3ff3ff).setScale(0.25).setAlpha(0.5).setDepth(c.depth - 0.1); }
-    // checkpoint beacon
-    this.add.rectangle(this.cpX, GY - 30, 4, 60, 0x2a2060).setDepth(1.5); this.cpLamp = this.add.image(this.cpX, GY - 62, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x666688).setScale(0.4).setDepth(1.6);
+    // checkpoint beacons (spacing ~1.4–1.5k so Neo-Kyo mid/late stretch isn't a death march)
+    this.cpLamps = [];
+    for (const [x, y] of this.cps) {
+      this.add.rectangle(x, y - 30, 4, 60, 0x2a2060).setDepth(1.5);
+      this.cpLamps.push(this.add.image(x, y - 62, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x666688).setScale(0.4).setDepth(1.6));
+    }
+    this.cpLamp = this.cpLamps[0]; this.cpX = this.cps[0][0];
     // systems
     this.fx = new Fx(this); this.gun = new Blaster(this, 'p', 'shot'); this.egun = new Blaster(this, 'e', 'ebolt', { cooldown: 0, speed: 150, life: 3 });
     for (const [x, y] of FLOWERS) { const f = this.flowers.create(x, y, 'petal') as any; f.setScale(2).setDepth(6); f.refreshBody(); this.tweens.add({ targets: f, y: y - 4, yoyo: true, repeat: -1, duration: 900 + Math.random() * 400, ease: 'Sine.inOut' }); }
@@ -171,7 +176,7 @@ export class Level2 extends Phaser.Scene {
   groundAt(x: number, y0: number) { let best = -1;
     for (const b of [...this.solids.getChildren(), ...this.ones.getChildren()] as any[]) { const r = b.body; if (x >= r.x && x <= r.right && r.y >= y0 && (best < 0 || r.y < best)) best = r.y; }
     return best; }
-  collect(f: any) { if (!f.active) return; audio.sfx('flower'); f.destroy(); this.got++; this.hud.setMem(this.got); this.fx.spark(f.x, f.y); this.player.trail?.explode?.(14, f.x, f.y);
+  collect(f: any) { if (!f.active) return; audio.sfx('flower'); f.destroy(); this.got++; this.hud.setMem(this.got); this.fx.sparkle(f.x, f.y, 0xffd6f0); this.player.trail?.explode?.(14, f.x, f.y);
     if (this.got === 10) this.toast.show('All ten petals of Neo-Kyo.', '#ffd6f0'); }
   take(k: PK) { const p = this.player; if (k === 'heart') { if (p.hp >= HP_MAX) return false; p.hp = Math.min(HP_MAX, p.hp + 1); this.hud.setHp(p.hp); this.toast.show('+1 HP', '#ff8fb8'); return true; }
     if (k === 'cannon') { this.cannon.give(); this.toast.show('MEGA CANNON — press C', '#ff9a3f'); return true; }
@@ -216,7 +221,11 @@ export class Level2 extends Phaser.Scene {
     if (p.body_.blocked.down) this.safe = { x: p.x - p.facing * 6, y: p.y };
     if (!this.arena && !this.won && p.x > AX0 + 40) this.lockArena();
     if (this.arena) { this.hud.draw(p.hasJet ? p.fuel / JET.fuel : -1, Math.max(0, this.boss.hp / this.boss.maxHp)); const a = 0.35 + 0.25 * Math.sin(this.time_ * 8); this.arenaFx.setAlpha(a); this.arenaFx2.setAlpha(a); this.gateCols.forEach((c, i) => c.setAlpha(0.28 + 0.18 * Math.sin(this.time_ * 10 + i))); }
-    if (!this.cpLit && p.x > this.cpX) { this.cpLit = true; audio.sfx('checkpoint'); this.spawn = { x: this.cpX, y: GY }; this.cpLamp.setTint(0x3ff3ff); this.fx.explode(this.cpX, GY - 60, 0.5); this.toast.show('Transit beacon online — checkpoint.', '#3ff3ff'); }
+    if (this.cpI < this.cps.length && p.x > this.cps[this.cpI][0] && Math.abs(p.y - this.cps[this.cpI][1]) < 140) {
+      const [x, y] = this.cps[this.cpI]; this.cpLit = true; audio.sfx('checkpoint'); this.spawn = { x, y };
+      this.cpLamps[this.cpI].setTint(0x3ff3ff); this.fx.explode(x, y - 60, 0.5);
+      this.toast.show('Transit beacon online — checkpoint.', '#3ff3ff'); this.cpI++; this.cpX = x;
+    }
     if (p.y > WH + 40) { p.hp -= 1; this.hud.setHp(p.hp); this.fx.shake(120, 0.004); this.respawn(p.hp <= 0); }
     else if (p.hp <= 0) this.respawn(true);
   }

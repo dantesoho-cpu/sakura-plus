@@ -137,16 +137,16 @@ const FOES: [string, number, number][] = [
   ['jelly', 6000, 1100], ['jellyb', 6400, 1060], ['jellyp', 6900, 1120], ['jelly', 6700, 900], ['orb', 6600, 620], ['crabs', 6800, T4], ['orbs', 7100, 470],
   ['jellyp', 6150, 980], ['crab', 7050, T1],
   // Crystal Deep — crystal corridor pressure
-  ['mech', 7700, T2], ['crab', 8100, T2], ['jellyb', 7900, 900], ['orb', 8300, 620], ['crab2', 7800, T3], ['mechl', 8400, T1], ['mechs', 8500, T4], ['jellyp', 8650, 880],
-  ['orbs', 8000, 540], ['jelly', 8550, 1050],
+  ['mech', 7700, T2], ['crab', 8100, T2], ['jellyb', 7900, 900], ['orb', 8300, 620], ['crab2', 7800, T3], ['mechl', 8400, T1], ['mechs', 8500, T4],
+  ['orbs', 8000, 540],
   // Warden approach (pre-arena, outside hollow)
   ['mech2', 8750, T2], ['crab2', 8680, T1],
   // polish: fill sparse shelves / shafts
   ['jelly', 950, 700], ['orb', 2100, 750], ['crab', 3550, T1], ['jellyp', 4800, 1050],
-  ['orbs', 5800, 700], ['mech', 7350, T1], ['jellyb', 8150, 780],
+  ['orbs', 5800, 700], ['mech', 7350, T1],
   // pacing: Falls→Terraces bridge + Crystal approach
   ['orb', 3750, 720], ['mech', 3900, T2], ['jelly', 4000, 900], ['crabl', 3820, T1],
-  ['orbs', 7500, 540], ['crab', 7600, T2], ['jellyp', 8450, 1000]];
+  ];
 const ZONES: [number, string, number][] = [[0, 'Moss Gate', 0x1a5a6a], [1900, 'Falls of Ame', 0x1a4a8a], [3900, 'Lantern Terraces', 0x5a2a6a], [5700, 'Sunken Halls', 0x0a3a7a], [7400, 'Crystal Deep', 0x2a3a9a], [AX0 - 200, "Warden's Hollow", 0x1a2a5a]];
 export class Shrine extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; scam!: SpeedCam; culler!: Cull; clite!: CanvasLite; bgp!: SheetParallax;
@@ -157,7 +157,7 @@ export class Shrine extends Phaser.Scene {
   boss!: ShBoss; arena = false; won = false; walls: Phaser.GameObjects.Zone[] = []; arenaFx: Phaser.GameObjects.Rectangle[] = []; AX0 = AX0; AX1 = AX1; inWater = false; dbg: any = { water: 0, lever: 0, chest: 0, portal: 0, zones: [] as string[], lift: 0, current: 0, loop: 0, swim: 0, secret: 0, ramp: 0, tiers: [] as number[] };
   vaults: { lever: Phaser.GameObjects.Image; gate: Phaser.GameObjects.Image; gateZ: any; chest: Phaser.GameObjects.Image; on: boolean; open: boolean; ly: number; sy: number }[] = [];
   secrets: { wall: Phaser.GameObjects.Image[]; chest: Phaser.GameObjects.Image; sy: number; found: boolean; open: boolean; ex: number }[] = []; surf: { x: number; y: number; prof: number[]; w: number; flip: boolean }[] = [];
-  deep = false; looping = -1; liftFx = 0; cps: [number, number][] = [[3800, T2], [7450, T2]]; cpI = 0; cpLamps: Phaser.GameObjects.Image[] = [];
+  deep = false; looping = -1; liftFx = 0; cps: [number, number][] = [[3800, T2], [5600, T2], [7450, T2]]; cpI = 0; cpLamps: Phaser.GameObjects.Image[] = []; // v24: mid Sunken Halls beacon
   get lever() { return this.vaults[0].lever; } get chest() { return this.vaults[0].chest; } get leverOn() { return this.vaults[0].on; } get chestOpen() { return this.vaults[0].open; }
   portal!: Phaser.GameObjects.Image; portalB!: Phaser.GameObjects.Image; portT = 0;
   solid = { getTileAtWorldXY: (x: number, y: number) => (this.rects.some(r => r.contains(x, y)) ? { collides: true } : null) };
@@ -324,7 +324,7 @@ export class Shrine extends Phaser.Scene {
     const x = LOOP.cx + Math.sin(a) * LOOP.r, y = LOOP.cy + Math.cos(a) * LOOP.r + 12; b.reset(x, y); p.setAngle(-a * 180 / Math.PI); p.setFlipX(false);
     if (Math.random() < 0.5) this.bubble(x, y - 8, true);
     if (this.looping >= 1) { this.looping = -1; p.locked = false; p.setAngle(0); p.setPosition(LOOP.cx + 4, LOOP.cy + LOOP.r + 12); b.reset(LOOP.cx + 4, LOOP.cy + LOOP.r + 12); b.setVelocity(320, -40); p.facing = 1; } }
-  gem(g: any) { if (!g.active || !g.body) return; this.gems += g.kind === 'i_gem_b' ? 3 : g.kind === 'i_gem_p' ? 1 : 1; audio.sfx('flower', { rate: 1.6, vol: 0.4 }); this.fx.spark(g.x, g.y);
+  gem(g: any) { if (!g.active || !g.body) return; this.gems += g.kind === 'i_gem_b' ? 3 : g.kind === 'i_gem_p' ? 1 : 1; audio.sfx('flower', { rate: 1.6, vol: 0.4 }); this.fx.sparkle(g.x, g.y, g.kind === 'i_gem_b' ? 0x3ff3ff : 0xff9af0);
     const r = this.add.image(g.x, g.y, 'sh_fx_ring').setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setScale(0.4); this.tweens.add({ targets: r, scale: 1.2, alpha: 0, duration: 280, onComplete: () => r.destroy() }); g.destroy(); }
   lockArena() { this.arena = true; for (const x of [AX0 - 8, AX1]) { const z = this.add.zone(x + 4, GA - 300, 8, 600); this.physics.add.existing(z, true); this.physics.add.collider(this.player, z); this.walls.push(z); }
     this.cameras.main.setBounds(AX0 - 10, GA + 60 - 270, AX1 - AX0 + 20, 270); this.arenaFx.forEach(r => r.setFillStyle(0x6fe8ff, 0.5)); this.hud.setBossName('ABYSS WARDEN'); this.boss.wake(); audio.sfx('gate'); audio.sfx('bossw', { vol: 0.55 });
@@ -334,7 +334,7 @@ export class Shrine extends Phaser.Scene {
     this.toast.show('The Warden sinks. The shrine lanterns relight.', '#ffd23f'); this.ending = true; this.player.resetInput();
     this.time.delayedCall(2600, () => { this.cameras.main.fadeOut(800, 200, 240, 255); this.time.delayedCall(850, () => this.scene.start('Victory', { time: this.time_, got: this.got, kills: this.kills, deaths: this.deaths, ch: 2, gems: this.gems })); }); }
   groundAt(x: number, y0: number) { let best = -1; for (const b of [...this.solids.getChildren(), ...this.ones.getChildren()] as any[]) { const r = b.body; if (x >= r.x && x <= r.right && r.y >= y0 && (best < 0 || r.y < best)) best = r.y; } return best; }
-  collect(f: any) { if (!f.active) return; audio.sfx('flower'); f.destroy(); this.got++; this.hud.setMem(this.got); this.fx.spark(f.x, f.y); this.player.trail?.explode?.(14, f.x, f.y); if (this.got === 10) this.toast.show('All ten petals of the Shrine Cave.', '#ffd6f0'); }
+  collect(f: any) { if (!f.active) return; audio.sfx('flower'); f.destroy(); this.got++; this.hud.setMem(this.got); this.fx.sparkle(f.x, f.y, 0xffd6f0); this.player.trail?.explode?.(14, f.x, f.y); if (this.got === 10) this.toast.show('All ten petals of the Shrine Cave.', '#ffd6f0'); }
   take(k: PK) { const p = this.player; if (k === 'heart') { if (p.hp >= HP_MAX) return false; p.hp = Math.min(HP_MAX, p.hp + 1); this.hud.setHp(p.hp); this.toast.show('+1 HP', '#ff8fb8'); return true; }
     if (k === 'cannon') { this.cannon.give(); this.toast.show('MEGA CANNON — press C', '#ff9a3f'); return true; }
     this.toast.show(k === 'rapid' ? 'RAPID FIRE' : 'POWER BEAM', k === 'rapid' ? '#3ff3ff' : '#ffd23f'); if (k === 'rapid') this.rapT = 12; else this.powT = 12; return true; }

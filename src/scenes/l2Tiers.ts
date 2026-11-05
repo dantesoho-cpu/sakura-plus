@@ -35,9 +35,9 @@ export const TIER_FOES: [string, number, number][] = [['assault', 900, MID], ['d
   ['scout', 1150, 440], ['scout', 2550, 440], ['scout', 3700, 440], ['mine', 1300, MID - 70], ['lancer', 2450, MID], ['mine', 3250, MID - 70],
   ['scout', 1760, UP], ['mine', 2400, UP - 70], ['lancer', 3700, UP], ['mine', 4850, SKY - 70],
   // pacing fills: mid-gap skyway + rooftop approach + street mid-beats
-  ['assault', 1450, MID], ['drone', 2550, MID - 90], ['shield', 3400, MID], ['sentry', 4400, MID],
-  ['assault', 1980, UP], ['drone', 3300, UP - 90], ['lancer', 4300, UP],
-  ['scout', 1900, 440], ['mine', 3100, 360], ['heavy', 4000, 440]];
+  ['shield', 3400, MID], ['sentry', 4400, MID],
+  ['drone', 3300, UP - 90], ['lancer', 4300, UP],
+  ['mine', 3100, 360], ['heavy', 4000, 440]];
 // curved / sloped sheet-style pieces: [key, left x, surface y (bottom for ground pieces, top for 'overhang')]; walkable via fine one-way step strips following the art's top silhouette
 export const CURVES: [string, number, number][] = [['qramp', 990, 440], ['arch', 1960, 440], ['hill', 3870, 440], ['pipe', 2960, 440], ['slope', 3560, 440], ['overhang', 2160, MID], ['hill', 4700, 440]];
 const DECKS = ['deck_glass_12', 'bridge_16', 'deck_neon_12', 'deck_vent_12'];

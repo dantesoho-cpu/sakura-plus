@@ -86,7 +86,7 @@ export class Level1 extends Phaser.Scene {
   pk!: Pickups; cannon!: Cannon; powT = 0; rapT = 0; auraT2 = 0;
   flowers!: Phaser.Physics.Arcade.StaticGroup; got = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 0, y: 0 }; safe = { x: 0, y: 0 };
   boss!: Enforcer; bossDead = false; arena = false; walls!: Phaser.Physics.Arcade.StaticGroup; gate!: Phaser.Physics.Arcade.Image; gateFx!: Phaser.GameObjects.TileSprite;
-  gateOpen = false; ending = false; shrineX = 0; shrineLit = false; jetPick!: Phaser.Physics.Arcade.Image; carX = 0; car!: Car;
+  gateOpen = false; ending = false; shrineX = 0; shrineLit = false; cp2X = 5400; cp2Y = 560; cp2Lit = false; cp2Lamp!: Phaser.GameObjects.Image; jetPick!: Phaser.Physics.Arcade.Image; carX = 0; car!: Car;
   falls: Phaser.GameObjects.TileSprite[] = []; waters: Phaser.GameObjects.TileSprite[] = []; deco: Phaser.GameObjects.Image[] = []; cullT = 0; gateToastT = 0;
   constructor() { super('Level1'); }
   falls2: { t: Phaser.GameObjects.TileSprite; v: number }[] = [];
@@ -143,7 +143,7 @@ export class Level1 extends Phaser.Scene {
   }
   create() {
     const M = LEVEL1.map((r, y) => y === 46 ? r.slice(0, 186) + r.slice(186, 200).replace(/=/g, '.') + r.slice(200) : r), MW = M[0].length, MH = M.length, worldW = MW * TS, worldH = MH * TS;
-    Object.assign(this, { enemies: [], got: 0, kills: 0, deaths: 0, time_: 0, bossDead: false, arena: false, gateOpen: false, ending: false, shrineLit: false, falls: [], falls2: [], wfRects: [], sil: null, waters: [], deco: [] });
+    Object.assign(this, { enemies: [], got: 0, kills: 0, deaths: 0, time_: 0, bossDead: false, arena: false, gateOpen: false, ending: false, shrineLit: false, cp2Lit: false, falls: [], falls2: [], wfRects: [], sil: null, waters: [], deco: [] });
     this.bg = new Parallax(this);
     const at = (x: number, y: number) => (x < 0 || x >= MW) ? '#' : (y < 0 ? '.' : y >= MH ? (M[MH - 1][x] === '#' ? '#' : '.') : M[y][x]);
     const S = (x: number, y: number) => at(x, y) === '#' || at(x, y) in SLOPES; this.at = at;
@@ -573,6 +573,8 @@ export class Level1 extends Phaser.Scene {
     if (this.shrineX) { const sy = this.surfaceBelow(Math.floor(this.shrineX / TS), 0, (x, y) => /[#\/]/.test(LEVEL1[y]?.[x] ?? '')) * TS;
       const g = this.add.image(this.shrineX, sy - 16, 'glow').setTint(0xff8ad8).setBlendMode(Phaser.BlendModes.ADD).setScale(2).setAlpha(0.25).setDepth(-4.9);
       this.tweens.add({ targets: g, alpha: 0.8, scale: 2.6, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.inOut' }); }
+    { const g2 = this.add.image(this.cp2X, this.cp2Y - 28, 'glow').setTint(0x666688).setBlendMode(Phaser.BlendModes.ADD).setScale(0.55).setAlpha(0.45).setDepth(2);
+      this.cp2Lamp = g2; this.tweens.add({ targets: g2, alpha: 0.7, scale: 0.7, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut' }); }
     // grass & flower clumps sway from their base; lanterns flicker with an additive glow; crystal veins in the ground pulse
     this.sway.forEach((o, i) => this.tweens.add({ targets: o, angle: { from: -2.5, to: 2.5 }, duration: 1400 + (i * 137) % 900, yoyo: true, repeat: -1, ease: 'Sine.inOut', delay: (i * 211) % 1200 }));
     for (const l of this.lanterns) { const g = this.cull(this.add.image(l.x, l.y - l.displayHeight * 0.55, 'glow').setTint(0xffb347).setBlendMode(Phaser.BlendModes.ADD).setScale(1.6).setDepth(l.depth + 0.1));
@@ -582,7 +584,7 @@ export class Level1 extends Phaser.Scene {
   }
   surfaceBelow(x: number, y0: number, S: (x: number, y: number) => boolean) { for (let y = y0; y < LEVEL1.length; y++) if (S(x, y) && !S(x, y - 1)) return y; return -1; }
   collect(f: any) {
-    if (!f.active) return; audio.sfx('flower'); f.destroy(); this.got++; this.hud.setMem(this.got); this.fx.spark(f.x, f.y); this.player.trail.explode(14, f.x, f.y);
+    if (!f.active) return; audio.sfx('flower'); f.destroy(); this.got++; this.hud.setMem(this.got); this.fx.sparkle(f.x, f.y, 0xffd6f0); this.player.trail.explode(14, f.x, f.y);
     this.toast.show(MEMORIES[this.got - 1] + `  (${this.got}/10)`, '#ffd6f0');
   }
   pickJet() {
@@ -674,6 +676,7 @@ export class Level1 extends Phaser.Scene {
     this.hud.draw(p.hasJet ? p.fuel / JET.fuel : -1, this.arena && this.boss.active ? Math.max(0, this.boss.hp / this.boss.maxHp) : (this.boss.dead && this.boss.active ? 0 : -1));
     if (p.body_.blocked.down) this.safe = { x: p.x - p.facing * 6, y: p.y };
     if (!this.shrineLit && this.shrineX && p.x > this.shrineX) { this.shrineLit = true; audio.sfx('checkpoint'); this.spawn = { x: this.shrineX, y: p.y }; this.fx.explode(this.shrineX, p.y - 20, 0.5); this.toast.show('Lantern shrine lit — checkpoint.', '#ffd23f'); }
+    if (!this.cp2Lit && this.shrineLit && p.x > this.cp2X && Math.abs(p.y - this.cp2Y) < 160) { this.cp2Lit = true; audio.sfx('checkpoint'); this.spawn = { x: this.cp2X, y: this.cp2Y }; this.cp2Lamp?.setTint(0xffd23f); this.fx.explode(this.cp2X, this.cp2Y - 20, 0.5); this.toast.show('Ridge lantern lit — checkpoint.', '#ffd23f'); }
     if (!this.arena && !this.bossDead && p.x > (ARENA.x0 + 3) * TS && p.y > 64 * TS) this.lockArena();
     if (this.gate && !this.gateOpen && Math.abs(p.x - this.gate.x) < 24 && (this.gateToastT -= dt) <= 0) {
       this.gateToastT = 3; if (this.bossDead && this.got >= 10) this.openGate(); else this.toast.show(this.bossDead ? `The gate is sealed. Memories ${this.got}/10.` : 'Defeat the Enforcer first.', '#ff8a8a'); }
