@@ -17,46 +17,56 @@ import type { Enemy } from '../entities/Enemy';
 const WW = 7200, WH = 900;
 const T1 = 760, T2 = 620, T3 = 480, T4 = 340, T5 = 200;
 const GY = T1, AX0 = 6400, AX1 = 7180;
-const PLAT_KEYS = ['p_left', 'p_mid', 'p_center', 'p_right', 'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'];
-// Modular strip placements: [piece, x, walkY]
-const STRIPS: [string, number, number][] = [
-  // T1 ground docks
-  ['p_left', 80, T1], ['p_mid', 228, T1], ['p_center', 464, T1], ['p_mid', 674, T1], ['p_right', 910, T1],
-  ['p0', 1100, T1], ['p1', 1340, T1], ['p2', 1560, T1], ['p3', 1720, T1], ['p4', 1920, T1],
-  ['p_mid', 2100, T1], ['p_center', 2340, T1], ['p_mid', 2550, T1], ['p0', 2780, T1], ['p1', 3020, T1],
-  ['p2', 3240, T1], ['p_mid', 3420, T1], ['p_center', 3660, T1], ['p3', 3880, T1], ['p4', 4080, T1],
-  ['p_mid', 4260, T1], ['p0', 4500, T1], ['p1', 4740, T1], ['p_mid', 4960, T1], ['p_center', 5200, T1],
-  ['p2', 5420, T1], ['p3', 5600, T1], ['p_mid', 5800, T1], ['p0', 6040, T1], ['p_center', 6280, T1],
-  // T2 mid shelves
-  ['p5', 320, T2], ['p6', 400, T2], ['p7', 480, T2], ['p8', 560, T2],
-  ['p_left', 700, T2], ['p_mid', 848, T2], ['p_right', 1084, T2],
-  ['p1', 1300, T2], ['p2', 1520, T2], ['p3', 1700, T2],
-  ['p_mid', 2000, T2], ['p_center', 2240, T2], ['p0', 2500, T2],
-  ['p4', 2800, T2], ['p5', 2980, T2], ['p_mid', 3200, T2], ['p1', 3440, T2],
-  ['p2', 3700, T2], ['p_center', 3900, T2], ['p3', 4200, T2], ['p_mid', 4400, T2],
-  ['p0', 4700, T2], ['p4', 4940, T2], ['p_mid', 5200, T2], ['p1', 5500, T2],
-  ['p2', 5800, T2], ['p_center', 6000, T2],
-  // T3
-  ['p8', 200, T3], ['p7', 300, T3], ['p6', 400, T3], ['p_left', 520, T3], ['p_mid', 668, T3], ['p_right', 904, T3],
-  ['p0', 1100, T3], ['p1', 1340, T3], ['p_center', 1600, T3], ['p2', 1900, T3],
-  ['p3', 2200, T3], ['p_mid', 2450, T3], ['p4', 2700, T3], ['p0', 2950, T3],
-  ['p1', 3200, T3], ['p_center', 3450, T3], ['p_mid', 3700, T3], ['p2', 4000, T3],
-  ['p3', 4300, T3], ['p_mid', 4550, T3], ['p0', 4850, T3], ['p_center', 5100, T3],
-  ['p1', 5400, T3], ['p_mid', 5650, T3], ['p4', 5900, T3],
-  // T4 upper
-  ['p5', 180, T4], ['p6', 260, T4], ['p_left', 400, T4], ['p_mid', 548, T4], ['p_right', 784, T4],
-  ['p0', 1000, T4], ['p1', 1240, T4], ['p2', 1500, T4], ['p_center', 1750, T4],
-  ['p3', 2050, T4], ['p_mid', 2300, T4], ['p4', 2550, T4], ['p0', 2800, T4],
-  ['p1', 3100, T4], ['p_center', 3350, T4], ['p2', 3650, T4], ['p_mid', 3900, T4],
-  ['p3', 4200, T4], ['p0', 4500, T4], ['p_center', 4750, T4], ['p1', 5050, T4],
-  ['p_mid', 5300, T4], ['p4', 5550, T4], ['p2', 5800, T4],
-  // T5 canopy routes
-  ['p8', 150, T5], ['p7', 250, T5], ['p_left', 400, T5], ['p_mid', 548, T5], ['p_center', 784, T5],
-  ['p0', 1100, T5], ['p1', 1350, T5], ['p2', 1600, T5], ['p_mid', 1850, T5],
-  ['p3', 2150, T5], ['p_center', 2400, T5], ['p4', 2700, T5], ['p0', 2950, T5],
-  ['p1', 3250, T5], ['p_mid', 3500, T5], ['p2', 3800, T5], ['p_center', 4050, T5],
-  ['p3', 4350, T5], ['p0', 4600, T5], ['p_mid', 4850, T5], ['p1', 5150, T5],
-  ['p_center', 5400, T5], ['p4', 5700, T5],
+const PLAT_KEYS = [
+  'p_left', 'p_mid', 'p_center', 'p_right', 'p_long', 'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8',
+  'p_block', 'p_crystal', 'p_mural', 'p_tl', 'p_rail', 'p_rail2', 'p_thin', 'p_tiny', 'p_hang',
+  'p_slope', 'p_slope_a', 'p_slope_b', 'p_step', 'p_step2', 'p_low', 'p_low2', 'p_low3', 'col_a', 'col_b', 'banner',
+];
+/** Continuous dock bands on T1 — tiled with p_long; gaps are open air channels. */
+const GROUND: [number, number][] = [
+  [0, 980], [1120, 1980], [2140, 3180], [3340, 4480], [4640, 5580], [5740, 6380], [AX0 - 40, WW],
+];
+/** Floating shelves: [a, b, walkY] — LMR modular strips. */
+const SHELVES: [number, number, number][] = [
+  // T2 gantries
+  [280, 520, T2], [700, 1180, T2], [1400, 1880, T2], [2100, 2680, T2], [2900, 3560, T2],
+  [3800, 4480, T2], [4700, 5380, T2], [5600, 6180, T2],
+  // T3 spires
+  [180, 420, T3], [560, 1100, T3], [1300, 1880, T3], [2100, 2780, T3], [3000, 3680, T3],
+  [3900, 4580, T3], [4800, 5480, T3], [5700, 6280, T3],
+  // T4 hangar rails
+  [160, 480, T4], [700, 1280, T4], [1500, 2280, T4], [2500, 3280, T4], [3500, 4280, T4],
+  [4500, 5280, T4], [5500, 6200, T4],
+  // T5 canopy
+  [120, 420, T5], [560, 1180, T5], [1400, 2180, T5], [2400, 3180, T5], [3400, 4280, T5],
+  [4500, 5380, T5], [5600, 6300, T5],
+];
+/** Isolated vignette platforms: [piece, x, walkY] */
+const PLATS: [string, number, number][] = [
+  ['p_crystal', 1020, T1 - 40], ['p_mural', 2040, T1 - 36], ['p_block', 3260, T1 - 36],
+  ['p_tl', 1020, T2 - 60], ['p0', 2680, T3 - 20], ['p1', 3580, T4 - 20],
+  ['p_hang', 1800, T5 + 40], ['p_hang', 4200, T4 + 36], ['p_rail', 640, T3 - 50],
+  ['p_rail2', 2400, T2 - 48], ['p_tiny', 900, T4 - 10], ['p_step', 1600, T1 - 20],
+  ['p_step2', 4000, T2 - 16], ['p_thin', 520, T5 - 8],
+];
+/** Sheet ramps: [key, x, lowWalkY, flip] — lowWalkY is the lower end walk height. */
+const RAMPS: [string, number, number, boolean][] = [
+  ['p_slope_a', 980, T1, false], ['p_slope_b', 1980, T1, false],
+  ['p_slope_a', 1200, T2, true], ['p_slope_b', 1880, T3, false],
+  ['p_slope_a', 2780, T2, false], ['p_slope_b', 3280, T3, true],
+  ['p_slope_a', 4480, T2, false], ['p_slope_b', 5280, T3, false],
+  ['p_slope_a', 1100, T4, true], ['p_slope_b', 2280, T4, false],
+  ['p_slope_a', 3180, T5, false], ['p_slope_b', 4280, T5, true],
+];
+/** Decor props sit flush on walkY: [key, x, walkY, depth, flip?] */
+const PROPS: [string, number, number, number, boolean?][] = [
+  ['banner', 400, T1, 1.8], ['banner', 1500, T2, 1.8], ['banner', 2600, T3, 1.8, true],
+  ['banner', 3700, T1, 1.8], ['banner', 4900, T4, 1.8], ['banner', 5800, T2, 1.8, true],
+  ['col_a', 860, T1, 1.7], ['col_b', 1900, T1, 1.7], ['col_a', 3100, T1, 1.7],
+  ['col_b', 4300, T1, 1.7], ['col_a', 5400, T1, 1.7],
+  ['col_b', 1000, T2, 1.7], ['col_a', 2500, T3, 1.7], ['col_b', 4000, T4, 1.7],
+  ['p_low', 200, T1 + 4, 1.5], ['p_low2', 1200, T1 + 4, 1.5], ['p_low3', 2400, T1 + 4, 1.5],
+  ['p_low', 3600, T1 + 4, 1.5], ['p_low2', 4800, T1 + 4, 1.5], ['p_low', 6000, T1 + 4, 1.5],
 ];
 // [kind, x, y] — kinds: drone|orb|heavy|wing|bip|tri|thrust|human|avian
 const FOES: [string, number, number][] = [
@@ -75,6 +85,7 @@ const FLOWERS: [number, number][] = [
 const GEMS: [number, number, number][] = [
   [600, T2 - 30, 5], [1600, T3 - 30, 4], [2800, T4 - 30, 6], [4000, T5 - 30, 5], [5200, T3 - 30, 4],
 ];
+
 export class Fortress extends Phaser.Scene {
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups;
   solids!: Phaser.Physics.Arcade.StaticGroup; ones!: Phaser.Physics.Arcade.StaticGroup; flowers!: Phaser.Physics.Arcade.StaticGroup;
@@ -87,28 +98,85 @@ export class Fortress extends Phaser.Scene {
   dbg: any = { tiers: [] as number[], zones: [] as string[], portal: 0, ai: 0 }; portalUsed = false;
   cps: [number, number][] = [[1800, T1], [3600, T1], [5200, T1]];
   cpLamps: Phaser.GameObjects.Image[] = [];
-  man: Record<string, { w: number; h: number; top: number }> = {};
+  man: Record<string, { w: number; h: number; top: number; foot?: number; prof?: number[] }> = {};
+  surf: { x: number; y: number; prof: number[]; w: number; flip: boolean }[] = [];
+  onSlope = false; glows: { o: Phaser.GameObjects.Image; base: number; t: number; sp: number }[] = [];
   constructor() { super('Fortress'); }
   preload() {
     loadFortressPano(this); ftLoad(this);
     this.load.json('ft_plat', 'assets/ft/plat/plat.json');
     for (const n of PLAT_KEYS) this.load.image('ft_' + n, `assets/ft/plat/${n}.png`);
   }
+  m(k: string) { return this.man[k] || { w: 64, h: 32, top: 0, foot: 31 }; }
   addRect(x: number, y: number, w: number, h: number, one: boolean) {
     const z = this.add.zone(x + w / 2, y + h / 2, w, h); (one ? this.ones : this.solids).add(z);
     const b = z.body as Phaser.Physics.Arcade.StaticBody;
     if (one) { b.checkCollision.down = false; b.checkCollision.left = false; b.checkCollision.right = false; }
     else this.rects.push(new Phaser.Geom.Rectangle(x, y, w, h));
   }
-  place(k: string, x: number, sy: number) {
-    const m = this.man[k] || { w: 64, h: 32, top: 0 };
-    const key = 'ft_' + k; if (!this.textures.exists(key)) return;
+  /** Continuous ground: tile p_long with slight overlap + flipX for seamless docks. */
+  tileTop(a: number, b: number, y: number, d = 2) {
+    const gm = this.m('p_long'), gw = gm.w - 8;
+    for (let x = a - 4, j = 0; x < b - 4; x += gw, j++) {
+      const w = Math.min(gw + 8, b + 4 - x);
+      const key = 'ft_p_long'; if (!this.textures.exists(key)) continue;
+      this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.add.image(Math.round(x), Math.round(y - (gm.top || 0)), key).setOrigin(0, 0).setDepth(d)
+        .setFlipX(!!(j & 1) && w > gw).setCrop(0, 0, w, gm.h);
+    }
+  }
+  /** Left–mid*–right modular floating strip. */
+  stripLMR(a: number, b: number, y: number, d = 2.1) {
+    const L = this.m('p_left'), R = this.m('p_right'), M = this.m('p_mid');
+    const place = (k: string, x: number, sy: number) => {
+      const m = this.m(k), key = 'ft_' + k; if (!this.textures.exists(key)) return m.w;
+      this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.add.image(Math.round(x), Math.round(sy - (m.top || 0)), key).setOrigin(0, 0).setDepth(d);
+      return m.w;
+    };
+    let x = a;
+    x += place('p_left', x, y) - 2;
+    const midW = Math.max(8, b - a - L.w - R.w + 8);
+    for (let i = 0, cx = x; cx < a + L.w - 2 + midW - 4; i++, cx += M.w - 2) {
+      const key = 'ft_p_mid'; if (!this.textures.exists(key)) break;
+      this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      const im = this.add.image(Math.round(cx), Math.round(y - (M.top || 0)), key).setOrigin(0, 0).setDepth(d);
+      if (i & 1) im.setFlipX(true);
+    }
+    place('p_right', b - R.w, y);
+    this.addRect(a + 2, y, Math.max(8, b - a - 4), 10, true);
+  }
+  place(k: string, x: number, sy: number, d = 2) {
+    const m = this.m(k); const key = 'ft_' + k; if (!this.textures.exists(key)) return;
     this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
-    this.add.image(Math.round(x), Math.round(sy - (m.top || 0)), key).setOrigin(0, 0).setDepth(2);
+    this.add.image(Math.round(x), Math.round(sy - (m.top || 0)), key).setOrigin(0, 0).setDepth(d);
     this.addRect(x + 2, sy, Math.max(8, (m.w || 64) - 4), 10, true);
   }
+  prop(k: string, x: number, sy: number, d: number, flip = false) {
+    const m = this.m(k); const key = 'ft_' + k; if (!this.textures.exists(key)) return null;
+    this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    const foot = (m.foot ?? m.h - 1);
+    return this.add.image(x, sy + (m.h - 1 - foot), key).setOrigin(0.5, 1).setDepth(d).setFlipX(flip);
+  }
+  rampY(x: number) {
+    for (const r of this.surf) {
+      if (x < r.x || x > r.x + r.w) continue;
+      let u = x - r.x; if (r.flip) u = r.w - u;
+      const i = Math.min(r.prof.length - 1, Math.max(0, Math.round(u / 4)));
+      return r.y + r.prof[i];
+    }
+    return Infinity;
+  }
+  slopeSnap() {
+    const p = this.player, b = p?.body_; this.onSlope = false;
+    if (!b || !b.enable || b.velocity.y < 0) return;
+    const feet = b.bottom; let sy = Infinity;
+    for (const x of [b.left + 2, b.right - 2, b.center.x]) sy = Math.min(sy, this.rampY(x));
+    if (sy === Infinity) return;
+    const dy = sy - feet;
+    if (dy > -12 && dy < 6) { b.y += dy; b.velocity.y = 0; b.blocked.down = b.touching.down = true; this.onSlope = true; }
+  }
   groundAt(x: number, y: number): number {
-    // one-way tops near y
     let best = -1;
     for (const r of this.ones.getChildren() as Phaser.GameObjects.Zone[]) {
       const b = r.body as Phaser.Physics.Arcade.StaticBody;
@@ -116,8 +184,12 @@ export class Fortress extends Phaser.Scene {
         if (best < 0 || b.y < best) best = b.y;
       }
     }
-    // solid ground band
-    if (y <= T1 + 20 && x >= 0 && x < WW) { if (best < 0 || T1 < best) best = T1; }
+    const ry = this.rampY(x); if (ry !== Infinity && Math.abs(ry - y) < 80 && ry >= y - 4) {
+      if (best < 0 || ry < best) best = ry;
+    }
+    for (const [a, b] of GROUND) {
+      if (x >= a && x < b && y <= T1 + 20) { if (best < 0 || T1 < best) best = T1; }
+    }
     return best;
   }
   create() {
@@ -128,14 +200,50 @@ export class Fortress extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, WW, WH + 80); this.physics.world.setBoundsCollision(true, true, false, false);
     this.cameras.main.setBackgroundColor(0x1a0a3a);
     this.bg = new PanoramaBg(this);
-    // ground band under T1 so voids don't read empty
-    this.add.rectangle(0, T1, WW, WH - T1 + 40, 0x1a1030).setOrigin(0, 0).setDepth(1);
-    this.add.rectangle(0, T1 - 2, WW, 3, 0x6fe8ff, 0.35).setOrigin(0, 0).setDepth(1.1);
+    this.surf = []; this.glows = []; this.onSlope = false;
+    // deep void under docks (only bands get solid floor)
+    this.add.rectangle(0, T1 + 48, WW, WH - T1, 0x0c0618).setOrigin(0, 0).setDepth(0.5);
     this.solids = this.physics.add.staticGroup(); this.ones = this.physics.add.staticGroup(); this.flowers = this.physics.add.staticGroup();
     this.enemyGroup = this.physics.add.group();
-    // solid floor under entire T1
-    this.addRect(0, T1, WW, 48, false);
-    for (const [k, x, sy] of STRIPS) this.place(k, x, sy);
+    // T1 continuous docks with open air channels between
+    for (const [a, b] of GROUND) {
+      this.add.rectangle(a, T1 + 10, b - a, WH - T1 + 40, 0x1a1030).setOrigin(0, 0).setDepth(1.9);
+      this.tileTop(a, b, T1);
+      this.addRect(a, T1, b - a, 48, false);
+    }
+    for (let i = 0; i < GROUND.length - 1; i++) {
+      const a = GROUND[i][1], b = GROUND[i + 1][0];
+      // neon channel glow between docks
+      const ch = this.add.rectangle(a, T1 + 6, b - a, 3, 0x6fe8ff, 0.25).setOrigin(0, 0).setDepth(1.95).setBlendMode(Phaser.BlendModes.ADD);
+      this.tweens.add({ targets: ch, alpha: { from: 0.15, to: 0.4 }, yoyo: true, repeat: -1, duration: 900 + i * 70, ease: 'Sine.inOut' });
+    }
+    // floating modular shelves
+    for (const [a, b, y] of SHELVES) this.stripLMR(a, b, y, y === T2 ? 2.05 : y === T3 ? 2.1 : y === T4 ? 2.15 : 2.2);
+    // sheet ramps
+    for (const [k, x, low, flip] of RAMPS) {
+      const m = this.m(k); if (!m.prof || !this.textures.exists('ft_' + k)) continue;
+      const pr = m.prof, lo = Math.max(...pr.slice(flip ? -4 : 0, flip ? undefined : 4));
+      const y = low - lo;
+      this.add.image(x, y, 'ft_' + k).setOrigin(0, 0).setFlipX(flip).setDepth(2.3);
+      this.textures.get('ft_' + k).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.surf.push({ x, y, prof: pr, w: m.w, flip });
+    }
+    // vignette plats
+    for (const [k, x, y] of PLATS) this.place(k, x, y, 2.4);
+    // sheet decor flush on walk surfaces
+    for (const row of PROPS) {
+      const [k, x, y, d, f] = row as [string, number, number, number, boolean?];
+      const im = this.prop(k, x, y, d, !!f);
+      if (!im) continue;
+      if (k === 'banner') {
+        this.tweens.add({ targets: im, angle: { from: -3, to: 3 }, yoyo: true, repeat: -1, duration: 1600 + (x % 500), ease: 'Sine.inOut' });
+        this.tweens.add({ targets: im, scaleX: { from: 1, to: 0.94 }, yoyo: true, repeat: -1, duration: 1100 + (x % 300), ease: 'Sine.inOut' });
+      }
+      if (k.startsWith('col')) {
+        const g = this.add.image(x, im.y - im.displayHeight * 0.55, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x9a7aff).setScale(0.45).setAlpha(0.3).setDepth(d + 0.05);
+        this.glows.push({ o: g, base: 0.28, t: x, sp: 1.6 });
+      }
+    }
     // set pieces: airships, ring portal, banners
     if (this.textures.exists('ft_ship0')) this.add.image(2400, T5 - 40, 'ft_ship0').setOrigin(0.5, 1).setDepth(1.5).setScale(0.55).setAlpha(0.9);
     if (this.textures.exists('ft_ship0')) this.add.image(4800, T4 - 20, 'ft_ship0').setOrigin(0.5, 1).setDepth(1.5).setScale(0.4).setFlipX(true).setAlpha(0.85);
@@ -258,6 +366,8 @@ export class Fortress extends Phaser.Scene {
   }
   update(_t: number, dms: number) {
     const dt = dms / 1000; this.time_ += dt; this.bg.update(dt);
+    this.slopeSnap();
+    for (const g of this.glows) g.o.setAlpha(g.base + 0.12 * Math.sin(this.time_ * g.sp + g.t * 0.01));
     if (touch.respawnP) { touch.respawnP = false; this.checkpoint(); }
     const p = this.player; if (!p || this.ending) return;
     p.update(dt); this.gun.update(dt); this.egun.update(dt);

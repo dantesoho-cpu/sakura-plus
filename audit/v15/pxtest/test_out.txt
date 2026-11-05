@@ -1,0 +1,2 @@
+{"planes":[{"key":"ft_sky","f":0.05,"h":270},{"key":"ft_L1","f":0.15,"h":156},{"key":"ft_L2","f":0.3,"h":121},{"key":"ft_L3","f":0.5,"h":107},{"key":"ft_L4","f":0.8,"h":105}],"scrollEnd":2400,"plat":["ft_p_left","ft_p_mid","ft_p_mid","ft_p_center","ft_p_mid","ft_p_right"],"sample":{"planes":5,"scroll":2400,"factors":[0.05,0.15,0.3,0.5,0.8]},"errs":[]}
+PASS
