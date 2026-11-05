@@ -35,18 +35,22 @@ export class Kaiju extends Enemy {
     for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2, sp = s.add.image(this.x, this.y, 'spark').setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setTint(i % 2 ? 0xff4fd8 : 0xffd23f); s.tweens.add({ targets: sp, x: this.x + Math.cos(a) * 120, y: this.y + Math.sin(a) * 90, alpha: 0, scale: 0.3, duration: 700, ease: 'Cubic.out', onComplete: () => sp.destroy() }); }
     const P = s.player; if (P && Math.abs(P.x - this.x) < 140) P.body_?.setVelocity(Math.sign(P.x - this.x || 1) * 220, -180); }
   get p2() { return this.hp <= this.maxHp / 2; }
+  get phase() { return this.hp > this.maxHp * 0.66 ? 1 : this.hp > this.maxHp * 0.33 ? 2 : 3; }
+  lastPhase = 1;
   knock() {}
   punch(sx: number, sy: number, ms = 140) { if (this.st === 'dying') return; this.scene.tweens.killTweensOf(this); this.setScale(1.3 * sx, 1.3 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.3, scaleY: 1.3, duration: ms, ease: 'Quad.out' }); }
   hit(dmg: number, dir: number) { if (!this.awake || this.st === 'dying' || this.st === 'intro' || this.dead) return;
     audio.sfx('ehit', { rate: 0.7 }); this.hp -= dmg; this.flashT = 0.06; this.setTintFill(0xffffff); this.fx.spark(this.x - dir * 20, this.y); if (Math.random() < 0.5) this.fxc(2, this.x - dir * 24 + Phaser.Math.Between(-10, 10), this.y + Phaser.Math.Between(-20, 20), 0.4, 0.9, 200);
-    if (!this.dbg.phase2 && this.p2) { this.dbg.phase2 = true; this.fx.shake(400, 0.01); this.roar(); (this.scene as any).toast?.show('KAIJU UNIT — CORE OVERLOAD', '#ff4fd8'); this.phaseShift(); }
+    if (this.phase > this.lastPhase) { this.lastPhase = this.phase;
+      if (this.phase === 2 && !this.dbg.phase2) { this.dbg.phase2 = true; this.fx.shake(400, 0.01); this.roar(); (this.scene as any).toast?.show('KAIJU UNIT — CORE OVERLOAD', '#ff4fd8'); this.phaseShift(); }
+      else if (this.phase === 3 && !this.dbg.phase3) { this.dbg.phase3 = true; this.fx.shake(480, 0.012); this.roar(); (this.scene as any).toast?.show('KAIJU UNIT — FINAL PROTOCOL', '#ffd23f'); this.phaseShift(); this.p2T = 1.6; } }
     if (this.hp <= 0) this.die(); }
   wake() { if (this.st !== 'sleep') return; this.st = 'intro'; this.stT = 1.6; const s = this.scene; this.y = this.hy - 160;
     s.tweens.add({ targets: this, alpha: 1, y: this.hy, duration: 1500, ease: 'Back.out' }); this.roar(); }
   roar() { const s = this.scene; this.roarT = 0.6; audio.sfx('bossw', { rate: 0.6 }); this.fx.shake(500, 0.008); this.fxc(10, this.x, this.y, 0.8, 5, 700); this.fxc(9, this.x, this.y, 0.6, 3.5, 560);
     for (let i = 0; i < 3; i++) { const r = s.add.circle(this.x, this.y, 10).setStrokeStyle(3, i % 2 ? 0x3ff3ff : 0xff4fd8).setDepth(12).setBlendMode(Phaser.BlendModes.ADD);
       s.tweens.add({ targets: r, radius: 160, alpha: 0, duration: 700, delay: i * 160, onComplete: () => r.destroy() }); } }
-  reset() { { const s: any = this.scene; s.physics.world.timeScale = 1; s.tweens.timeScale = 1; s.time.timeScale = 1; this.p2T = 0; } this.setPose('base'); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false; this.setAlpha(0); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.clearTint(); this.las.clear(); this.dbg.phase2 = false; }
+  reset() { { const s: any = this.scene; s.physics.world.timeScale = 1; s.tweens.timeScale = 1; s.time.timeScale = 1; this.p2T = 0; } this.setPose('base'); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false; this.setAlpha(0); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.clearTint(); this.las.clear(); this.dbg.phase2 = false; this.dbg.phase3 = false; this.lastPhase = 1; }
   tick(dt: number, px: number, py: number) {
     this.t += dt; if (this.flashT > 0 && (this.flashT -= dt) <= 0) this.clearTint();
     // layered animation (runs in every state)
@@ -61,13 +65,13 @@ export class Kaiju extends Enemy {
     if ((this.ghT -= dt) <= 0 && Math.abs(this.b.velocity.x) + Math.abs(this.b.velocity.y) > 120) { this.ghT = 0.05; const g = this.scene.add.image(this.x, this.y, this.texture.key).setScale(1.3).setFlipX(this.flipX).setTintFill(0xff4fd8).setAlpha(0.45).setDepth(7.3).setBlendMode(Phaser.BlendModes.ADD);
       this.scene.tweens.add({ targets: g, alpha: 0, scale: 1.4, duration: 260, onComplete: () => g.destroy() }); }
     if (this.st === 'intro') { if (this.stT <= 0) { this.st = 'hover'; this.stT = 1; this.awake = true; } return; }
-    const sp = this.p2 ? 1.5 : 1;
+    const sp = this.phase === 3 ? 1.85 : this.p2 ? 1.5 : 1;
     if (this.st === 'hover') {
       const tx = this.hx + Math.sin(this.t * 0.7 * sp) * 150, ty = this.hy + 10 + Math.sin(this.t * 1.9) * 14;
       this.b.setVelocity(Phaser.Math.Clamp((tx - this.x) * 2, -140, 140), Phaser.Math.Clamp((ty - this.y) * 2, -100, 100)); this.setAngle(Phaser.Math.Clamp(this.b.velocity.x * 0.05, -8, 8));
-      if (this.stT <= 0) { const o = ['fan', 'ring', 'dive', ...(this.p2 ? ['laser', 'dive'] : []), ...(this.escorts() < 2 ? ['summon'] : [])];
+      if (this.stT <= 0) { const o = ['fan', 'ring', 'dive', ...(this.p2 ? ['laser', 'dive'] : []), ...(this.phase >= 3 ? ['laser', 'ring'] : []), ...(this.escorts() < (this.phase >= 3 ? 3 : 2) ? ['summon'] : [])];
         this.next = this.n < 4 ? ['fan', 'dive', 'ring', 'summon'][this.n] : o[Math.floor(Math.random() * o.length)]; this.n++;
-        this.st = 'tele'; this.stT = this.next === 'dive' ? 0.7 : 0.55; this.b.setVelocity(0, 0); { const r = this.scene.add.circle(this.x, this.y, 6).setStrokeStyle(2, 0xff3050).setDepth(12).setBlendMode(Phaser.BlendModes.ADD); this.scene.tweens.add({ targets: r, radius: 40, alpha: 0, duration: this.stT * 1000, onComplete: () => r.destroy() }); } audio.sfx('bossw', { rate: 1.1 }); this.fxc(this.next === 'dive' ? 17 : 6, this.x, this.y + 2, 0.3, 1.8, this.stT * 1000, 12); }
+        this.st = 'tele'; this.stT = this.next === 'dive' ? (this.phase >= 3 ? 0.55 : 0.7) : (this.phase >= 3 ? 0.42 : 0.55); this.b.setVelocity(0, 0); { const r = this.scene.add.circle(this.x, this.y, 6).setStrokeStyle(2, this.phase >= 3 ? 0xffd23f : 0xff3050).setDepth(12).setBlendMode(Phaser.BlendModes.ADD); this.scene.tweens.add({ targets: r, radius: 40 + this.phase * 6, alpha: 0, duration: this.stT * 1000, onComplete: () => r.destroy() }); } audio.sfx('bossw', { rate: 1.1 }); this.fxc(this.next === 'dive' ? 17 : 6, this.x, this.y + 2, 0.3, 1.8, this.stT * 1000, 12); }
     } else if (this.st === 'tele') { this.x += Math.sin(this.t * 80) * 0.8; if (this.next === 'dive') this.y = Math.max(this.hy - 50, this.y - 40 * dt);
       if (this.stT <= 0) this.attack(px, py);
     } else if (this.st === 'dive') { if (this.y >= this.groundY - 58) { this.b.setVelocity(0, 0); this.y = this.groundY - 58; this.slam(); this.st = 'rise'; this.stT = 0.6; }
