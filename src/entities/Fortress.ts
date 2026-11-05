@@ -7,7 +7,7 @@ import type { Blaster } from '../weapons/Blaster';
 export const FT_EN = ['drone', 'orb', 'heavy_d', 'wing', 'bip', 'tri', 'thrust', 'human', 'avian'] as const;
 export function ftLoad(s: Phaser.Scene) {
   for (const k of FT_EN) if (!s.textures.exists('ft_en_' + k)) s.load.image('ft_en_' + k, `assets/ft/en/${k}.png`);
-  if (!s.textures.exists('ft_boss_0')) s.load.image('ft_boss_0', 'assets/ft/boss/boss_0.png');
+  if (!s.textures.exists('ft_boss_0')) s.load.image('ft_boss_0', 'assets/ft/boss/boss0.png');
   for (const k of ['ring', 'hoop']) if (!s.textures.exists('ft_' + k)) s.load.image('ft_' + k, `assets/ft/prop/${k}.png`);
   for (const k of ['ship0', 'portal0', 'deco0', 'deco1', 'deco2', 'deco3', 'deco4', 'deco5', 'deco6', 'deco7', 'deco8', 'gem0', 'gem1', 'gem3', 'gem5']) {
     if (!s.textures.exists('ft_' + k)) s.load.image('ft_' + k, `assets/ft/prop/${k}.png`);
@@ -132,7 +132,7 @@ export class FtBoss extends Enemy {
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx, public gun: Blaster, public groundY: number) {
     super(s, x, y, 'ft_boss_0', BOSS_HP, fx); this.hx = x; this.hy = y; this.setOrigin(0.5, 0.5);
     // impose: scale up ~1.6× native sheet cut
-    this.setScale(1.55); this.b.setSize(this.width * 0.7, this.height * 0.55);
+    this.setScale(1.85); this.b.setSize(this.width * 0.7, this.height * 0.55);
     this.setAlpha(0); this.setDepth(8.5);
     this.glowI = s.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xb04aff).setScale(6).setAlpha(0).setDepth(8.4);
   }
@@ -143,10 +143,10 @@ export class FtBoss extends Enemy {
     if (!was && this.p2 && !this.dead) { this.st = 'rain'; this.stT = 2.6; this.scene.cameras.main.flash(220, 180, 100, 255); audio.sfx('gate'); }
   }
   knock() {}
-  punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(1.55 * sx, 1.55 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.55, scaleY: 1.55, duration: ms, ease: 'Quad.out' }); }
+  punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(1.85 * sx, 1.85 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.85, scaleY: 1.85, duration: ms, ease: 'Quad.out' }); }
   wake() {
     if (this.st !== 'sleep') return; this.st = 'intro'; this.stT = 2.1;
-    this.setPosition(this.hx, this.hy - 200); this.setScale(1.55); this.glowI.setAlpha(0.55).setScale(9);
+    this.setPosition(this.hx, this.hy - 200); this.setScale(1.85); this.glowI.setAlpha(0.55).setScale(9);
     this.scene.tweens.add({ targets: this, alpha: 1, y: this.hy, duration: 1800, ease: 'Sine.out' });
     this.scene.tweens.add({ targets: this.glowI, alpha: 0.38, scale: 6.5, duration: 1800, ease: 'Sine.out' });
     this.scene.cameras.main.shake(420, 0.009);
@@ -154,7 +154,7 @@ export class FtBoss extends Enemy {
   }
   reset() {
     this.scene.tweens.killTweensOf(this); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false;
-    this.setAlpha(0).setScale(1.55).setAngle(0); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.glowI.setAlpha(0);
+    this.setAlpha(0).setScale(1.85).setAngle(0); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.glowI.setAlpha(0);
   }
   tick(dt: number, px: number, py: number) {
     super.tick(dt, px, py); if (this.dead) return;

@@ -152,16 +152,17 @@ export class Fortress extends Phaser.Scene {
     const role = p.role || '';
     // live gameplay roles: spawn entities, skip decorative duplicate for enemies/turrets when AI spawned
     if (role === 'turret' || role === 'en_mech') {
-      if (this.liveTur < 22 && this.egun) {
+      if (this.liveTur < 14 && this.egun) {
         this.liveTur++;
-        const e = new FtTurret(this, p.x, p.y, this.fx, this.egun, key, role === 'en_mech' ? 6 : 3);
+        const e = new FtTurret(this, p.x, p.y, this.fx, this.egun, key, role === 'en_mech' ? 7 : 3);
         e.on('destroyed', () => { this.kills++; });
         this.enemies.push(e); this.enemyGroup.add(e);
         return e as any;
       }
+      // overflow turrets become inert setpiece scenery
     }
     if (role === 'en_spawn' || role === 'en_heavy' || role === 'en_flyer') {
-      if (this.liveEn < 40 && this.egun) {
+      if (this.liveEn < 18 && this.egun) {
         this.liveEn++;
         const kind = role === 'en_flyer' ? 'flyer' : (role === 'en_heavy' ? 'heavy' : 'trooper');
         this.spawnFoeTx(kind, p.x, p.y, key);
@@ -200,6 +201,14 @@ export class Fortress extends Phaser.Scene {
       if ((m.kind === 'decor' || role === 'decor') && m.h >= 18 && m.h <= 70 && this.textures.exists('glow')) {
         const g = this.add.image(p.x, im.y - im.displayHeight * 0.6, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xffd27a).setScale(0.28).setAlpha(0.22).setDepth(p.depth + 0.04);
         this.glows.push({ o: g, base: 0.2, t: p.x, sp: 2.2 });
+      }
+      if (role === 'setpiece') {
+        // parked sheet art — intentional scenery, soft idle bob, no AI
+        this.tweens.add({ targets: im, y: im.y - 2, yoyo: true, repeat: -1, duration: 2400 + (p.x % 500), ease: 'Sine.inOut' });
+        if (m.h >= 40 && this.textures.exists('glow')) {
+          const g = this.add.image(p.x, im.y - im.displayHeight * 0.55, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x8a7cff).setScale(0.32).setAlpha(0.16).setDepth(p.depth - 0.02);
+          this.glows.push({ o: g, base: 0.14, t: p.x, sp: 1.4 });
+        }
       }
       if (role === 'collect') {
         this.collects.push(im);
@@ -312,6 +321,8 @@ export class Fortress extends Phaser.Scene {
     for (let bi = 0; bi < this.groundBands.length; bi++) {
       const [a, b] = this.groundBands[bi];
       const w = Math.max(8, b - a);
+      // band solid walk surface (reliable T1 landing; deck tiles dress the top)
+      this.addRect(a, T1, w, 48, false);
       const fk = fillKeys[bi % fillKeys.length];
       const dk = deepKeys[bi % deepKeys.length];
       if (this.textures.exists('ft_fill_lip')) {
@@ -355,6 +366,7 @@ export class Fortress extends Phaser.Scene {
     const st = layout?.stats;
     if (st) this.dbg.tx = `${st.used_pieces}/${st.total_pieces}`;
     this.dbg.deck = !!(layout?.placements || []).some((p: Place) => (p.role || '').startsWith('deck'));
+    (this.solids as any).refresh?.(); (this.ones as any).refresh?.();
 
     // wind lifts
     for (const [a, b, top, bot] of WINDS) {
@@ -447,7 +459,7 @@ export class Fortress extends Phaser.Scene {
     // Sheet7/8 AI from layout (capped inside placeLayout)
     for (const p of ((this as any)._pendingAI || []) as Place[]) this.placeLayout(p);
     // Keep a few classic FOES as backup diversity if layout AI sparse
-    if (this.liveEn < 8) for (const [k, x, y] of FOES) this.spawnFoe(k, x, y);
+    if (this.liveEn < 10) for (const [k, x, y] of FOES) this.spawnFoe(k, x, y);
     this.boss = new FtBoss(this, (AX0 + AX1) / 2, T1 - 100, this.fx, this.egun, T1);
     this.enemies.push(this.boss); this.enemyGroup.add(this.boss);
     this.boss.onDead = () => this.win();

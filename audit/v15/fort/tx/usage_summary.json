@@ -1,21 +1,55 @@
 {
-  "total": 222,
-  "used": 222,
-  "placements": 432,
-  "by_kind": {
-    "plat": 49,
-    "decor": 83,
-    "slope": 17,
-    "set": 19,
-    "pillar": 50,
-    "banner": 3,
-    "stair": 1
+  "total": 654,
+  "used": 654,
+  "s1_4": {
+    "total": 222,
+    "used": 222
   },
-  "use_hist": {
-    "1": 108,
-    "2": 49,
-    "3": 40,
-    "4": 19,
-    "5": 6
-  }
+  "s5_9": {
+    "total": 432,
+    "used": 432
+  },
+  "deck_tiles": 11,
+  "placements": 1134,
+  "live_turrets": 14,
+  "live_enemies": 16,
+  "by_sheet": {
+    "1": {
+      "total": 36,
+      "used": 36
+    },
+    "2": {
+      "total": 34,
+      "used": 34
+    },
+    "3": {
+      "total": 65,
+      "used": 65
+    },
+    "4": {
+      "total": 87,
+      "used": 87
+    },
+    "5": {
+      "total": 20,
+      "used": 20
+    },
+    "6": {
+      "total": 110,
+      "used": 110
+    },
+    "7": {
+      "total": 90,
+      "used": 90
+    },
+    "8": {
+      "total": 98,
+      "used": 98
+    },
+    "9": {
+      "total": 114,
+      "used": 114
+    }
+  },
+  "polish": "layout3_intentional"
 }

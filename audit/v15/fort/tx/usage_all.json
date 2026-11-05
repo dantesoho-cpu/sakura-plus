@@ -10,7 +10,9 @@
     "used": 432
   },
   "deck_tiles": 11,
-  "placements": 1046,
+  "placements": 1134,
+  "live_turrets": 14,
+  "live_enemies": 16,
   "by_sheet": {
     "1": {
       "total": 36,
@@ -48,5 +50,6 @@
       "total": 114,
       "used": 114
     }
-  }
+  },
+  "polish": "layout3_intentional"
 }
