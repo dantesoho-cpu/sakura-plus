@@ -9,6 +9,8 @@ export type PanoOpts = {
   /** path relative to public/, used only when the texture is not yet loaded */
   path?: string;
   depth?: number;
+  /** camera clear color behind the pano (steel under-deck default) */
+  bg?: number;
 };
 
 export function loadFortressPano(S: Phaser.Scene) {
@@ -45,7 +47,7 @@ export class PanoramaBg {
     if (iw * scale < VIEW_W) scale = Math.max(scale, VIEW_W / iw);
     this.dw = iw * scale;
     this.dh = ih * scale;
-    scene.cameras.main.setBackgroundColor(0x1a0a3a);
+    scene.cameras.main.setBackgroundColor(opts.bg ?? 0x2a2840); // steel under-deck, never purple void
     this.img = scene.add.image(0, 0, key)
       .setOrigin(0, 0)
       .setScrollFactor(0)

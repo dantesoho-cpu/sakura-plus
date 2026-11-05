@@ -285,10 +285,10 @@ export class Fortress extends Phaser.Scene {
     this.gates = []; this.collects = []; this.fxPool = []; this.liveEn = 0; this.liveTur = 0;
     this.dbg = { tiers: [], zones: ['dock', 'gantry', 'spires', 'hangar', 'bridge', 'arena'], portal: 0, ai: 0, wind: 0, vault: 0, secret: 0, ramp: 0 };
     this.physics.world.setBounds(0, 0, WW, WH + 80); this.physics.world.setBoundsCollision(true, true, false, false);
-    this.cameras.main.setBackgroundColor(0x1a0a3a);
+    // steel under-deck fallback (never flat purple void if a fill tile fails)
+    this.cameras.main.setBackgroundColor(0x2a2840);
     this.bg = new PanoramaBg(this);
     this.surf = []; this.glows = []; this.onSlope = false; this.winds = []; this.vaults = []; this.secrets = []; this.arenaFx = [];
-    this.add.rectangle(0, T1 + 48, WW, WH - T1, 0x0c0618).setOrigin(0, 0).setDepth(0.5);
     this.solids = this.physics.add.staticGroup(); this.ones = this.physics.add.staticGroup(); this.flowers = this.physics.add.staticGroup();
     this.enemyGroup = this.physics.add.group();
 
@@ -301,10 +301,43 @@ export class Fortress extends Phaser.Scene {
       stats?: { total_pieces: number; used_pieces: number };
     };
     this.groundBands = (layout?.ground_bands || []) as [number, number][];
-    // dock underfills + neon air channels
-    for (const [a, b] of this.groundBands) {
-      this.add.rectangle(a, T1 + 10, b - a, WH - T1 + 40, 0x1a1030).setOrigin(0, 0).setDepth(1.9);
+    // FULL-HEIGHT under-deck fill: seamless bulkhead/truss from walk surface to past world/camera bottom.
+    // Floating upper-tier shelves stay floating; only T1 ground_bands get solid bodies.
+    const fillKeys = ['ft_fill_00', 'ft_fill_01', 'ft_fill_02'];
+    const deepKeys = ['ft_fill_deep_00', 'ft_fill_deep_01', 'ft_fill_deep_02'];
+    const FILL_TOP = T1 + 6;                 // tuck under deck gold lip
+    const FILL_BOT = WH + 220;               // past camera lowest extent + margin
+    const FILL_H = FILL_BOT - FILL_TOP;
+    const DEEP_Y = T1 + 6 + 128;             // deeper rows use darker variant
+    for (let bi = 0; bi < this.groundBands.length; bi++) {
+      const [a, b] = this.groundBands[bi];
+      const w = Math.max(8, b - a);
+      const fk = fillKeys[bi % fillKeys.length];
+      const dk = deepKeys[bi % deepKeys.length];
+      if (this.textures.exists('ft_fill_lip')) {
+        const lip = this.add.tileSprite(a, FILL_TOP, w, 64, 'ft_fill_lip').setOrigin(0, 0).setDepth(1.92);
+        lip.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+      if (this.textures.exists(fk)) {
+        const bodyH = Math.max(64, Math.min(DEEP_Y, FILL_BOT) - (FILL_TOP + 64));
+        const body = this.add.tileSprite(a, FILL_TOP + 64, w, bodyH, fk).setOrigin(0, 0).setDepth(1.9);
+        body.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+      if (this.textures.exists(dk) && FILL_BOT > DEEP_Y) {
+        const deep = this.add.tileSprite(a, DEEP_Y, w, FILL_BOT - DEEP_Y, dk).setOrigin(0, 0).setDepth(1.89);
+        deep.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+      // pit side walls / edges where ground ends
+      if (this.textures.exists('ft_fill_edge_L')) {
+        const el = this.add.tileSprite(a - 4, FILL_TOP, 24, FILL_H, 'ft_fill_edge_L').setOrigin(0, 0).setDepth(1.93);
+        el.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+      if (this.textures.exists('ft_fill_edge_R')) {
+        const er = this.add.tileSprite(b - 20, FILL_TOP, 24, FILL_H, 'ft_fill_edge_R').setOrigin(0, 0).setDepth(1.93);
+        er.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
     }
+    // neon air-channel glow across pits (sky still visible between bands)
     for (let i = 0; i < this.groundBands.length - 1; i++) {
       const a = this.groundBands[i][1], b = this.groundBands[i + 1][0];
       if (b - a < 8) continue;

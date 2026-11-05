@@ -4,7 +4,7 @@ import { Parallax } from '../systems/Parallax';
 import { Petals } from '../systems/Petals';
 import { liveHint } from '../systems/Pad';
 import { isTouch } from '../systems/Touch';
-// Level select: two chapter cards with in-game preview art, best time / memories (saved by Victory), ←→ choose · ENTER play · ESC back.
+// Level select: chapter cards (1–4 incl. Air Fortress) with in-game preview art, best time / memories (saved by Victory), ←→ choose · ENTER play · ESC back.
 export const LEVELS = [{ key: 'Level1', ch: 1, name: 'AKARI VALLEY', sub: 'blossom ruins · falls', thumb: 'ui_thumb_l1', col: 0xff7ac8 },
   { key: 'Shrine', ch: 2, name: 'SHRINE CAVE', sub: 'sunken torii · WARDEN', thumb: 'ui_thumb_sh', col: 0x6fe8ff },
   { key: 'Level2', ch: 3, name: 'NEO-KYO', sub: 'neon rooftops · KAIJU', thumb: 'ui_thumb_l2', col: 0xff4fd8 },
@@ -23,9 +23,9 @@ export class LevelSelect extends Phaser.Scene {
     this.add.rectangle(240, 135, 480, 270, 0x1a0f2e, 0.35).setScrollFactor(0).setDepth(45);
     const st = { fontFamily: 'monospace', fontStyle: 'bold', fontSize: '14px', color: '#ffd23f', stroke: '#1a0f2e', strokeThickness: 4 };
     this.add.text(240, 26, 'SELECT CHAPTER', st).setOrigin(0.5).setScrollFactor(0).setDepth(50);
-    LEVELS.forEach((L, i) => { const x = 62 + i * 118, b = bestOf(L.ch);
-      const fr = this.add.rectangle(0, 0, 108, 150, 0x1a0f2e, 0.92).setStrokeStyle(2, L.col); this.frames.push(fr);
-      const im = this.add.image(0, -24, L.thumb).setDisplaySize(96, 58);
+    LEVELS.forEach((L, i) => { const x = 56 + i * 122, b = bestOf(L.ch);
+      const fr = this.add.rectangle(0, 0, 110, 150, 0x1a0f2e, 0.92).setStrokeStyle(2, L.col); this.frames.push(fr);
+      const im = this.add.image(0, -24, L.thumb).setDisplaySize(98, 58);
       const t1 = this.add.text(-48, 18, `CHAPTER ${L.ch}`, { ...st, fontSize: '8px', color: '#c9b8e8', strokeThickness: 2 });
       const t2 = this.add.text(-48, 28, L.name, { ...st, fontSize: '9px', strokeThickness: 3 });
       const t3 = this.add.text(-48, 42, L.sub, { ...st, fontSize: '8px', fontStyle: 'normal', color: '#fff', strokeThickness: 2 });

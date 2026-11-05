@@ -2,7 +2,8 @@
  "meta": {
   "source": "mid_v2+palette",
   "th": 56,
-  "tw": 64
+  "tw": 64,
+  "fill": "bulkhead_v1"
  },
  "frames": {
   "deck_mid_00": {
@@ -92,6 +93,78 @@
    "foot": 55,
    "kind": "deck_ramp",
    "role": "ramp"
+  },
+  "fill_00": {
+   "w": 64,
+   "h": 64,
+   "top": 0,
+   "foot": 63,
+   "kind": "fill",
+   "role": "fill"
+  },
+  "fill_deep_00": {
+   "w": 64,
+   "h": 64,
+   "top": 0,
+   "foot": 63,
+   "kind": "fill",
+   "role": "fill"
+  },
+  "fill_01": {
+   "w": 64,
+   "h": 64,
+   "top": 0,
+   "foot": 63,
+   "kind": "fill",
+   "role": "fill"
+  },
+  "fill_deep_01": {
+   "w": 64,
+   "h": 64,
+   "top": 0,
+   "foot": 63,
+   "kind": "fill",
+   "role": "fill"
+  },
+  "fill_02": {
+   "w": 64,
+   "h": 64,
+   "top": 0,
+   "foot": 63,
+   "kind": "fill",
+   "role": "fill"
+  },
+  "fill_deep_02": {
+   "w": 64,
+   "h": 64,
+   "top": 0,
+   "foot": 63,
+   "kind": "fill",
+   "role": "fill"
+  },
+  "fill_edge_L": {
+   "w": 24,
+   "h": 64,
+   "top": 0,
+   "foot": 63,
+   "kind": "fill_edge",
+   "role": "fill"
+  },
+  "fill_edge_R": {
+   "w": 24,
+   "h": 64,
+   "top": 0,
+   "foot": 63,
+   "kind": "fill_edge",
+   "role": "fill"
+  },
+  "fill_lip": {
+   "w": 64,
+   "h": 64,
+   "top": 0,
+   "foot": 63,
+   "kind": "fill_lip",
+   "role": "fill"
   }
  }
 }
