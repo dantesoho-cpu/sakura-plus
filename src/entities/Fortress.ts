@@ -118,6 +118,7 @@ export class FtAvian extends Enemy {
     }
     this.face(Math.sign(px - this.x) || this.faceDir);
     this.setAngle(Phaser.Math.Clamp(this.b.velocity.y * 0.08 + this.b.velocity.x * 0.04, -18, 18));
+    this.scaleY = 1 + 0.08 * Math.sin(this.t * (this.swoop > 0 ? 18 : 9));
   }
   knock(dir: number) { this.b.setVelocity(dir * 140, -50); }
 }
@@ -145,10 +146,11 @@ export class FtBoss extends Enemy {
   punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(1.55 * sx, 1.55 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.55, scaleY: 1.55, duration: ms, ease: 'Quad.out' }); }
   wake() {
     if (this.st !== 'sleep') return; this.st = 'intro'; this.stT = 2.1;
-    this.setPosition(this.hx, this.hy - 200); this.setScale(1.1); this.glowI.setAlpha(0.5).setScale(8);
-    this.scene.tweens.add({ targets: this, alpha: 1, y: this.hy, scaleX: 1.55, scaleY: 1.55, duration: 1800, ease: 'Sine.out' });
-    this.scene.tweens.add({ targets: this.glowI, alpha: 0.35, scale: 6, duration: 1800, ease: 'Sine.out' });
-    this.scene.cameras.main.shake(400, 0.008);
+    this.setPosition(this.hx, this.hy - 200); this.setScale(1.55); this.glowI.setAlpha(0.55).setScale(9);
+    this.scene.tweens.add({ targets: this, alpha: 1, y: this.hy, duration: 1800, ease: 'Sine.out' });
+    this.scene.tweens.add({ targets: this.glowI, alpha: 0.38, scale: 6.5, duration: 1800, ease: 'Sine.out' });
+    this.scene.cameras.main.shake(420, 0.009);
+    this.scene.time.delayedCall(200, () => { try { (this.scene as any).toast?.show?.('WINGED FORTRESS', '#ff4fd8'); } catch {} });
   }
   reset() {
     this.scene.tweens.killTweensOf(this); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false;

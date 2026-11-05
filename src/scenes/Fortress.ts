@@ -251,9 +251,18 @@ export class Fortress extends Phaser.Scene {
     }
     for (let i = 0; i < GROUND.length - 1; i++) {
       const a = GROUND[i][1], b = GROUND[i + 1][0];
-      // neon channel glow between docks
+      // neon channel glow between docks + lip trusses so gaps read as intentional air shafts
       const ch = this.add.rectangle(a, T1 + 6, b - a, 3, 0x6fe8ff, 0.25).setOrigin(0, 0).setDepth(1.95).setBlendMode(Phaser.BlendModes.ADD);
       this.tweens.add({ targets: ch, alpha: { from: 0.15, to: 0.4 }, yoyo: true, repeat: -1, duration: 900 + i * 70, ease: 'Sine.inOut' });
+      if (this.textures.exists('ft_p_low3')) {
+        this.prop('p_low3', a - 20, T1 + 4, 1.55);
+        this.prop('p_low3', b + 20, T1 + 4, 1.55, true);
+      }
+      // hazard lip markers
+      if (this.textures.exists('ft_p_step')) {
+        this.place('p_step', a - 90, T1 - 2, 2.05);
+        this.place('p_step2', b + 10, T1 - 2, 2.05);
+      }
     }
     // floating modular shelves
     for (const [a, b, y] of SHELVES) this.stripLMR(a, b, y, y === T2 ? 2.05 : y === T3 ? 2.1 : y === T4 ? 2.15 : 2.2);
