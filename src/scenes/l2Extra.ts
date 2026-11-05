@@ -14,7 +14,7 @@ export class Extra {
   constructor(public s: any, public GY: number, WW: number) {
     const sc = s as Phaser.Scene; let seed = 913; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     const solidAt = (x: number) => s.groundAt(x, GY - 2) === GY; const clear = (x: number, r: number) => solidAt(x - r) && solidAt(x) && solidAt(x + r);
-    for (let x = 700; x < WW - 300; x += 560 + Math.floor(rnd() * 240)) { const n = 3, base = GY - 64 - Math.floor(rnd() * 24); const G = { x: x + 34, y: base, n: [] as Node[], done: false }; this.groups.push(G); this.dbg.groups++;
+    for (let x = 560; x < WW - 300; x += 420 + Math.floor(rnd() * 180)) { const n = 3, base = GY - 64 - Math.floor(rnd() * 24); const G = { x: x + 34, y: base, n: [] as Node[], done: false }; this.groups.push(G); this.dbg.groups++;
       for (let i = 0; i < n; i++) { const id = 40 + Math.floor(rnd() * 4), c = NC[id - 40], nx = x + i * 34, ny = base - (i === 1 ? 14 : 0);
         const gl = sc.add.image(nx, ny, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(c).setScale(0.35).setAlpha(0.18).setDepth(7.4);
         const im = sc.add.image(nx, ny, 'l2pr_' + pad(id)).setDepth(7.5).setScale(0.8).setTint(0x8a8aa8);
@@ -23,6 +23,13 @@ export class Extra {
       const im = sc.add.image(px, GY, 'l2f_' + (rnd() < 0.5 ? '11' : '24')).setOrigin(0.5, 1).setDepth(1.8).setAlpha(0); this.vents.push({ im, x: px, t: rnd() * 3, per: 3.2 + rnd() }); this.dbg.vents++; }
     for (let x = 500; x < WW - 200; x += 640 + Math.floor(rnd() * 260)) { const im = sc.add.image(x, GY - 150 - Math.floor(rnd() * 30), 'l2pr_' + (rnd() < 0.5 ? '44' : '45')).setDepth(1.3).setScale(1.2).setAlpha(0.8);
       this.signs.push({ im, t: rnd() * 9, g: 0, x0: x }); this.dbg.signs++; }
+    // alternate-route charge circuits on mid skyway / rooftops (sheet props only)
+    for (const [bx, by] of [[780, 210 - 64], [1600, 210 - 64], [2600, 210 - 64], [3600, 210 - 64], [1400, -20 - 64], [2700, -20 - 64], [4000, -20 - 64]]) {
+      const G = { x: bx + 34, y: by, n: [] as Node[], done: false }; this.groups.push(G); this.dbg.groups++;
+      for (let i = 0; i < 3; i++) { const id = 40 + Math.floor(rnd() * 4), c = NC[id - 40], nx = bx + i * 34, ny = by - (i === 1 ? 14 : 0);
+        const gl = sc.add.image(nx, ny, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(c).setScale(0.35).setAlpha(0.18).setDepth(7.4);
+        const im = sc.add.image(nx, ny, 'l2pr_' + pad(id)).setDepth(7.5).setScale(0.8).setTint(0x8a8aa8);
+        const nd = { im, gl, x: nx, y0: ny, t: rnd() * 6, lit: 0, c, g: this.groups.length - 1 }; this.nodes.push(nd); G.n.push(nd); this.dbg.nodes++; } }
   }
   light(n: Node) { if (n.lit) return; n.lit = 1; this.dbg.lit++; n.im.clearTint(); audio.sfx('flower', { rate: 1.7 + (this.dbg.lit % 4) * 0.1, vol: 0.4 }); this.s.fx?.spark(n.x, n.im.y);
     (this.s as Phaser.Scene).tweens.add({ targets: n.im, angle: 360, duration: 380, ease: 'Quad.easeOut', onComplete: () => n.im.setAngle(0) }); const G = this.groups[n.g]; if (!G.done && G.n.every(m => m.lit)) this.complete(G, n.g); }
