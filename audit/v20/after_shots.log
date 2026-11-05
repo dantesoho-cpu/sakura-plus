@@ -1,0 +1,49 @@
+shot audit/v20/fort/dock_low.png
+shot audit/v20/fort/gantry_low.png
+shot audit/v20/fort/spires_low.png
+shot audit/v20/fort/bridge_low.png
+shot audit/v20/fort/arena_low.png
+shot audit/v20/fort/play.png
+shot audit/v20/hud/fort.png
+shot audit/v20/fort/pit_sky.png
+fortInfo {"bands":7,"fillTex":[true,true,true],"bg":2762816,"objs":2258,"cull":{"culled":1516,"checked":1717}}
+shot audit/v20/victory/from_fortress.png
+shot audit/v20/victory/hard_stop.png
+victory {
+  "fortress": {
+    "active": true,
+    "data": {
+      "time": 333,
+      "got": 8,
+      "kills": 22,
+      "deaths": 1,
+      "ch": 4,
+      "gems": 5
+    },
+    "errs": []
+  },
+  "hard": {
+    "active": true,
+    "data": {
+      "time": 120,
+      "got": 7,
+      "kills": 12,
+      "deaths": 1,
+      "ch": 1
+    },
+    "errs": []
+  }
+}
+shot audit/v20/l1/after_play.png
+shot audit/v20/hud/l1.png
+Level1 {"x":225,"hp":5,"cull":true,"roundPx":false,"lerp":0.11,"objs":1594,"cullDbg":{"culled":1170,"checked":1213},"errs":[]}
+shot audit/v20/l2/after_play.png
+shot audit/v20/hud/l2.png
+Level2 {"x":236,"hp":5,"cull":true,"roundPx":false,"lerp":0.11,"objs":2324,"cullDbg":{"culled":1325,"checked":1424},"errs":[]}
+shot audit/v20/shrine/after_play.png
+shot audit/v20/hud/shrine.png
+Shrine {"x":254,"hp":5,"cull":true,"roundPx":false,"lerp":0.34,"objs":1349,"cullDbg":{"culled":1105,"checked":1168},"errs":[]}
+shot audit/v20/fort/after_play.png
+shot audit/v20/hud/fort.png
+Fortress {"x":314,"hp":4,"cull":true,"roundPx":false,"lerp":0.11,"objs":2268,"cullDbg":{"culled":1570,"checked":1727},"errs":[]}
+PASS true
