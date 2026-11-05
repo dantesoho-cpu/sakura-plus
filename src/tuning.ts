@@ -13,7 +13,7 @@ export const JET = { fuel: 0.6 /*0.55*/, vel: 185 /*170*/, accel: 2400 /*3000: s
 export const FEEL = {
   cam: { lerp: 0.11 /*0.15*/, lookX: 36 /*new: lookahead px in facing dir*/, lookLerp: 0.04, lookFallY: 24 /*new: peek down when falling fast*/, deadW: 28 /*40*/, deadH: 36 /*40*/ },
   hurt: { stop: 85 /*70*/, shakeMs: 140 /*120*/, shakeI: 0.005 /*0.004*/, knockX: 210 /*190*/, knockY: 185 /*170*/, flashMs: 85 /*70*/ },
-  ehit: { stop: 55 /*40*/, knock: 140 /*110*/, flash: 0.11 /*0.08*/ },
-  land: { dustMinVy: 220 /*new*/, squashHard: [1.24, 0.78] as [number, number] /*was always 1.18,0.84*/, squashSoft: [1.1, 0.92] as [number, number] },
+  ehit: { stop: 55 /*40*/, knock: 140 /*110*/, flash: 0.11 /*0.08*/, shakeMs: 55, shakeI: 0.0022, bigMs: 130, bigI: 0.007 },
+  land: { dustMinVy: 220 /*new*/, squashHard: [1.24, 0.78] as [number, number] /*was always 1.18,0.84*/, squashSoft: [1.1, 0.92] as [number, number], shakeMs: 70, shakeI: 0.0024 },
   dashShake: [50, 0.0015] as [number, number] /*was 60, 0.002*/,
 };

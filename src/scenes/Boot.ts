@@ -34,6 +34,7 @@ export class Boot extends Phaser.Scene {
     for (const k of ['shot', 'ebolt', 'flash', 'pip', 'pip_e', 'spark', 'spark2', 'petal', 'waterfall', 'shot1', 'shot2', 'shot3', 'eorb', 'eneedle', 'eplasma', 'pk_heart', 'pk_rapid', 'pk_power', 'pk_cannon']) this.load.image(k, `assets/fx/${k}.png`);
     this.load.image('pr_torii_big', 'assets/props/torii.png'); this.load.image('pr_stone_gate', 'assets/props/stone_gate.png'); this.load.image('pr_lantern_stone', 'assets/props/lantern_stone.png'); this.load.image('pr_torii11', 'assets/props2/torii11.png');
     this.load.image('petal_soft', 'assets/fx/petal.png');
+    for (let i = 0; i < 3; i++) this.load.image('fx_dust' + i, `assets/fx/cloud${i}.png`); // sheet dust puffs (separate from bg clouds)
     for (let i = 0; i < 3; i++) this.load.image('cloud' + i, `assets/bg/cloud${i}.png`);
     this.load.image('P_far', 'assets/bg/P_far.png'); this.load.image('P_mid', 'assets/bg/P_mid.png'); this.load.json('pano', 'assets/bg/pano.json');
     for (const k of ['lantern2', 'arch', 'fence']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
