@@ -208,8 +208,20 @@ export class Fortress extends Phaser.Scene {
     // live gameplay roles: spawn entities, skip decorative duplicate for enemies/turrets when AI spawned
     if (role === 'turret' || role === 'en_mech') {
       if (this.liveTur < 14 && this.egun) {
+        // seat on nearest one-way / solid top — layout turrets often hang in empty air over the arena
+        let sy = p.y, best = 1e9;
+        const seatOf = (g: Phaser.Physics.Arcade.StaticGroup) => {
+          for (const z of g.getChildren() as Phaser.GameObjects.Zone[]) {
+            const b = z.body as Phaser.Physics.Arcade.StaticBody; if (!b) continue;
+            if (p.x < b.x - b.width / 2 - 10 || p.x > b.x + b.width / 2 + 10) continue;
+            const top = b.y - b.height / 2, d = Math.abs(top - p.y);
+            if (d < best && d < 60) { best = d; sy = top; }
+          }
+        };
+        seatOf(this.ones); seatOf(this.solids);
+        if (best > 59) return null; // no deck under feet — skip floating AI + scenery
         this.liveTur++;
-        const e = new FtTurret(this, p.x, p.y, this.fx, this.egun, key, role === 'en_mech' ? 7 : 3);
+        const e = new FtTurret(this, p.x, sy, this.fx, this.egun, key, role === 'en_mech' ? 7 : 3);
         e.on('destroyed', () => { this.kills++; });
         this.enemies.push(e); this.enemyGroup.add(e);
         return e as any;
