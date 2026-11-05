@@ -1,0 +1,3284 @@
+{
+"public/assets/gen2/cloud1.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud1",
+"n": 1,
+"depth": -97,
+"sf": 0
+},
+"public/assets/gen2/cloud3.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud3",
+"n": 1,
+"depth": -97,
+"sf": 0
+},
+"public/assets/gen2/cloud7.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud7",
+"n": 1,
+"depth": -97,
+"sf": 0
+},
+"public/assets/gen2/cloud10.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud10",
+"n": 1,
+"depth": -97,
+"sf": 0
+},
+"public/assets/gen2/cloud12.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud12",
+"n": 1,
+"depth": -97,
+"sf": 0
+},
+"public/assets/gen2/cloud14.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud14",
+"n": 1,
+"depth": -97,
+"sf": 0
+},
+"public/assets/gen2/cloud15.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud15",
+"n": 1,
+"depth": -97,
+"sf": 0
+},
+"public/assets/gen2/cloud0.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud0",
+"n": 1,
+"depth": -96,
+"sf": 0
+},
+"public/assets/gen2/cloud4.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud4",
+"n": 1,
+"depth": -96,
+"sf": 0
+},
+"public/assets/gen2/cloud6.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud6",
+"n": 1,
+"depth": -96,
+"sf": 0
+},
+"public/assets/gen2/cloud9.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud9",
+"n": 1,
+"depth": -96,
+"sf": 0
+},
+"public/assets/fx/spark2.png": {
+"lv": [
+"Level1"
+],
+"key": "spark2",
+"n": 14,
+"depth": -92,
+"sf": 0
+},
+"public/assets/fx/spark.png": {
+"lv": [
+"Level1"
+],
+"key": "spark",
+"n": 23,
+"depth": -92,
+"sf": 0
+},
+"public/assets/fx/petal.png": {
+"lv": [
+"Level1",
+"Level2"
+],
+"key": "petal_soft",
+"n": 139,
+"depth": -90.5,
+"sf": 0
+},
+"public/assets/gen2/bird.png": {
+"lv": [
+"Level1"
+],
+"key": "bird",
+"n": 5,
+"depth": -89,
+"sf": 0
+},
+"public/assets/gen2/cloud2.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud2",
+"n": 1,
+"depth": -88,
+"sf": 0
+},
+"public/assets/gen2/cloud5.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud5",
+"n": 1,
+"depth": -88,
+"sf": 0
+},
+"public/assets/gen2/cloud8.png": {
+"lv": [
+"Level1"
+],
+"key": "g2cloud8",
+"n": 1,
+"depth": -88,
+"sf": 0
+},
+"public/assets/deco/d14.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d14",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d17.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d17",
+"n": 2,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d39.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d39",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d51.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d51",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d05.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d05",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d40.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d40",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d03.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d03",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d34.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d34",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d26.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d26",
+"n": 2,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d23.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d23",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d04.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d04",
+"n": 2,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d36.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d36",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d31.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d31",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d18.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d18",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/deco/d16.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d16",
+"n": 1,
+"depth": -16,
+"sf": 1
+},
+"public/assets/gen2/pp19.png": {
+"lv": [
+"Level1"
+],
+"key": "pp19",
+"n": 2,
+"depth": -15,
+"sf": 1
+},
+"public/assets/gen2/pp1.png": {
+"lv": [
+"Level1"
+],
+"key": "pp1",
+"n": 1,
+"depth": -15,
+"sf": 1
+},
+"public/assets/gen2/pp6.png": {
+"lv": [
+"Level1"
+],
+"key": "pp6",
+"n": 1,
+"depth": -15,
+"sf": 1
+},
+"public/assets/gen2/pp9.png": {
+"lv": [
+"Level1"
+],
+"key": "pp9",
+"n": 1,
+"depth": -15,
+"sf": 1
+},
+"public/assets/gen2/pp10.png": {
+"lv": [
+"Level1"
+],
+"key": "pp10",
+"n": 1,
+"depth": -15,
+"sf": 1
+},
+"public/assets/gen2/pp5.png": {
+"lv": [
+"Level1"
+],
+"key": "pp5",
+"n": 2,
+"depth": -15,
+"sf": 1
+},
+"public/assets/props2/ts1dk.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_ts1lt",
+"n": 9,
+"depth": -14,
+"sf": 1
+},
+"public/assets/props2/ts0dk.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_ts0",
+"n": 4,
+"depth": -14,
+"sf": 1
+},
+"public/assets/props2/ts2dk.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_ts2dk",
+"n": 12,
+"depth": -13,
+"sf": 1
+},
+"public/assets/props2/ts3.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_ts3",
+"n": 7,
+"depth": -13,
+"sf": 1
+},
+"public/assets/props2/ts3lt.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_ts3lt",
+"n": 4,
+"depth": -13,
+"sf": 1
+},
+"public/assets/props2/tree.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_tree",
+"n": 4,
+"depth": -12,
+"sf": 1
+},
+"public/assets/props2/tree2.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_tree2",
+"n": 2,
+"depth": -12,
+"sf": 1
+},
+"public/assets/props2/ts_sap.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_ts_sap",
+"n": 18,
+"depth": -12,
+"sf": 1
+},
+"public/assets/props2/ts_bush.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_ts_bush",
+"n": 10,
+"depth": -12,
+"sf": 1
+},
+"public/assets/gen2/pp23.png": {
+"lv": [
+"Level1"
+],
+"key": "pp23",
+"n": 4,
+"depth": -9,
+"sf": 1
+},
+"public/assets/gen2/pp13.png": {
+"lv": [
+"Level1"
+],
+"key": "pp13",
+"n": 3,
+"depth": -9,
+"sf": 1
+},
+"public/assets/gen2/pp0.png": {
+"lv": [
+"Level1"
+],
+"key": "pp0",
+"n": 4,
+"depth": -9,
+"sf": 1
+},
+"public/assets/gen2/pp7.png": {
+"lv": [
+"Level1"
+],
+"key": "pp7",
+"n": 4,
+"depth": -9,
+"sf": 1
+},
+"public/assets/gen2/pp11.png": {
+"lv": [
+"Level1"
+],
+"key": "pp11",
+"n": 3,
+"depth": -9,
+"sf": 1
+},
+"public/assets/gen2/pp8.png": {
+"lv": [
+"Level1"
+],
+"key": "pp8",
+"n": 3,
+"depth": -9,
+"sf": 1
+},
+"public/assets/gen2/pp12.png": {
+"lv": [
+"Level1"
+],
+"key": "pp12",
+"n": 3,
+"depth": -9,
+"sf": 1
+},
+"public/assets/gen2/pp4.png": {
+"lv": [
+"Level1"
+],
+"key": "pp4",
+"n": 2,
+"depth": -9,
+"sf": 1
+},
+"public/assets/deco/d84.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d84",
+"n": 3,
+"depth": -7,
+"sf": 1
+},
+"public/assets/deco/d85.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d85",
+"n": 3,
+"depth": -7,
+"sf": 1
+},
+"public/assets/deco/d107.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d107",
+"n": 2,
+"depth": -7,
+"sf": 1
+},
+"public/assets/props2/arch.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_arch",
+"n": 2,
+"depth": -6,
+"sf": 1
+},
+"public/assets/props2/torii.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_torii",
+"n": 1,
+"depth": -6,
+"sf": 1
+},
+"public/assets/props2/flower.png": {
+"lv": [
+"Level1",
+"Level2"
+],
+"key": "pip",
+"n": 33,
+"depth": -5.5,
+"sf": 1
+},
+"public/assets/props2/wf_lip2.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_wf_lip2",
+"n": 1,
+"depth": -5.5,
+"sf": 1
+},
+"public/assets/props2/lantern2.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_lantern2",
+"n": 31,
+"depth": -5,
+"sf": 1
+},
+"public/assets/props2/shrine.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_shrine",
+"n": 1,
+"depth": -5,
+"sf": 1
+},
+"public/assets/gen2/pp22.png": {
+"lv": [
+"Level1"
+],
+"key": "pp22",
+"n": 57,
+"depth": -5,
+"sf": 1
+},
+"public/assets/gen2/pp20.png": {
+"lv": [
+"Level1"
+],
+"key": "pp20",
+"n": 1,
+"depth": -5,
+"sf": 1
+},
+"public/assets/gen2/pp2.png": {
+"lv": [
+"Level1"
+],
+"key": "pp2",
+"n": 1,
+"depth": -5,
+"sf": 1
+},
+"public/assets/gen2/pp24.png": {
+"lv": [
+"Level1"
+],
+"key": "pp24",
+"n": 57,
+"depth": -5,
+"sf": 1
+},
+"public/assets/gen2/pp21.png": {
+"lv": [
+"Level1"
+],
+"key": "pp21",
+"n": 1,
+"depth": -5,
+"sf": 1
+},
+"public/assets/gen2/pp17.png": {
+"lv": [
+"Level1"
+],
+"key": "pp17",
+"n": 1,
+"depth": -5,
+"sf": 1
+},
+"public/assets/gen2/pp3.png": {
+"lv": [
+"Level1"
+],
+"key": "pp3",
+"n": 1,
+"depth": -5,
+"sf": 1
+},
+"public/assets/gen2/pp15.png": {
+"lv": [
+"Level1"
+],
+"key": "pp15",
+"n": 1,
+"depth": -5,
+"sf": 1
+},
+"public/assets/props2/bush.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_bush",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/props2/bush2.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_bush2",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/props2/fence.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_fence",
+"n": 2,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d48.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d48",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d69.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d69",
+"n": 13,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d73_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d73",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d74_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d74",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d68_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d68",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d79_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d79_dusk",
+"n": 5,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d133_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d133",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d35_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d35",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d142.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d142",
+"n": 3,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d125.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d125",
+"n": 5,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d105.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d105_dusk",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d63_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d63",
+"n": 3,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d72.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d72",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d15.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d15",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d54_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d54",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d81.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d81",
+"n": 5,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d75.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d75",
+"n": 7,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d64.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d64",
+"n": 3,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d149_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d149",
+"n": 7,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d43_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d43",
+"n": 9,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d37_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d37",
+"n": 3,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d78_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d78",
+"n": 5,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d137_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d137",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d89.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d89",
+"n": 5,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d27.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d27",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d71_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d71",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d135.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d135",
+"n": 5,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d62.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d62",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d128.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d128",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d38.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d38",
+"n": 5,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d42_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d42",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d83_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d83",
+"n": 7,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d44_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d44",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d148_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d148",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d47_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d47",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d55_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d55",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d138.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d138_dusk",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d132_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d132",
+"n": 6,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d61.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d61",
+"n": 5,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d144_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d144",
+"n": 8,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d140.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d140",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d136.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d136",
+"n": 4,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d09_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d09",
+"n": 1,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d80.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d80",
+"n": 3,
+"depth": -4,
+"sf": 1
+},
+"public/assets/deco/d08_dusk.png": {
+"lv": [
+"Level1"
+],
+"key": "dc_d08",
+"n": 3,
+"depth": -4,
+"sf": 1
+},
+"public/assets/props/torii.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_torii_big",
+"n": 1,
+"depth": -3,
+"sf": 1
+},
+"public/assets/props/stone_gate.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_stone_gate",
+"n": 1,
+"depth": -3,
+"sf": 1
+},
+"public/assets/props2/torii11.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_torii11",
+"n": 1,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp29.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp29",
+"n": 1,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp30.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp30",
+"n": 1,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp13.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp13",
+"n": 1,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp12.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp12",
+"n": 2,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp25.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp25",
+"n": 2,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp18.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp18",
+"n": 2,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp22.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp22",
+"n": 2,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp31.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp31",
+"n": 3,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp27.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp27",
+"n": 3,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp0.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp0",
+"n": 1,
+"depth": -3,
+"sf": 1
+},
+"public/assets/plat/sp19.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp19",
+"n": 2,
+"depth": -3,
+"sf": 1
+},
+"public/assets/props/lantern_stone.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_lantern_stone",
+"n": 2,
+"depth": -2.5,
+"sf": 1
+},
+"public/assets/plat/sp24.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp24",
+"n": 2,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp78.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp78",
+"n": 3,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp41.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp41",
+"n": 2,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp63.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp63",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp1.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp1",
+"n": 2,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp40.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp40",
+"n": 2,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp35.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp35",
+"n": 2,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp23.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp23",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp52.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp52",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp79.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp79",
+"n": 2,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp16.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp16",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp3.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp3",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp11.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp11",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp7.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp7",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp60.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp60",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp80.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp80",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp26.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp26",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp33.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp33",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp5.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp5",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp32.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp32",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp17.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp17",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp34.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp34",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp14.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp14",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp20.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp20",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp28.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp28",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp58.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp58",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp10.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp10",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp39.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp39",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp51.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp51",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp4.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp4",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp77.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp77",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp21.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp21",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp71.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp71",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp38.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp38",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp64.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp64",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/plat/sp62.png": {
+"lv": [
+"Level1"
+],
+"key": "pl_sp62",
+"n": 1,
+"depth": -2,
+"sf": 1
+},
+"public/assets/props2/wf_lip1.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_wf_lip1",
+"n": 3,
+"depth": 1.2,
+"sf": 1
+},
+"public/assets/props2/wf_lip0.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_wf_lip0",
+"n": 3,
+"depth": 1.2,
+"sf": 1
+},
+"public/assets/tiles/slopes.png": {
+"lv": [
+"Level1"
+],
+"key": "slopes",
+"n": 72,
+"depth": 2,
+"sf": 1
+},
+"public/assets/props2/bridge_parts.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_bridge_parts",
+"n": 135,
+"depth": 3,
+"sf": 1
+},
+"public/assets/props2/wf_basin1.png": {
+"lv": [
+"Level1"
+],
+"key": "wf_basin1",
+"n": 3,
+"depth": 4.5,
+"sf": 1
+},
+"public/assets/props2/wf_basin0.png": {
+"lv": [
+"Level1"
+],
+"key": "wf_basin0",
+"n": 3,
+"depth": 4.5,
+"sf": 1
+},
+"public/assets/props2/wf_rocks.png": {
+"lv": [
+"Level1"
+],
+"key": "pr_wf_rocks",
+"n": 12,
+"depth": 4.6,
+"sf": 1
+},
+"public/assets/gen2/car_wheel.png": {
+"lv": [
+"Level1"
+],
+"key": "car_wheel",
+"n": 2,
+"depth": 0,
+"sf": 1
+},
+"public/assets/gen2/car_body.png": {
+"lv": [
+"Level1"
+],
+"key": "car_body",
+"n": 1,
+"depth": 0,
+"sf": 1
+},
+"public/assets/props2/jetboots.png": {
+"lv": [
+"Level1",
+"Level2"
+],
+"key": "pr_jetboots",
+"n": 3,
+"depth": 6,
+"sf": 1
+},
+"public/assets/fx/pk_heart.png": {
+"lv": [
+"Level1",
+"Level2"
+],
+"key": "pk_heart",
+"n": 4,
+"depth": 6,
+"sf": 1
+},
+"public/assets/fx/pk_rapid.png": {
+"lv": [
+"Level1"
+],
+"key": "pk_rapid",
+"n": 2,
+"depth": 6,
+"sf": 1
+},
+"public/assets/fx/pk_cannon.png": {
+"lv": [
+"Level1",
+"Level2"
+],
+"key": "pk_cannon",
+"n": 4,
+"depth": 6,
+"sf": 1
+},
+"public/assets/enemies/drone8_v.png": {
+"lv": [
+"Level1"
+],
+"key": "e_drone",
+"n": 5,
+"depth": 8,
+"sf": 1
+},
+"public/assets/enemies/wasp6_v.png": {
+"lv": [
+"Level1"
+],
+"key": "e_wasp",
+"n": 3,
+"depth": 8,
+"sf": 1
+},
+"public/assets/enemies/bot8_v.png": {
+"lv": [
+"Level1"
+],
+"key": "e_bot",
+"n": 6,
+"depth": 8,
+"sf": 1
+},
+"public/assets/enemies/trooper6.png": {
+"lv": [
+"Level1"
+],
+"key": "e_trooper",
+"n": 3,
+"depth": 8,
+"sf": 1
+},
+"public/assets/enemies/turret8.png": {
+"lv": [
+"Level1"
+],
+"key": "e_turret",
+"n": 3,
+"depth": 8,
+"sf": 1
+},
+"public/assets/enemies/boss.png": {
+"lv": [
+"Level1"
+],
+"key": "boss",
+"n": 1,
+"depth": 8,
+"sf": 1
+},
+"public/assets/enemies/sentry6_v.png": {
+"lv": [
+"Level1"
+],
+"key": "e_sentry_v",
+"n": 1,
+"depth": 8,
+"sf": 1
+},
+"public/assets/sakura/idle6.png": {
+"lv": [
+"Level1",
+"Level2"
+],
+"key": "p_idle6",
+"n": 2,
+"depth": 10,
+"sf": 1
+},
+"public/assets/sakura/fall2.png": {
+"lv": [
+"Level1"
+],
+"key": "p_fall2",
+"n": 1,
+"depth": 10.8,
+"sf": 1
+},
+"public/assets/fx/flash.png": {
+"lv": [
+"Level1"
+],
+"key": "flash",
+"n": 2,
+"depth": 12,
+"sf": 1
+},
+"public/assets/l2/veh/veh_02.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_veh_02",
+"n": 2,
+"depth": -14.6,
+"sf": 0
+},
+"public/assets/l2/veh/veh_03.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_veh_03",
+"n": 2,
+"depth": -14.6,
+"sf": 0
+},
+"public/assets/l2/veh/veh_06.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_veh_06",
+"n": 3,
+"depth": -14.6,
+"sf": 0
+},
+"public/assets/l2/veh/veh_09.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_veh_09",
+"n": 3,
+"depth": -14.6,
+"sf": 0
+},
+"public/assets/l2/veh/veh_10.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_veh_10",
+"n": 3,
+"depth": -14.6,
+"sf": 0
+},
+"public/assets/l2/veh/veh_01.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_veh_01",
+"n": 1,
+"depth": -12.5,
+"sf": 0
+},
+"public/assets/l2/veh/veh_07.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_veh_07",
+"n": 1,
+"depth": -9.5,
+"sf": 0
+},
+"public/assets/l2/veh/veh_13.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_veh_13",
+"n": 1,
+"depth": -9.5,
+"sf": 0
+},
+"public/assets/l2/veh/veh_04.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_veh_04",
+"n": 1,
+"depth": -7.5,
+"sf": 0
+},
+"public/assets/l2/tiles/tiles_24.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_24",
+"n": 5,
+"depth": 0.4096958118536025,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_44.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_44",
+"n": 2,
+"depth": 0.41606409466642147,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_20.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_20",
+"n": 4,
+"depth": 0.4245415124225158,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_12.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_12",
+"n": 2,
+"depth": 0.4247550815459132,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_02.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_02",
+"n": 3,
+"depth": 0.42605938195533094,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_06.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_06",
+"n": 2,
+"depth": 0.42612527936050915,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_29.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_29",
+"n": 1,
+"depth": 0.4283339983915603,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_30.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_30",
+"n": 5,
+"depth": 0.43147243393187995,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_01.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_01",
+"n": 2,
+"depth": 0.43261916443361864,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_34.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_34",
+"n": 7,
+"depth": 0.4384372304372663,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_32.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_32",
+"n": 4,
+"depth": 0.4403930206039888,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_09.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_09",
+"n": 4,
+"depth": 0.4449976372742083,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_26.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_26",
+"n": 2,
+"depth": 0.4565665209929303,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_46.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_46",
+"n": 2,
+"depth": 0.4581922585415618,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_19.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_19",
+"n": 3,
+"depth": 0.45970010210745976,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_04.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_04",
+"n": 2,
+"depth": 0.46336452386498667,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_37.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_37",
+"n": 1,
+"depth": 0.46999869079794676,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_27.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_27",
+"n": 1,
+"depth": 0.4701165590761772,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_14.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_14",
+"n": 1,
+"depth": 0.5196688159926184,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_45.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_45",
+"n": 1,
+"depth": 0.5504785188243159,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_22.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_22",
+"n": 3,
+"depth": 0.5631595624439231,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_18.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_18",
+"n": 2,
+"depth": 0.5773548291890672,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_36.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_36",
+"n": 2,
+"depth": 0.5813204530539553,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_17.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_17",
+"n": 1,
+"depth": 0.5887004545837178,
+"sf": 0.82
+},
+"public/assets/l2/tiles/tiles_10.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_tiles_10",
+"n": 2,
+"depth": 1,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_25.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_tiles_25",
+"n": 3,
+"depth": 1,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_40.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_tiles_40",
+"n": 2,
+"depth": 1,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_38.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_tiles_38",
+"n": 2,
+"depth": 1,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_39.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_tiles_39",
+"n": 2,
+"depth": 1,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_41.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_tiles_41",
+"n": 2,
+"depth": 1,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_21.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_tiles_21",
+"n": 3,
+"depth": 1,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_35.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_tiles_35",
+"n": 2,
+"depth": 1,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_15.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_15",
+"n": 2,
+"depth": 1.2,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_51.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_51",
+"n": 1,
+"depth": 1.2,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_53.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_53",
+"n": 1,
+"depth": 1.2,
+"sf": 1
+},
+"public/assets/l2/tiles/tiles_52.png": {
+"lv": [
+"Level2"
+],
+"key": "l2t_52",
+"n": 1,
+"depth": 1.2,
+"sf": 1
+},
+"public/assets/l2/props/props_44.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_44",
+"n": 4,
+"depth": 1.3,
+"sf": 1
+},
+"public/assets/l2/props/props_45.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_45",
+"n": 2,
+"depth": 1.3,
+"sf": 1
+},
+"public/assets/l2/items/items_06.png": {
+"lv": [
+"Level2"
+],
+"key": "l2i_06",
+"n": 9,
+"depth": 1.3,
+"sf": 1
+},
+"public/assets/l2/env/env_11.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_11",
+"n": 13,
+"depth": 1.35,
+"sf": 1
+},
+"public/assets/l2/env/env_12.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_12",
+"n": 3,
+"depth": 1.35,
+"sf": 1
+},
+"public/assets/l2/env/env_00.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_00",
+"n": 12,
+"depth": 1.45,
+"sf": 1
+},
+"public/assets/l2/env/env_01.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_01",
+"n": 2,
+"depth": 1.45,
+"sf": 1
+},
+"public/assets/l2/env/env_07.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_07",
+"n": 10,
+"depth": 1.45,
+"sf": 1
+},
+"public/assets/l2/env/env_08.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_08",
+"n": 2,
+"depth": 1.45,
+"sf": 1
+},
+"public/assets/l2/env/env_13.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_13",
+"n": 2,
+"depth": 1.45,
+"sf": 1
+},
+"public/assets/l2/env/env_20.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_20",
+"n": 2,
+"depth": 1.45,
+"sf": 1
+},
+"public/assets/l2/env/env_03.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_03",
+"n": 2,
+"depth": 1.46,
+"sf": 1
+},
+"public/assets/l2/env/env_02.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_02",
+"n": 3,
+"depth": 1.46,
+"sf": 1
+},
+"public/assets/l2/env/env_17.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_17",
+"n": 11,
+"depth": 1.46,
+"sf": 1
+},
+"public/assets/l2/env/env_06.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_06",
+"n": 1,
+"depth": 1.46,
+"sf": 1
+},
+"public/assets/l2/env/env_22.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_22",
+"n": 8,
+"depth": 1.48,
+"sf": 1
+},
+"public/assets/l2/env/env_05.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_05",
+"n": 7,
+"depth": 1.48,
+"sf": 1
+},
+"public/assets/l2/env/env_14.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_14",
+"n": 11,
+"depth": 1.48,
+"sf": 1
+},
+"public/assets/l2/env/env_18.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_18",
+"n": 10,
+"depth": 1.5,
+"sf": 1
+},
+"public/assets/l2/env/env_15.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_15",
+"n": 11,
+"depth": 1.5,
+"sf": 1
+},
+"public/assets/l2/env/env_19.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_19",
+"n": 2,
+"depth": 1.5,
+"sf": 1
+},
+"public/assets/l2/items/items_07.png": {
+"lv": [
+"Level2"
+],
+"key": "l2i_07",
+"n": 2,
+"depth": 1.5,
+"sf": 1
+},
+"public/assets/l2/items/items_08.png": {
+"lv": [
+"Level2"
+],
+"key": "l2i_08",
+"n": 2,
+"depth": 1.5,
+"sf": 1
+},
+"public/assets/l2/items/items_05.png": {
+"lv": [
+"Level2"
+],
+"key": "l2i_05",
+"n": 1,
+"depth": 1.5,
+"sf": 1
+},
+"public/assets/l2/items/items_09.png": {
+"lv": [
+"Level2"
+],
+"key": "l2i_09",
+"n": 1,
+"depth": 1.5,
+"sf": 1
+},
+"public/assets/l2/props/props_00.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_00",
+"n": 3,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_23.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_23",
+"n": 1,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_25.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_25",
+"n": 1,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_22.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_22",
+"n": 1,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_08.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_08",
+"n": 4,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_01.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_01",
+"n": 5,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_34.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_34",
+"n": 4,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_15.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_15",
+"n": 2,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_21.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_21",
+"n": 9,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_11.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_11",
+"n": 2,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_10.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_10",
+"n": 7,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_19.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_19",
+"n": 2,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_12.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_12",
+"n": 2,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_13.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_13",
+"n": 2,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_09.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_09",
+"n": 4,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_26.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_26",
+"n": 1,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_05.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_05",
+"n": 1,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_33.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_33",
+"n": 1,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_14.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_14",
+"n": 1,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_02.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_02",
+"n": 1,
+"depth": 1.6,
+"sf": 1
+},
+"public/assets/l2/props/props_07.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_07",
+"n": 3,
+"depth": 1.62,
+"sf": 1
+},
+"public/assets/l2/props/props_37.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_37",
+"n": 2,
+"depth": 1.62,
+"sf": 1
+},
+"public/assets/l2/props/props_38.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_38",
+"n": 1,
+"depth": 1.62,
+"sf": 1
+},
+"public/assets/l2/props/props_39.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_39",
+"n": 1,
+"depth": 1.62,
+"sf": 1
+},
+"public/assets/l2/fx/fx_22.png": {
+"lv": [
+"Level2"
+],
+"key": "l2f_22",
+"n": 4,
+"depth": 1.64,
+"sf": 1
+},
+"public/assets/l2/fx/fx_24.png": {
+"lv": [
+"Level2"
+],
+"key": "l2f_24",
+"n": 8,
+"depth": 1.7,
+"sf": 1
+},
+"public/assets/l2/fx/fx_13.png": {
+"lv": [
+"Level2"
+],
+"key": "l2f_13",
+"n": 1,
+"depth": 1.7,
+"sf": 1
+},
+"public/assets/l2/fx/fx_11.png": {
+"lv": [
+"Level2"
+],
+"key": "l2f_11",
+"n": 2,
+"depth": 1.8,
+"sf": 1
+},
+"public/assets/l2/env/env_10.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_10",
+"n": 9,
+"depth": 1.95,
+"sf": 1
+},
+"public/assets/l2/rg/ground.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_ground",
+"n": 43,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_08.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_08",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_07.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_07",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_02.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_02",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_01.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_01",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_16.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_16",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_10.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_10",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_12.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_12",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_21.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_21",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pr_11.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pr_11",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_15.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_15",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pl_23.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pl_23",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pr_03.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pr_03",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pr_04.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pr_04",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pr_15.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pr_15",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/rg/pr_05.png": {
+"lv": [
+"Level2"
+],
+"key": "l2r_pr_05",
+"n": 1,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/plat/deck_glass_12.png": {
+"lv": [
+"Level2"
+],
+"key": "l2p_deck_glass_12",
+"n": 26,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/plat/bridge_16.png": {
+"lv": [
+"Level2"
+],
+"key": "l2p_bridge_16",
+"n": 6,
+"depth": 2,
+"sf": 1
+},
+"public/assets/l2/env/env_09.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_09",
+"n": 9,
+"depth": 2.05,
+"sf": 1
+},
+"public/assets/l2/curve/qramp.png": {
+"lv": [
+"Level2"
+],
+"key": "l2c_qramp",
+"n": 1,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/curve/arch.png": {
+"lv": [
+"Level2"
+],
+"key": "l2c_arch",
+"n": 1,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/curve/hill.png": {
+"lv": [
+"Level2"
+],
+"key": "l2c_hill",
+"n": 2,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/curve/pipe.png": {
+"lv": [
+"Level2"
+],
+"key": "l2c_pipe",
+"n": 1,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/curve/slope.png": {
+"lv": [
+"Level2"
+],
+"key": "l2c_slope",
+"n": 1,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/curve/overhang.png": {
+"lv": [
+"Level2"
+],
+"key": "l2c_overhang",
+"n": 1,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/env/env_21.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_21",
+"n": 4,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/env/env_35.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_35",
+"n": 4,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/env/env_36.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_36",
+"n": 3,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/env/env_25.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_25",
+"n": 5,
+"depth": 2.2,
+"sf": 1
+},
+"public/assets/l2/plat/deck_vent_3.png": {
+"lv": [
+"Level2"
+],
+"key": "l2p_deck_glass_3",
+"n": 45,
+"depth": 2.45,
+"sf": 1
+},
+"public/assets/l2/fx/fx_25.png": {
+"lv": [
+"Level2"
+],
+"key": "l2f_25",
+"n": 7,
+"depth": 3.9,
+"sf": 1
+},
+"public/assets/l2/fx/fx_26.png": {
+"lv": [
+"Level2"
+],
+"key": "l2f_26",
+"n": 12,
+"depth": 4.9,
+"sf": 1
+},
+"public/assets/l2/props/props_27.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_27",
+"n": 5,
+"depth": 5,
+"sf": 1
+},
+"public/assets/l2/props/props_28.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_28",
+"n": 5,
+"depth": 5,
+"sf": 1
+},
+"public/assets/l2/props/props_29.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_29",
+"n": 4,
+"depth": 5,
+"sf": 1
+},
+"public/assets/l2/props/props_16.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_16",
+"n": 2,
+"depth": 5.5,
+"sf": 1
+},
+"public/assets/l2/props/props_18.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_18",
+"n": 2,
+"depth": 5.5,
+"sf": 1
+},
+"public/assets/l2/props/props_17.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_17",
+"n": 2,
+"depth": 5.5,
+"sf": 1
+},
+"public/assets/l2/swap/pk_rapid.png": {
+"lv": [
+"Level2"
+],
+"key": "pk_rapid",
+"n": 2,
+"depth": 6,
+"sf": 1
+},
+"public/assets/l2/boss/kpose_charge.png": {
+"lv": [
+"Level2"
+],
+"key": "l2_boss_00",
+"n": 2,
+"depth": 7.4,
+"sf": 1
+},
+"public/assets/l2/props/props_42.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_40",
+"n": 13,
+"depth": 7.5,
+"sf": 1
+},
+"public/assets/l2/props/props_43.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_43",
+"n": 2,
+"depth": 7.5,
+"sf": 1
+},
+"public/assets/l2/props/props_41.png": {
+"lv": [
+"Level2"
+],
+"key": "l2pr_41",
+"n": 3,
+"depth": 7.5,
+"sf": 1
+},
+"public/assets/l2/env/env_32.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_32",
+"n": 23,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/env/env_27.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_27",
+"n": 20,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/env/env_16.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_16",
+"n": 19,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/env/env_28.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_28",
+"n": 14,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/env/env_29.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_29",
+"n": 19,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/env/env_34.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_34",
+"n": 3,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/env/env_31.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_31",
+"n": 15,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/env/env_33.png": {
+"lv": [
+"Level2"
+],
+"key": "l2e_33",
+"n": 8,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/assault_0_v.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_assault_0",
+"n": 9,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/drone_1.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_drone_1",
+"n": 6,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/sentry_2_v.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_sentry_2_v",
+"n": 2,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/drone_0.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_drone_0_v",
+"n": 5,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/shield_1_v.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_shield_1_v",
+"n": 3,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/heavy_0.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_heavy_0_v",
+"n": 3,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/shield_3.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_shield_0",
+"n": 2,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/assault_2.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_assault_2_v",
+"n": 2,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/sentry_0.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_sentry_0",
+"n": 1,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/en/heavy_1_v.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_heavy_1",
+"n": 1,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/enemy/enemy_22.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_scout_1_v",
+"n": 2,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/enemy/enemy_21_v.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_scout_0",
+"n": 2,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/enemy/enemy_05_v.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_mine_0_v",
+"n": 3,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/enemy/enemy_13_v.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_lancer_0",
+"n": 2,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/enemy/enemy_06_v.png": {
+"lv": [
+"Level2"
+],
+"key": "nk_mine_1",
+"n": 1,
+"depth": 8,
+"sf": 1
+},
+"public/assets/l2/fx/fx_27.png": {
+"lv": [
+"Level2"
+],
+"key": "l2f_27",
+"n": 4,
+"depth": 9,
+"sf": 1
+},
+"public/assets/l2/swap/flash.png": {
+"lv": [
+"Level2"
+],
+"key": "flash",
+"n": 2,
+"depth": 12,
+"sf": 1
+},
+"public/assets/l2/swap/spark.png": {
+"lv": [
+"Level2"
+],
+"key": "spark",
+"n": 1,
+"depth": 20,
+"sf": 1
+},
+"public/assets/l2/swap/spark2.png": {
+"lv": [
+"Level2"
+],
+"key": "spark2",
+"n": 1,
+"depth": 20,
+"sf": 1
+}
+}
