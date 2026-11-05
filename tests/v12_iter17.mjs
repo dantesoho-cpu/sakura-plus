@@ -9,7 +9,7 @@ await p.keyboard.press('ArrowDown'); await p.keyboard.press('ArrowDown'); await 
 await p.keyboard.press('Enter'); await W(400); await p.screenshot({ path: `${D}/title_controls.png` }); out.ctl = await p.evaluate(() => !!window.__title.ctl);
 await p.keyboard.press('Enter'); await W(200); out.ctlClosed = await p.evaluate(() => !window.__title.ctl);
 await p.keyboard.press('ArrowUp'); await W(100); out.sel1 = await p.evaluate(() => window.__title.sel); await p.keyboard.press('Enter'); await W(1200);
-out.ls = await act('LevelSelect'); if (!(out.sel2 === 2 && out.ctl && out.ctlClosed && out.sel1 === 1 && out.ls)) fails.push('title menu ' + JSON.stringify(out));
+out.ls = await p.waitForFunction(() => window.__game.scene.isActive('LevelSelect') && window.__ls?.sel !== undefined, null, { timeout: 20000 }).then(() => true, () => false); await W(400); if (!(out.sel2 === 2 && out.ctl && out.ctlClosed && out.sel1 === 1 && out.ls)) fails.push('title menu ' + JSON.stringify(out));
 await p.screenshot({ path: `${D}/levelselect.png` });
 await p.keyboard.press('ArrowRight'); await W(300); out.lsSel = await p.evaluate(() => window.__ls.sel); await p.screenshot({ path: `${D}/levelselect_l2.png` });
 await p.keyboard.press('Escape'); await W(700); out.back = await act('Title'); if (!(out.lsSel === 1 && out.back)) fails.push('ls nav');

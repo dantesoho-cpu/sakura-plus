@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
+import { HI } from './HiRes';
+const q = (v: number) => Math.round(v * HI) / HI;
 // Multi-layer parallax built from generated hi-bit layers (tools/gen2.py). Every layer is a separate seamless,
 // horizontally tileable RGBA strip (no fades): sky gradient, far clouds, far mountains, lake band (animated shimmer
 // + glints), mid hills/castle, near clouds, near blossom forest, birds, and an optional foreground strip.
-type Lay = { ts: Phaser.GameObjects.TileSprite; f: number; y: number; vy: number };
+type Lay = { ts: Phaser.GameObjects.TileSprite; f: number; y: number; vy: number; anim?: boolean };
 const SKY = [[38, 70, 190], [74, 120, 224], [150, 180, 240], [214, 200, 238]];
 export class Parallax {
   layers: Lay[] = []; clouds: { img: Phaser.GameObjects.Image; v: number; f: number; x: number }[] = [];
@@ -26,7 +28,7 @@ export class Parallax {
     for (let i = 0; i < 7; i++) cl(small[i % small.length], i * 90 + Phaser.Math.Between(0, 40), 14 + Phaser.Math.Between(0, 50), 0.01, 1.5, -97, 0.8, 0.85);
     add('g2_far_mtn', 70, 0.04, -95, 4);
     for (let i = 0; i < 4; i++) cl(big[i * 2 % big.length], i * 170 + Phaser.Math.Between(0, 60), 6 + Phaser.Math.Between(0, 34), 0.03, 4, -96, 0.7, 0.95);
-    this.lake = add('g2_lake', 160, 0.09, -93, 8); this.lake2 = add('g2_lake', 160, 0.09, -92, 8); this.lake2.ts.setAlpha(0.35).setFlipY(true);
+    this.lake = add('g2_lake', 160, 0.09, -93, 8); this.lake2 = add('g2_lake', 160, 0.09, -92, 8); this.lake2.ts.setAlpha(0.35).setFlipY(true); this.lake.anim = this.lake2.anim = true;
     add('g2_mid_hills', 128, 0.14, -90, 12);
     for (let i = 0; i < 3; i++) cl(big[(i * 2 + 1) % big.length], i * 220 + Phaser.Math.Between(0, 80), -6 + Phaser.Math.Between(0, 20), 0.2, 9, -88, 0.8, 1);
     add('g2_near_forest', 172, 0.26, -86, 18);
@@ -37,16 +39,20 @@ export class Parallax {
     for (let i = 0; i < 5; i++) { const g = S.add.sprite(0, 0, 'bird').setScrollFactor(0).setDepth(-89).play({ key: 'bird', startFrame: i % 2 }).setTint(0x3a2a5a);
       this.birds.push({ g, x: Math.random() * 600, y: 40 + Math.random() * 50, v: 14 + Math.random() * 10, ph: Math.random() * 6 }); }
   }
-  update(dt: number) {
-    this.t += dt; const cam = this.scene.cameras.main, sx = cam.scrollX;
+  dt = 0;
+  /** advance animation time; positions are applied in sync() on the camera's prerender, i.e. after follow/lerp has set this frame's scroll (no 1-frame lag vs the world) */
+  update(dt: number) { this.t += dt; this.dt += dt; if (!this.hooked) { this.hooked = true; const cam = this.scene.cameras.main; cam.on('prerender', this.sync, this); this.scene.events.once('shutdown', () => cam.off('prerender', this.sync, this)); } }
+  hooked = false;
+  sync() {
+    const dt = this.dt; this.dt = 0; const cam = this.scene.cameras.main, sx = cam.scrollX;
     const b = cam.getBounds(); const vy = b.height > 270 ? Phaser.Math.Clamp((cam.scrollY - b.y) / (b.height - 270), 0, 1) - 0.5 : 0;
-    for (const l of this.layers) { l.ts.tilePositionX = Math.round(sx * l.f); l.ts.y = Math.round(l.y - vy * l.vy * 2); }
+    for (const l of this.layers) { l.ts.tilePositionX = q(sx * l.f); l.ts.y = q(l.y - vy * l.vy * 2); }
     // lake shimmer: two copies scrolling against each other + vertical wobble
-    this.lake.ts.tilePositionX = Math.round(sx * 0.09 + this.t * 3); this.lake2.ts.tilePositionX = Math.round(sx * 0.09 - this.t * 5 + 37);
-    this.lake2.ts.tilePositionY = Math.round(Math.sin(this.t * 1.3) * 2);
-    for (const c of this.clouds) { c.x -= c.v * dt; let x = c.x - sx * c.f; const w = c.img.displayWidth, span = 480 + w + 40; x = ((x + w) % span + span) % span - w; c.img.x = Math.round(x); }
+    this.lake.ts.tilePositionX = q(sx * 0.09 + this.t * 3); this.lake2.ts.tilePositionX = q(sx * 0.09 - this.t * 5 + 37);
+    this.lake2.ts.tilePositionY = q(Math.sin(this.t * 1.3) * 2);
+    for (const c of this.clouds) { c.x -= c.v * dt; let x = c.x - sx * c.f; const w = c.img.displayWidth, span = 480 + w + 40; x = ((x + w) % span + span) % span - w; c.img.x = q(x); }
     const ly = this.lake.ts.y;
-    for (const s of this.sparks) { const x = ((s.x - sx * 0.09 - this.t * 3) % 560 + 560) % 560; s.img.setPosition(Math.round(x), Math.round(s.y - 160 + ly)); s.img.setAlpha(Math.max(0, Math.sin(this.t * 3 + s.ph)) ** 4); }
-    for (const bd of this.birds) { bd.x -= bd.v * dt; if (bd.x < -20) { bd.x = 520 + Math.random() * 200; bd.y = 30 + Math.random() * 60; } bd.g.setPosition(Math.round(bd.x - sx * 0.05 % 600), Math.round(bd.y + Math.sin(this.t * 2 + bd.ph) * 3)); }
+    for (const s of this.sparks) { const x = ((s.x - sx * 0.09 - this.t * 3) % 560 + 560) % 560; s.img.setPosition(q(x), q(s.y - 160 + ly)); s.img.setAlpha(Math.max(0, Math.sin(this.t * 3 + s.ph)) ** 4); }
+    for (const bd of this.birds) { bd.x -= bd.v * dt; if (bd.x < -20) { bd.x = 520 + Math.random() * 200; bd.y = 30 + Math.random() * 60; } bd.g.setPosition(q(bd.x - sx * 0.05 % 600), q(bd.y + Math.sin(this.t * 2 + bd.ph) * 3)); }
   }
 }

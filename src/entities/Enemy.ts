@@ -42,9 +42,9 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
   /** Facing (+1 = right; sheets face right). Turning plays a quick squash-flip and blocks movement while it runs. */
   faceDir = 1; hitT = 0; turning = false; baseSX = 1;
   face(d: number) {
-    if (!d || d === this.faceDir || this.turning || this.dead) return; this.turning = true; this.faceDir = d;
+    if (d) (this as any).wantFace = d; if (this.turning && this.scene.time.now - ((this as any).turnAt || 0) > 320) { this.turning = false; this.setFlipX(this.faceDir < 0); this.setScale(1); } if (!d || d === this.faceDir || this.turning || this.dead) return; this.turning = true; (this as any).turnAt = this.scene.time.now; this.faceDir = d;
     this.scene.tweens.add({ targets: this, scaleX: 0.15, scaleY: 1.08, duration: 70, ease: 'Quad.in', onComplete: () => { if (this.dead) return; this.setFlipX(d < 0);
-      this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 90, ease: 'Back.out', onComplete: () => { this.turning = false; } }); } });
+      this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: 90, ease: 'Back.out', onComplete: () => { this.turning = false; const w = (this as any).wantFace; if (w && w !== this.faceDir) this.face(w); } }); } });
   }
   punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(sx, sy); this.scene.tweens.add({ targets: this, scaleX: 1, scaleY: 1, duration: ms, ease: 'Quad.out' }); }
   die() {

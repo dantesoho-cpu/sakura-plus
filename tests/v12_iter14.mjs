@@ -23,7 +23,7 @@ await W(700); out.l1b = await p.evaluate(() => window.__extra1.dbg); if (out.l1b
 const L = await p.evaluate(() => { const S = window.__lvl, so = S.solid, c = (x, y) => !!so.getTileAt(x, y)?.collides;
   for (let y = 10; y < so.layer.height - 4; y++) for (let x = 20; x < 380; x++) if (c(x, y) && c(x, y + 1) && c(x, y + 2) && !c(x, y - 1) && !c(x, y - 2) && !c(x, y - 3) && !c(x - 1, y) && !c(x - 1, y + 1) && !c(x - 1, y + 2) && !c(x - 1, y + 3) && !c(x - 1, y - 1) && !c(x - 1, y - 2) && !S.oneway.getTileAt(x - 1, y)?.index > 0 && !c(x - 2, y + 4)) return { tx: x * 16, ty: y * 16 }; return null; });
 if (!L) fails.push('no ledge spot'); else {
-  await p.evaluate(L => { const P = window.__lvl.player; P.body.reset(L.tx - 9, L.ty + 26); P.body.setVelocity(0, 40); }, L); await p.keyboard.down('ArrowRight'); await W(300);
+  await p.evaluate(L => { const P = window.__lvl.player; P.body.reset(L.tx - 9, L.ty + 26); P.body.setVelocity(0, 40); }, L); await p.keyboard.down('ArrowRight'); await p.waitForFunction(() => window.__lvl.player.hang, null, { timeout: 2500, polling: 16 }).catch(() => {}); await W(120);
   out.hang = await p.evaluate(() => { const P = window.__lvl.player; return { grabs: P.dbg.grabs, hang: !!P.hang, anim: P.anims.currentAnim?.key, y: Math.round(P.y) }; }); await p.keyboard.up('ArrowRight');
   await p.screenshot({ path: 'audit/v12/iter14/ledge_hang.png' }); if (!(out.hang.grabs > 0) || out.hang.anim !== 'ledge') fails.push('no ledge grab ' + JSON.stringify(out.hang) + JSON.stringify(L));
   await p.keyboard.press('Space'); await W(90); await p.screenshot({ path: 'audit/v12/iter14/ledge_climb.png' }); await W(500);

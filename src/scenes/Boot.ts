@@ -1,7 +1,7 @@
 import { PLAT } from './platPieces';
 import Phaser from 'phaser';
 import { makeCombatTextures } from '../systems/Textures';
-import { DECO_SIZE } from '../decoList';
+import { DECO, DECO_SIZE } from '../decoList';
 // src: sheet key, frames. Core cycles from player2 (generated + processed, tools/gen_frames.py)
 export const ANIMS: Record<string, { src: string; frames: number[]; rate: number; repeat: number }> = {
   idle: { src: 'idle6', frames: [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], rate: 7, repeat: -1 }, skid: { src: 'land', frames: [0], rate: 1, repeat: 0 }, run: { src: 'run8', frames: [0, 1, 2, 3, 4, 5, 6, 7], rate: 15, repeat: -1 },
@@ -41,6 +41,7 @@ export class Boot extends Phaser.Scene {
     for (const q of PLAT) this.load.image('pl_' + q.k, `assets/plat/${q.k}.png`);
     for (const k of ['bush', 'bush2', 'jetboots', 'bridge_parts', 'tree_big0', 'tree_big1', 'tree_s0', 'tree_s1', 'tree_s2', 'tree_m0', 'tree_m1', ...['ts0','ts1','ts2','ts3'].flatMap(t => [t, t + 'dk', t + 'lt']), 'ts_sap', 'ts_bush', 'wf_lip0', 'wf_lip1', 'wf_lip2', 'wf_rocks']) this.load.image('pr_' + k, `assets/props2/${k}.png`);
     for (const k of Object.keys(DECO_SIZE)) this.load.image('dc_' + k, `assets/deco/${k}.png`);
+    for (const k of new Set([...DECO.ground, ...DECO.landmark])) this.load.image('dc_' + k + '_dusk', `assets/deco/${k}_dusk.png`); // regenerated maple/dusk variants for L1's later sections
     this.load.spritesheet('boss', 'assets/enemies/boss.png', { frameWidth: 60, frameHeight: 45 });
     this.load.spritesheet('slopes', 'assets/tiles/slopes.png', { frameWidth: 16, frameHeight: 16 });
     this.load.image('ui_logo', 'assets/ui_logo2.png'); this.load.image('intro_p1', 'assets/intro/pano1.png'); this.load.image('intro_p2', 'assets/intro/pano2.png'); for (const n of [1, 2]) for (let k = 0; k < 3; k++) this.load.image(`intro_p${n}_spk${k}`, `assets/intro/pano${n}_spk${k}.png`); this.load.image('water', 'assets/fx/water.png');

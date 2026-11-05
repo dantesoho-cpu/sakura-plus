@@ -13,7 +13,7 @@ export class Intro extends Phaser.Scene {
   i = -1; typed = 0; full = ''; txt!: Phaser.GameObjects.Text; bgA!: Phaser.GameObjects.Image; petals!: Petals; done = false; hint!: Phaser.GameObjects.Text; pan = 0; chap!: Phaser.GameObjects.Text; spk: Phaser.GameObjects.Image[] = []; clouds: Phaser.GameObjects.Image[] = []; tt = 0;
   constructor() { super('Intro'); }
   create() {
-    const W = this.scale.width, H = this.scale.height; this.i = -1; this.done = false;
+    const W = 480, H = 270; this.i = -1; this.done = false;
     this.bgA = this.add.image(0, 0, 'intro_p1').setOrigin(0, 0);
     // water shimmer: 3 sparkle layers masked to the lake, cross-faded; cloud drift: small sky clouds sliding over the panel
     this.spk = [0, 1, 2].map(k => this.add.image(0, 0, 'intro_p1_spk' + k).setOrigin(0, 0).setBlendMode(Phaser.BlendModes.ADD));
@@ -34,7 +34,7 @@ export class Intro extends Phaser.Scene {
   }
   next() {
     if (this.done) return; this.i++; if (this.i >= PANELS.length) return this.finish();
-    const P = PANELS[this.i], W = this.scale.width, H = this.scale.height;
+    const P = PANELS[this.i], W = 480, H = 270;
     if (this.bgA.texture.key !== P.img || this.i === 0) { const sc = Math.max(H / this.textures.get(P.img).getSourceImage().height, W / this.textures.get(P.img).getSourceImage().width); this.bgA.setTexture(P.img).setScale(sc); this.spk.forEach((q, k) => q.setTexture(P.img + '_spk' + k).setScale(sc)); this.pan = 0; this.cameras.main.flash(250, 26, 15, 46); }
     this.bgA.setTint(P.tint ?? 0xffffff); this.clouds.forEach(c => c.setTint(P.tint ?? 0xffffff)); this.full = P.lines.join('\n'); this.typed = 0; audio.sfx('menu');
     this.tweens.add({ targets: this.chap, alpha: this.i === 0 ? 1 : 0, duration: 500 });
@@ -43,9 +43,9 @@ export class Intro extends Phaser.Scene {
   update(_t: number, d: number) {
     const dt = d / 1000; this.petals.update(dt); this.typed = Math.min(this.full.length, this.typed + dt * 38);
     this.txt.setText(this.full.slice(0, Math.floor(this.typed))); this.hint.setAlpha(this.typed >= this.full.length ? 0.6 + 0.4 * Math.sin(_t / 200) : 0.3);
-    const maxPan = this.bgA.displayWidth - this.scale.width; this.pan = Math.min(maxPan, this.pan + dt * 9); this.bgA.x = -Math.round(this.pan);
-    this.bgA.y = Math.round(Math.min(0, this.scale.height - 62 - this.bgA.displayHeight + 40));
+    const maxPan = this.bgA.displayWidth - 480; this.pan = Math.min(maxPan, this.pan + dt * 9); this.bgA.x = -Math.round(this.pan);
+    this.bgA.y = Math.round(Math.min(0, 270 - 62 - this.bgA.displayHeight + 40));
     this.tt += dt; this.spk.forEach((q, k) => { q.setPosition(this.bgA.x, this.bgA.y).setAlpha(Math.max(0, Math.sin(this.tt * 2.4 + k * 2.09)) * 0.9); });
-    const W = this.scale.width; for (const [i, c] of this.clouds.entries()) { c.x -= dt * (4 + (i % 3) * 2.5) + dt * 9 * 0.4; if (c.x < -c.width) c.x += W + c.width * 2; c.y = Math.round(this.bgA.y + 18 + (i * 23) % 50); }
+    const W = 480; for (const [i, c] of this.clouds.entries()) { c.x -= dt * (4 + (i % 3) * 2.5) + dt * 9 * 0.4; if (c.x < -c.width) c.x += W + c.width * 2; c.y = Math.round(this.bgA.y + 18 + (i * 23) % 50); }
   }
 }

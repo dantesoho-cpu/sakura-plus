@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 // Gamepad (PlayStation / standard mapping) -> shared `touch` input state + synthetic keys for menus.
 // Cross jump · Square shoot (hold = charge) · Circle/R1 dash · Triangle/R2 cannon · Options pause/start · Touchpad fullscreen.
 import { touch } from './Touch';
@@ -46,3 +47,9 @@ export function setupPad() {
   addEventListener('keydown', e => { if ((e.key === 'f' || e.key === 'F') && !e.repeat) toggleFullscreen(); });
   (window as any).__pad = pad; requestAnimationFrame(poll);
 }
+/** live input-aware hint line (TV/controller, phone, keyboard): swaps its text whenever a controller connects/disconnects */
+export function liveHint(s: Phaser.Scene, t: Phaser.GameObjects.Text, h: { kb: string; touch: string; pad: string }, touchNow: () => boolean) {
+  const set = () => { const m = (pad.connected || (window as any).__padSim) ? 'pad' : touchNow() ? 'touch' : 'kb'; if (t.getData('m') !== m) { t.setData('m', m).setText(h[m]); } };
+  set(); s.time.addEvent({ delay: 300, loop: true, callback: set });
+}
+(window as any).__pad = pad;

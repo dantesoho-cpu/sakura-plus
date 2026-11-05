@@ -22,7 +22,7 @@ export class NkScout extends Walker {
   kind = 'scout'; hopT = 1; hops = 0;
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx, gun: Blaster) { super(s, x, y, 'scout', 2, fx, gun, 14, 28, 90); this.speed = 62; this.bobA = 3; this.eyeY = 0.8; this.sight = 150; }
   tick(dt: number, px: number, py: number) {
-    super.tick(dt, px, py); if (this.dead) return; const see = this.sees(px, py); if (see) this.face(Math.sign(px - this.x) || this.faceDir);
+    super.tick(dt, px, py); if (this.dead) return; const see = this.sees(px, py); if (see || (Math.abs(px - this.x) > 4 && Math.abs(px - this.x) < 160 && Math.abs(py - this.y) < 120)) this.face(Math.sign(px - this.x) || this.faceDir);
     this.hopT -= dt; if (see && this.hopT <= 0 && this.grounded() && Math.abs(px - this.x) < 120) { this.hopT = 1.6; this.hops++; this.punch(1.2, 0.75, 120); this.telegraph(0.2);
       this.scene.time.delayedCall(200, () => { if (this.dead || !this.active) return; this.b.setVelocity(this.faceDir * 120, -300); audio.sfx('jump', { rate: 1.8, vol: 0.4 }); }); return; }
     if (!this.grounded()) return; if (this.hitT <= 0) this.walk(dt, px, py, false);
@@ -43,12 +43,14 @@ export class NkMine extends Enemy {
 }
 /** Lancer: tall trooper; seeing Sakura it plants (telegraph 0.5s, forward lean) then charges ~200px/s along its ledge. */
 export class NkLancer extends Walker {
-  kind = 'lancer'; chT = 0; cdT = 1.2; charges = 0;
+  kind = 'lancer'; lastSafe = 0; chT = 0; cdT = 1.2; charges = 0;
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx, gun: Blaster) { super(s, x, y, 'lancer', 5, fx, gun, 14, 60, 80); this.speed = 24; this.bobA = 1; this.eyeY = 0.88; this.sight = 190; }
   tick(dt: number, px: number, py: number) {
     super.tick(dt, px, py); if (this.dead) return; const see = this.sees(px, py);
+    { const g = (this as any).L.groundAt(this.x, this.y - 6); if (g < 0 || Math.abs(g - this.y) > 6) { if (this.lastSafe) { this.x = this.lastSafe; this.b.reset(this.x, this.y); } this.b.setVelocityX(0); this.chT = 0; this.setAngle(0); } else this.lastSafe = this.x; }
+    { const g = (this as any).L.groundAt(this.x, this.y - 6); if (g < 0 || Math.abs(g - this.y) > 6) { if (this.lastSafe) { this.x = this.lastSafe; this.b.reset(this.x, this.y); } this.b.setVelocityX(0); this.chT = 0; this.setAngle(0); } else this.lastSafe = this.x; }
     if (this.chT > 0) { this.chT -= dt; if (this.chT > 0.45) { this.b.setVelocityX(0); this.setAngle(this.faceDir * 8); return; }
-      if (this.edgeAhead(this.faceDir) || (this.faceDir > 0 ? this.b.blocked.right : this.b.blocked.left)) this.chT = 0; this.b.setVelocityX(this.faceDir * 210); this.setAngle(this.faceDir * 12);
+      if (this.edgeAhead(this.faceDir) || this.edgeAhead(this.faceDir * 2.2) || (this.faceDir > 0 ? this.b.blocked.right : this.b.blocked.left)) { this.chT = 0; this.b.setVelocityX(0); this.setAngle(0); this.cdT = 1.8; return; } this.b.setVelocityX(this.faceDir * 210); this.setAngle(this.faceDir * 12);
       if (this.chT <= 0) { this.setAngle(0); this.cdT = 1.8; } return; }
     if (see) this.face(Math.sign(px - this.x) || this.faceDir); this.cdT -= dt;
     if (see && this.cdT <= 0 && this.grounded() && !this.turning) { this.chT = 0.95; this.charges++; this.telegraph(0.5); audio.sfx('eshot2', { rate: 0.6, vol: 0.4 }); return; }

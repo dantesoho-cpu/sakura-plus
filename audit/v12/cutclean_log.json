@@ -1,0 +1,189 @@
+{
+"public/assets/deco/d139.png": {
+"speck": 59
+},
+"public/assets/deco/d65.png": {
+"speck": 1
+},
+"public/assets/deco/d137_dusk.png": {
+"speck": 1
+},
+"public/assets/deco/d08_dusk.png": {
+"fringe": 1
+},
+"public/assets/deco/d137.png": {
+"speck": 1
+},
+"public/assets/deco/d08.png": {
+"fringe": 1
+},
+"public/assets/props/tree2.png": {
+"speck": 9
+},
+"public/assets/props/torii.png": {
+"speck": 290
+},
+"public/assets/props/flowers_rings.png": {
+"speck": 1204
+},
+"public/assets/props/car.png": {
+"speck": 3
+},
+"public/assets/props/lantern_small.png": {
+"speck": 5
+},
+"public/assets/props/waterfalls.png": {
+"speck": 375
+},
+"public/assets/props/tree1.png": {
+"speck": 317
+},
+"public/assets/props/waterfall_tall.png": {
+"speck": 9
+},
+"public/assets/props/tree3.png": {
+"speck": 42
+},
+"public/assets/props/tree4.png": {
+"speck": 170
+},
+"public/assets/props2/arch.png": {
+"speck": 30
+},
+"public/assets/props2/ts2dk.png": {
+"speck": 3
+},
+"public/assets/props2/car.png": {
+"speck": 78,
+"fringe": 1
+},
+"public/assets/props2/ts1dk.png": {
+"speck": 32
+},
+"public/assets/props2/ts0lt.png": {
+"speck": 7,
+"fringe": 2
+},
+"public/assets/props2/ts3lt.png": {
+"speck": 1,
+"fringe": 1
+},
+"public/assets/props2/ts0dk.png": {
+"speck": 7
+},
+"public/assets/props2/ts3.png": {
+"speck": 1
+},
+"public/assets/props2/ts0.png": {
+"speck": 7
+},
+"public/assets/props2/fence.png": {
+"speck": 13
+},
+"public/assets/props2/ts3dk.png": {
+"speck": 1
+},
+"public/assets/props2/shrine.png": {
+"speck": 10
+},
+"public/assets/props2/ts2lt.png": {
+"speck": 3
+},
+"public/assets/props2/ts1.png": {
+"speck": 32
+},
+"public/assets/props2/ts1lt.png": {
+"speck": 32
+},
+"public/assets/props2/ts2.png": {
+"speck": 3
+},
+"public/assets/plat/sp32.png": {
+"speck": 20
+},
+"public/assets/plat/sp25.png": {
+"speck": 2
+},
+"public/assets/plat/sp20.png": {
+"speck": 6
+},
+"public/assets/plat/sp21.png": {
+"speck": 10
+},
+"public/assets/plat/sp28.png": {
+"speck": 6
+},
+"public/assets/plat/sp33.png": {
+"speck": 6
+},
+"public/assets/l2/props/props_08.png": {
+"fringe": 3
+},
+"public/assets/l2/props/props_22.png": {
+"fringe": 1
+},
+"public/assets/l2/props/props_09.png": {
+"fringe": 1
+},
+"public/assets/l2/props/props_15.png": {
+"fringe": 1
+},
+"public/assets/l2/props/props_00.png": {
+"speck": 5
+},
+"public/assets/l2/props/props_10.png": {
+"fringe": 1
+},
+"public/assets/l2/props/props_33.png": {
+"fringe": 1
+},
+"public/assets/l2/veh/veh_08.png": {
+"fringe": 37
+},
+"public/assets/l2/veh/veh_12.png": {
+"speck": 113
+},
+"public/assets/l2/veh/veh_05.png": {
+"fringe": 12
+},
+"public/assets/l2/veh/veh_07.png": {
+"speck": 4
+},
+"public/assets/l2/plat/planter_4.png": {
+"speck": 29
+},
+"public/assets/l2/plat/planter_10.png": {
+"speck": 38
+},
+"public/assets/l2/plat/planter_6.png": {
+"speck": 48
+},
+"public/assets/l2/env/env_11.png": {
+"speck": 8
+},
+"public/assets/l2/env/env_04.png": {
+"speck": 12,
+"fringe": 1
+},
+"public/assets/l2/env/env_10.png": {
+"speck": 39
+},
+"public/assets/l2/env/env_24.png": {
+"fringe": 1
+},
+"public/assets/l2/env/env_12.png": {
+"fringe": 5
+},
+"public/assets/l2/env/env_07.png": {
+"fringe": 2
+},
+"public/assets/l2/env/env_17.png": {
+"speck": 19
+},
+"public/assets/l2/env/env_25.png": {
+"fringe": 1
+},
+"public/assets/l2/items/items_07.png": {
+"fringe": 4
+}
+}

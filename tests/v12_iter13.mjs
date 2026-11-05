@@ -22,7 +22,7 @@ const res = {};
 for (const k of ['scout', 'mine', 'lancer']) {
   const r = await p.evaluate(k => { const S = window.__lvl, e = S.enemies.find(e => e.kind === k && e.active && !e.dead); if (!e) return null; S.player.body.reset(e.x - 70, e.kind === 'mine' ? e.y + 40 : e.y - 2); return { x: e.x, y: e.y }; }, k);
   if (!r) { fails.push('missing ' + k); continue; } await W(2600);
-  res[k] = await p.evaluate(k => { const e = window.__lvl.enemies.filter(e => e.kind === k); const a = e.find(e => e.active) || e[0]; return { n: e.length, hops: a.hops, rams: a.rams, charges: a.charges, face: a.faceDir, px: window.__lvl.player.x - a.x, feet: a.kind !== 'mine' ? [Math.round(a.y), window.__lvl.groundAt(a.x, a.y - 6)] : null }; }, k);
+  res[k] = await p.evaluate(k => { const e = window.__lvl.enemies.filter(e => e.kind === k); const a = e.find(e => e.active) || e[0]; return { n: e.length, hops: a.hops, rams: a.rams, charges: a.charges, face: a.turning ? a.wantFace : a.faceDir, px: window.__lvl.player.x - a.x, feet: a.kind !== 'mine' && (a.body?.blocked?.down || a.body?.touching?.down) ? [Math.round(a.y), window.__lvl.groundAt(a.x, a.y - 6)] : null }; }, k);
   await p.screenshot({ path: `audit/v12/iter13/foe_${k}.png` });
 }
 if (!(res.scout?.hops > 0)) fails.push('scout no hop'); if (!(res.mine?.rams > 0)) fails.push('mine no ram'); if (!(res.lancer?.charges > 0)) fails.push('lancer no charge');

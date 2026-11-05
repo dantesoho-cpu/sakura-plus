@@ -49,6 +49,15 @@ export class Tiers {
       const top = sm.map((v: number) => (v < 0 ? -1 : y0 + v + 3)); this.curves.push({ k, x, y: y0, w: P.w, top });
       if (k !== 'overhang') { const f = top.findIndex((v: number) => v > 0); const lip = sy - top[f]; if (lip > 3 && lip < 30) for (let d = 3; d < lip * 1.4; d += 3) { s.addRect(x + f - d, top[f] + (d / (lip * 1.4)) * lip, 3, 6, true); this.dbg.curveSteps++; } }
       for (let i = 0, st = 3; i < P.w; i += st) { st = Math.abs((top[Math.min(i + 3, P.w - 1)] || 0) - (top[i] || 0)) > 3 ? 1 : 3; const t = top[i]; if (t < 0) continue; const tt = k === 'overhang' ? t : Math.min(t, sy); if (k !== 'overhang' && tt >= sy) continue; s.addRect(x + i, tt, st, 6, true); this.dbg.curveSteps++; } }
+    // composed vignettes: every run gets authored scenes at fixed beats (not scatter) — a rest stop (lamp + bench planter + tree)
+    // and a signage nook (lamp+banner, flanking planters); kept clear of towers/run ends so climbs and landings stay readable
+    const VIG: [number, number, number][][] = [[[-26, 0, 0.62], [0, 10, 0.7], [30, 11, 0.55]], [[-22, 18, 0.7], [0, 7, 0.62], [24, 15, 0.7]]];
+    (this.dbg as any).vignettes = 0; const vg: any[] = []; (window as any).__vig = vg;
+    RUNS.forEach(([x0, x1, y], ri) => { const L = x1 - x0; const beats = L > 500 ? [0.3, 0.72] : [0.5];
+      beats.forEach((f, bi) => { let cx = Math.round(x0 + L * f); if (TOWERS.some(([tx]) => Math.abs(tx - cx) < 70)) cx += 90; if (cx < x0 + 50 || cx > x1 - 50) return;
+        for (const [dx, id, sc0] of VIG[(ri + bi) % 2]) { const im = sc.add.image(cx + dx, y + 1, 'l2e_' + String(id).padStart(2, '0')).setOrigin(0.5, 1).setDepth(1.95).setScale(sc0); if ((ri + bi) % 3 === 0) im.setFlipX(true); vg.push({ x: cx + dx, y, k: id }); }
+        const gl = sc.add.image(cx, y - 30, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint((ri + bi) % 2 ? 0xffb0f0 : 0x8ff6ff).setScale(0.55).setAlpha(0.35).setDepth(1.9); s.neon.push({ o: gl, base: 0.35, t: ri + bi });
+        (this.dbg as any).vignettes++; }); });
     // climb towers: solid column (sheet pylon crop tiled), ledges alternating left/right every 64px — wall-jump or ledge-hop up
     TOWERS.forEach(([x, yt, yb], ti) => { const w = 40; sc.add.tileSprite(x, yt, 51, yb - yt, 'l2t_09').setOrigin(0.5, 0).setDepth(2.4);
       const cap = sc.add.image(x, yt + 2, 'l2p_deck_neon_3').setOrigin(0.5, 1).setDepth(2.5); s.addRect(x - w / 2, yt + 10, w, yb - yt - 10, false); s.addRect(x - 24, yt, 48, 10, true); this.dbg.towers++; void cap;

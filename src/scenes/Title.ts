@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import { Parallax } from '../systems/Parallax';
 import { Petals } from '../systems/Petals';
 import { isTouch } from '../systems/Touch';
+import { liveHint } from '../systems/Pad';
 // Title: floating logo, Sakura idling on a blossom ledge, a 3-item menu (START / LEVEL SELECT / CONTROLS).
 // ENTER / SPACE / Cross confirm the highlighted item (START by default, so the old "press enter to play" still works).
 export class Title extends Phaser.Scene {
@@ -27,6 +28,7 @@ export class Title extends Phaser.Scene {
     this.prompt = this.items[0];
     this.cur = this.add.image(0, 0, 'petal_soft').setScrollFactor(0).setDepth(50).setScale(0.6).setTint(0xff8ad0);
     this.help = this.add.text(240, 252, isTouch() ? 'tap a menu item' : '↑↓ choose · ENTER confirm · 2 jump to Neo-Kyo', { ...st, fontSize: '8px', fontStyle: 'normal', color: '#fff', strokeThickness: 2 }).setOrigin(0.5).setScrollFactor(0).setDepth(50);
+    liveHint(this, this.help, { kb: '↑↓ choose · ENTER confirm · 2 jump to Neo-Kyo', touch: 'tap a menu item', pad: 'stick / d-pad choose · ✕ confirm' }, isTouch);
     const K = this.input.keyboard!;
     K.on('keydown-UP', () => this.move(-1)); K.on('keydown-DOWN', () => this.move(1)); K.on('keydown-W', () => this.move(-1)); K.on('keydown-S', () => this.move(1));
     K.on('keydown-ENTER', () => this.pick()); K.on('keydown-SPACE', () => this.pick());

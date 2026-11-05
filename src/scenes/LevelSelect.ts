@@ -2,6 +2,8 @@ import { audio } from '../audio/Audio';
 import Phaser from 'phaser';
 import { Parallax } from '../systems/Parallax';
 import { Petals } from '../systems/Petals';
+import { liveHint } from '../systems/Pad';
+import { isTouch } from '../systems/Touch';
 // Level select: two chapter cards with in-game preview art, best time / memories (saved by Victory), ←→ choose · ENTER play · ESC back.
 export const LEVELS = [{ key: 'Level1', ch: 1, name: 'AKARI VALLEY', sub: 'blossom ruins · waterfalls', thumb: 'ui_thumb_l1', col: 0xff7ac8 },
   { key: 'Level2', ch: 2, name: 'NEO-KYO', sub: 'neon rooftops · KAIJU UNIT', thumb: 'ui_thumb_l2', col: 0x4fe3ff }];
@@ -28,7 +30,8 @@ export class LevelSelect extends Phaser.Scene {
       const c = this.add.container(x, 128, [fr, im, t1, t2, t3, t4]).setScrollFactor(0).setDepth(50).setSize(200, 150).setInteractive({ useHandCursor: true });
       c.on('pointerover', () => this.choose(i)); c.on('pointerdown', () => { this.choose(i); this.play(); });
       c.setAlpha(0).y += 20; this.tweens.add({ targets: c, alpha: 1, y: 128, duration: 380, delay: 80 + i * 110, ease: 'Back.out' }); this.cards.push(c); });
-    this.add.text(240, 230, '←→ choose · ENTER play · ESC back', { ...st, fontSize: '8px', fontStyle: 'normal', color: '#fff', strokeThickness: 2 }).setOrigin(0.5).setScrollFactor(0).setDepth(50);
+    { const h = this.add.text(240, 230, '', { ...st, fontSize: '8px', fontStyle: 'normal', color: '#fff', strokeThickness: 2 }).setOrigin(0.5).setScrollFactor(0).setDepth(50); (window as any).__lsHint = h;
+      liveHint(this, h, { kb: '←→ choose · ENTER play · ESC back', touch: 'tap a chapter to play · ‹ BACK', pad: '←→ choose · ✕ play · ○ back' }, isTouch); }
     const back = this.add.text(18, 14, '‹ BACK', { ...st, fontSize: '9px', strokeThickness: 2 }).setScrollFactor(0).setDepth(50).setInteractive({ useHandCursor: true }); back.on('pointerdown', () => this.back());
     const K = this.input.keyboard!;
     K.on('keydown-LEFT', () => this.choose(this.sel - 1)); K.on('keydown-RIGHT', () => this.choose(this.sel + 1)); K.on('keydown-A', () => this.choose(this.sel - 1)); K.on('keydown-D', () => this.choose(this.sel + 1));

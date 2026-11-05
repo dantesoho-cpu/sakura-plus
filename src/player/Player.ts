@@ -13,6 +13,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   jumpHeld = false; dashing = false; jumpPressed = false; dashPressed = false; keys: any; trail: Phaser.GameObjects.Particles.ParticleEmitter;
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'p_idle', 0); scene.add.existing(this); scene.physics.add.existing(this);
+    this.on('animationupdate', (an: any, fr: any) => { if (an.key === 'run' && (fr.index === 1 || fr.index === 1 + (an.frames.length >> 1))) this.footfall(); });
     this.setOrigin(0.5, 1); const b = this.body as Phaser.Physics.Arcade.Body;
     b.setSize(10, 28).setOffset(27, 15); b.setMaxVelocityY(T.maxFall);
     this.keys = scene.input.keyboard!.addKeys({ left: 'LEFT', right: 'RIGHT', a: 'A', d: 'D', jump: 'SPACE', dash: 'SHIFT', j: 'J', x: 'X', up: 'UP', w: 'W', down: 'DOWN', s: 'S' });
@@ -170,6 +171,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   lastVy = 0; rollT = 0; hang: { ty: number; d: number } | null = null; hangCd = 0; wjT = 0; wallSliding = false; wsFx = 0; wasWall = false;
   dust() { const s = this.scene; for (let i = 0; i < 6; i++) { const d = i < 3 ? -1 : 1; const p = pooledImage(s, this.x + d * (3 + Math.random() * 4), this.y - 2, 'glow').setTint(0xe8dcc8).setAlpha(0.8).setScale(0.35).setDepth(this.depth - 0.1);
     s.tweens.add({ targets: p, x: p.x + d * (14 + Math.random() * 14), y: p.y - 4 - Math.random() * 5, alpha: 0, scale: 0.12, duration: 260 + Math.random() * 120, ease: 'Quad.out', onComplete: () => releaseImage(s, p) }); } }
+  /** footfall puffs: on the run cycle's two contact frames a small dust kick spawns behind the planted foot (pooled) */
+  steps = 0; footfall() { if (this.state_ !== 'run' || !(this.body as any)?.blocked.down || Math.abs((this.body as any).velocity.x) < 90) return; const s = this.scene, back = this.flipX ? 1 : -1; this.steps++;
+    for (let i = 0; i < 2; i++) { const p = pooledImage(s, this.x + back * (4 + i * 3), this.y - 1, 'glow').setTint(0xe8dcc8).setAlpha(0.55).setScale(0.22).setDepth(this.depth - 0.1);
+      s.tweens.add({ targets: p, x: p.x + back * (8 + Math.random() * 8), y: p.y - 3 - Math.random() * 3, alpha: 0, scale: 0.08, duration: 200 + Math.random() * 80, ease: 'Quad.out', onComplete: () => releaseImage(s, p) }); } }
   /** animation blend: when the pose changes, the outgoing frame of her own art lingers as a fading under-layer (~80ms crossfade) so pose swaps don't pop */
   blends = 0; blendFrom() { if (!this.visible || this.hurtT > 0 || !this.frame) return; const sc = this.scene; const g = sc.add.image(this.x, this.y, this.texture.key, this.frame.name).setOrigin(this.originX, this.originY).setFlipX(this.flipX).setScale(this.scaleX, this.scaleY).setAngle(this.angle).setAlpha(0.55).setDepth(this.depth - 0.02);
     this.blends++; sc.tweens.add({ targets: g, alpha: 0, duration: 80, onUpdate: () => g.setPosition(this.x, this.y), onComplete: () => g.destroy() }); }

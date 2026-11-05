@@ -1,8 +1,12 @@
+import { Life } from '../systems/Life';
+import { groundProps } from '../systems/Ground';
 import { Ambient } from '../systems/Ambient';
 import { SpeedCam } from '../systems/SpeedCam';
 import { CanvasLite } from '../systems/CanvasLite';
 import { Cull } from '../systems/Cull';
 import Phaser from 'phaser';
+import { HI } from '../systems/HiRes';
+const q = (v: number) => Math.round(v * HI) / HI;
 import { audio } from '../audio/Audio';
 import { touch, showRespawnBtn } from '../systems/Touch';
 import { Beam } from '../weapons/Beam';
@@ -41,7 +45,7 @@ const FLOWERS: [number, number][] = [...TIER_FLOWERS];
 const FOES: [string, number, number][] = [['assault', 520, GY], ['drone', 700, 330], ['sentry', 828, 392], ['assault', 1040, GY], ['drone', 1300, 300], ['assault', 1620, GY], ['shield', 1780, GY],
   ['drone', 2000, 300], ['assault', 2300, GY], ['heavy', 2420, GY], ['drone', 2700, 300], ['shield', 2820, GY], ['assault', 3350, GY], ['drone', 3400, 320], ['heavy', 3520, GY], ...TIER_FOES];
 export class Level2 extends Phaser.Scene {
-  amb!: Ambient; groundVar = 0;
+  life!: Life; amb!: Ambient; groundVar = 0;
   scam!: SpeedCam; culler!: Cull; clite!: CanvasLite;
   player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; hud!: Hud; toast!: Toast; pk!: Pickups; cannon!: Cannon; ia!: Interact; extra!: Extra; env!: Env; dress!: Dress;
   solids!: Phaser.Physics.Arcade.StaticGroup; ones!: Phaser.Physics.Arcade.StaticGroup; flowers!: Phaser.Physics.Arcade.StaticGroup;
@@ -139,8 +143,8 @@ export class Level2 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.egun.shots, (_p, s: any) => { if (s.active && this.player.damage(s.x)) { this.egun.kill(s); hurt(); } });
     this.physics.add.collider(this.egun.shots, this.solids, (s: any) => { this.fx.spark(s.x, s.y); this.egun.kill(s); });
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
-    this.toast = new Toast(this);
-    const cam = this.cameras.main; cam.setBounds(0, TOP, WW, WH - TOP); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); this.time.delayedCall(0, () => { const P: any = this.player; this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true); cam.fadeIn(450);
+    this.toast = new Toast(this); this.life = new Life(this, 2, LW, () => this.player.x / LW, z => this.toast.show(z.name, '#d8f4ff')); this.life.grade([...this.bg, ...this.cars, this.train]);
+    const cam = this.cameras.main; cam.setBounds(0, TOP, WW, WH - TOP); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); if (!location.search.includes("nog")) this.time.delayedCall(0, () => groundProps(this, (x, y) => this.groundAt(x, y))); this.time.delayedCall(0, () => { const P: any = this.player; this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true); cam.fadeIn(450);
     const kb = this.input.keyboard!;
     const pause = () => { if (this.ending) return; audio.stopLoops(); audio.sfx('menu'); this.scene.launch('Pause', { lvl: 'Level2' }); this.scene.pause(); };
     kb.on('keydown-P', pause); kb.on('keydown-ESC', pause); kb.on('keydown-R', () => this.checkpoint()); kb.on('keydown-BACKSPACE', () => this.checkpoint());
@@ -173,17 +177,22 @@ export class Level2 extends Phaser.Scene {
     b.setVelocity(0, 0); p.iT = 1; this.cameras.main.centerOn(p.x, p.y - 30); this.cameras.main.fadeIn(full ? 320 : 200, 255, 230, 240); p.burst(); (this as any).respawns = ((this as any).respawns || 0) + 1; }
   checkpoint() { if (this.ending) return; audio.sfx('respawn'); const p = this.player; p.resetInput(); p.hurtT = 0; p.dashing = false; p.dashT = 0;
     p.setPosition(this.spawn.x, this.spawn.y); p.body_.setVelocity(0, 0); p.iT = 1; this.cameras.main.flash(200, 255, 200, 230); this.toast.show('Back to the last checkpoint.', '#ffd6f0'); }
-  update(_t: number, dms: number) { this.fx.tick();
+  bgDt = 0; bgHook = false;
+  /** background parallax, applied on camera prerender (after follow) so layers never lag the world by a frame */
+  syncBg() { const dt = this.bgDt; this.bgDt = 0; const cam = this.cameras.main;
+    // parallax: horizontal by factor, slight vertical drift so layers don't feel pasted to the screen
+    const vy = Math.min(260, WH - 270 - cam.scrollY);
+    this.bg.forEach((s, i) => { s.tilePositionX = q(cam.scrollX * BG[i][2]); s.y = q(BG[i][1] + vy * BG[i][2] * 0.35); });
+    for (const c of this.cars) { c.wx += c.dir * c.sp * dt; c.t += dt; const span = 480 + 260; let x = ((c.wx - cam.scrollX * c.sf) % span + span) % span - 130;
+      c.x = q(x); c.y = c.by + Math.sin(c.t * 1.7) * 2 + vy * c.sf * 0.3; c.lt.setPosition(x + c.dir * c.displayWidth * 0.45, c.y); }
+    { const f = BG[2][2], ly = BG[2][1] + vy * f * 0.35 + 52; this.trainX += 150 * dt; const span = 1500;
+      this.train.x = q(((this.trainX - cam.scrollX * f) % span + span) % span - 220); this.train.y = ly; this.rail.y = ly; }
+  }
+  update(_t: number, dms: number) { this.fx.tick(); this.life?.update(Math.min(dms, 50) / 1000);
     const dt = Math.min(dms, 50) / 1000, p = this.player, cam = this.cameras.main; this.time_ += dt; this.hud.setTime(this.time_);
     if (touch.respawnP) { touch.respawnP = false; this.checkpoint(); }
     p.update(dt);
-    // parallax: horizontal by factor, slight vertical drift so layers don't feel pasted to the screen
-    const vy = Math.min(260, WH - 270 - cam.scrollY);
-    this.bg.forEach((s, i) => { s.tilePositionX = cam.scrollX * BG[i][2]; s.y = BG[i][1] + vy * BG[i][2] * 0.35; });
-    for (const c of this.cars) { c.wx += c.dir * c.sp * dt; c.t += dt; const span = 480 + 260; let x = ((c.wx - cam.scrollX * c.sf) % span + span) % span - 130;
-      c.x = x; c.y = c.by + Math.sin(c.t * 1.7) * 2 + vy * c.sf * 0.3; c.lt.setPosition(x + c.dir * c.displayWidth * 0.45, c.y); }
-    { const f = BG[2][2], ly = BG[2][1] + vy * f * 0.35 + 52; this.trainX += 150 * dt; const span = 1500;
-      this.train.x = ((this.trainX - cam.scrollX * f) % span + span) % span - 220; this.train.y = ly; this.rail.y = ly; }
+    this.bgDt += dt; if (!this.bgHook) { this.bgHook = true; cam.on('prerender', this.syncBg, this); this.events.once('shutdown', () => { cam.off('prerender', this.syncBg, this); this.bgHook = false; }); }
     for (const n of this.neon) { n.t += dt; let a = n.base * (0.85 + 0.15 * Math.sin(n.t * 6));
       if (n.flick) { const ph = n.t % 4.3; if ((ph > 3.6 && ph < 3.7) || (ph > 3.78 && ph < 3.85)) a = 0.04; n.im.setAlpha(a < 0.1 ? 0.55 : 1); }
       n.o.setAlpha(a); }

@@ -11,9 +11,11 @@ import { Transit } from './scenes/Transit';
 import { Victory } from './scenes/Victory';
 import { setupTouch } from './systems/Touch';
 import { setupPad } from './systems/Pad';
+import { HI, installHiRes } from './systems/HiRes';
+installHiRes();
 export const W = 480, H = 270;
 const game = new Phaser.Game({
-  type: Phaser.AUTO, parent: 'game', width: W, height: H, pixelArt: true, roundPixels: true,
+  type: Phaser.AUTO, parent: 'game', width: W * HI, height: H * HI, pixelArt: true, roundPixels: true,
   backgroundColor: '#1a1030',
   physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
@@ -21,4 +23,4 @@ const game = new Phaser.Game({
   scene: [Boot, TestRoom, Title, LevelSelect, Intro, Level1, Level2, Pause, Victory, Transit],
 });
 setupTouch(); setupPad();
-(window as any).__game = game;
+(window as any).__game = game; (window as any).__HI = HI;

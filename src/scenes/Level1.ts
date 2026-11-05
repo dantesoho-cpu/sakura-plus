@@ -1,3 +1,5 @@
+import { Life } from '../systems/Life';
+import { groundProps } from '../systems/Ground';
 import { SpeedCam } from '../systems/SpeedCam';
 import { CanvasLite, bakeTiles } from '../systems/CanvasLite';
 import { Cull } from '../systems/Cull';
@@ -47,7 +49,7 @@ const ARENA = { x0: 404, x1: 470 };
 export class Level1 extends Phaser.Scene {
   extra!: L1Extra; amb!: Ambient;
   scam!: SpeedCam; culler!: Cull; clite!: CanvasLite;
-  player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; giants: [number, number, string][] = []; treeTops: [number, number, number][] = []; hud!: Hud; toast!: Toast; bg!: Parallax;
+  life!: Life; player!: Player; fx!: Fx; gun!: Blaster; egun!: Blaster; enemies: Enemy[] = []; petals!: Petals; giants: [number, number, string][] = []; treeTops: [number, number, number][] = []; hud!: Hud; toast!: Toast; bg!: Parallax;
   solid!: Phaser.Tilemaps.TilemapLayer; oneway!: Phaser.Tilemaps.TilemapLayer; enemyGroup!: Phaser.Physics.Arcade.Group;
   pk!: Pickups; cannon!: Cannon; powT = 0; rapT = 0; auraT2 = 0;
   flowers!: Phaser.Physics.Arcade.StaticGroup; got = 0; kills = 0; deaths = 0; time_ = 0; spawn = { x: 0, y: 0 }; safe = { x: 0, y: 0 };
@@ -243,8 +245,8 @@ export class Level1 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.flowers, (_p, f: any) => this.collect(f));
     this.physics.add.overlap(this.player, this.jetPick, () => this.pickJet());
     this.hud = new Hud(this, HP_MAX, true); this.hud.setHp(this.player.hp); this.player.on('hurt', (hp: number) => this.hud.setHp(hp));
-    this.toast = new Toast(this); this.petals = new Petals(this); this.extra = new L1Extra(this, this.spawn.x + 260, (ARENA.x0 - 8) * TS); (window as any).__extra1 = this.extra; this.amb = new Ambient(this, 'l1', -88.5); (window as any).__amb = this.amb;
-    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); this.time.delayedCall(0, () => { const P: any = this.player; bakeTiles(this, [this.solid, this.oneway], 2); this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
+    this.toast = new Toast(this); this.life = new Life(this, 1, worldW, () => this.player.x / worldW, z => this.toast.show(z.name, '#ffe6f4')); this.life.grade([...this.bg.layers.map(l => l.ts), ...this.bg.clouds.map(c => c.img)]); this.petals = new Petals(this); this.extra = new L1Extra(this, this.spawn.x + 260, (ARENA.x0 - 8) * TS); (window as any).__extra1 = this.extra; this.amb = new Ambient(this, 'l1', -88.5); (window as any).__amb = this.amb;
+    const cam = this.cameras.main; cam.setBounds(0, 0, worldW, worldH); cam.startFollow(this.player, true, FEEL.cam.lerp, FEEL.cam.lerp, 0, 30); this.scam = new SpeedCam(this, this.player, FEEL.cam.lerp); this.culler = new Cull(this); if (!location.search.includes("nog")) this.time.delayedCall(0, () => groundProps(this, (x, y) => this.groundAt(x, y))); this.time.delayedCall(0, () => { const P: any = this.player; bakeTiles(this, [this.solid, this.oneway], 2); this.clite = new CanvasLite(this, [P.trail, P.jetFx, P.jetPetals, P.pfx?.shimmer]); }); cam.setDeadzone(FEEL.cam.deadW, FEEL.cam.deadH); cam.setRoundPixels(true);
     cam.fadeIn(400);
     // boss wiring
     this.boss.target = () => [this.player.x, this.player.y - 18];
@@ -368,16 +370,19 @@ export class Level1 extends Phaser.Scene {
         // small ground props every 2-6 tiles
         for (let cx = x + 1; cx < e - 1; cx += 2 + Math.floor(rnd() * 5)) { if (busy(cx, y)) continue;
           const k = pick(DECO.ground, 40); if (!k) continue; const front = rnd() < 0.12 && DECO_SIZE[k][1] < 14;
-          this.cull(this.add.image(cx * TS + 8, top + 2, 'dc_' + k).setOrigin(0.5, 1).setDepth(front ? 11 : -4)); }
+          this.cull(this.add.image(cx * TS + 8, top + 2, this.dusk(cx, k)).setOrigin(0.5, 1).setDepth(front ? 11 : -4)); }
         x = e;
       }
     }
     // landmarks & water pieces from the sheet near pits / waterfalls
     const lm = DECO.landmark; let li = 0;
-    for (let x = 6; x < M[0].length - 6; x += 37) { const y = this.surfaceBelow(x, 80, S); if (y > 0 && !busy(x, y)) this.cull(this.add.image(x * TS, y * TS + 2, 'dc_' + lm[li++ % lm.length]).setOrigin(0.5, 1).setDepth(-7)); }
+    for (let x = 6; x < M[0].length - 6; x += 37) { const y = this.surfaceBelow(x, 80, S); if (y > 0 && !busy(x, y)) this.cull(this.add.image(x * TS, y * TS + 2, this.dusk(x, lm[li++ % lm.length])).setOrigin(0.5, 1).setDepth(-7)); }
     // (old: sheet water pieces stamped at each fall foot — replaced by fallUnit lips/basins)
   }
   // ---- second-gen pieces (regenerated in the sakuratileset style): ruins, pillars, walls, scaffolds, banners, lanterns, rocks, plants ----
+  /** later sections (past 55% of the map) blend in regenerated maple/dusk variants of the sheet props, ramping from 30% to 80% */
+  duskN = 0; dusk(cx: number, k: string) { const r = () => (Math.imul(cx + 7, 2654435761) >>> 0) % 1000 / 1000; const f = cx / LEVEL1[0].length; const p = f < 0.55 ? 0 : 0.3 + (f - 0.55) * 1.1;
+    if (p > 0 && r() < p && this.textures.exists('dc_' + k + '_dusk')) { this.duskN++; return 'dc_' + k + '_dusk'; } return 'dc_' + k; }
   sway: Phaser.GameObjects.Image[] = []; lanterns: Phaser.GameObjects.Image[] = [];
   // ---- sheet platforms: pieces cut 1:1 from the user's tilesheet; one-way pixel-profile tops (ramps = real slopes) ----
   plats: { L: number; T: number; w: number; p: number[]; k: string }[] = []; platB = new Map<number, number[]>();
@@ -557,7 +562,7 @@ export class Level1 extends Phaser.Scene {
   auraPool: Phaser.GameObjects.Rectangle[] = [];
   lookX = 0; lookY = 0;
   update(_t: number, dms: number) {
-    const dt = Math.min(dms, 50) / 1000; this.petals.update(dt); this.bg.update(dt);
+    const dt = Math.min(dms, 50) / 1000; this.petals.update(dt); this.bg.update(dt); this.life?.update(dt);
     for (const w of this.falls) w.tilePositionY -= dt * 70; for (const f of this.falls2) f.t.tilePositionY -= dt * f.v; for (const w of this.waters) w.tilePositionX += dt * 8; if (this.gateFx) this.gateFx.tilePositionY += dt * 40;
     const cam = this.cameras.main; if ((this.cullT -= dt) <= 0) { this.cullT = 0.2; const vx = cam.scrollX - 120, vy = cam.scrollY - 120;
       for (const o of this.deco) o.setVisible(o.x > vx && o.x < vx + 720 && o.y > vy && o.y - o.displayHeight < vy + 510); }

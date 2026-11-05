@@ -17,10 +17,25 @@ export class Enforcer extends Enemy {
   }
   get phase() { return this.hp > this.maxHp * 0.66 ? 1 : this.hp > this.maxHp * 0.33 ? 2 : 3; }
   knock() {}
-  reset() { this.hp = this.maxHp; this.st = 'idle'; this.stT = 1.2; this.awake = false; this.setPosition(this.cx, this.gy); this.b.setVelocity(0, 0); this.clearTint(); }
-  hit(dmg: number, dir: number) { if (!this.awake || this.st === 'dying') return; super.hit(dmg, dir); }
+  reset() { this.lastPhase = 1; this.shieldT = 0; this.enrage?.destroy(); this.enrage = undefined; this.hp = this.maxHp; this.st = 'idle'; this.stT = 1.2; this.awake = false; this.setPosition(this.cx, this.gy); this.b.setVelocity(0, 0); this.clearTint(); }
+  hit(dmg: number, dir: number) { if (!this.awake || this.st === 'dying' || this.shieldT > 0) return; super.hit(dmg, dir); }
+  /** phase transition (2 and 3): flash, punch-zoom, shockwave rings, spark burst, toast, short invulnerable overload hover (no global time-scale changes) */
+  lastPhase = 1; shieldT = 0; shifts = 0; enrage?: Phaser.GameObjects.Image;
+  phaseShift(ph: number) { const s: any = this.scene, cam = s.cameras.main, cx = this.x, cy = this.y - this.height / 2; this.shifts++; (window as any).__enfShift = { n: this.shifts, ph };
+    this.st = 'hover'; this.stT = 1.3; this.shieldT = 1.1; this.b.setVelocity(0, 0); this.clearTint(); this.setAngle(0);
+    cam.flash(200, 255, 210, 235, true); cam.shake(380, 0.009); cam.zoomTo(1.1, 220, 'Quad.easeOut', true); s.time.delayedCall(520, () => cam.zoomTo(1, 380, 'Quad.easeInOut', true));
+    s.toast?.show(ph === 2 ? 'ENFORCER — ARMOR BREACH' : 'ENFORCER — BERSERK CORE', ph === 2 ? '#ffb040' : '#ff3a3a');
+    for (let i = 0; i < 4; i++) s.time.delayedCall(i * 90, () => { const r = s.add.circle(cx, cy, 10).setStrokeStyle(4 - i * 0.6, i % 2 ? 0xffffff : (ph === 2 ? 0xffb040 : 0xff3a3a)).setDepth(12).setBlendMode(Phaser.BlendModes.ADD); s.tweens.add({ targets: r, radius: 200, alpha: 0, duration: 620, onComplete: () => r.destroy() }); });
+    for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2, sp = s.add.image(cx, cy, 'spark2').setBlendMode(Phaser.BlendModes.ADD).setDepth(12).setTint(i % 2 ? 0xffd23f : 0xff6a3a).setAngle(a * 57.3); s.tweens.add({ targets: sp, x: cx + Math.cos(a) * 110, y: cy + Math.sin(a) * 80, alpha: 0, scale: 0.3, duration: 650, ease: 'Cubic.out', onComplete: () => sp.destroy() }); }
+    const g = s.add.image(cx, cy, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(ph === 2 ? 0xffb040 : 0xff3a3a).setDepth(11).setScale(2); s.tweens.add({ targets: g, scale: 7, alpha: 0, duration: 500, onComplete: () => g.destroy() });
+    const P = s.player; if (P && Math.abs(P.x - this.x) < 120) P.body?.setVelocity(Math.sign(P.x - this.x || 1) * 200, -160);
+    if (ph === 3 && !this.enrage) { this.enrage = s.add.image(this.x, this.y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xff2a2a).setDepth(7).setScale(3.2).setAlpha(0.35);
+      s.tweens.add({ targets: this.enrage, alpha: 0.12, scale: 3.8, duration: 420, yoyo: true, repeat: -1 }); } }
   tick(dt: number, px: number, py: number) {
     super.tick(dt, px, py); if (this.dead || !this.awake || this.st === 'dying') return;
+    if (this.phase > this.lastPhase) { this.lastPhase = this.phase; this.phaseShift(this.phase); }
+    if (this.shieldT > 0) { this.shieldT -= dt; this.setTint(Math.floor(this.shieldT * 16) % 2 ? 0xffffff : 0xffc0a0); if (this.shieldT <= 0) this.clearTint(); }
+    if (this.enrage) { this.enrage.setPosition(this.x, this.y - this.height / 2); if (Math.random() < dt * 14) { const s = this.scene, e = s.add.image(this.x + (Math.random() - 0.5) * this.width, this.y - Math.random() * this.height, 'spark').setTint(0xff5030).setBlendMode(Phaser.BlendModes.ADD).setDepth(10).setScale(0.6); s.tweens.add({ targets: e, y: e.y - 26, alpha: 0, duration: 500, onComplete: () => e.destroy() }); } }
     this.stT -= dt; this.setFlipX(px > this.x);
     if (this.st === 'idle' || this.st === 'hover') {
       const tx = this.cx + Math.sin(this.t * 0.9) * 120, ty = this.gy + Math.sin(this.t * 2.1) * 14;
@@ -95,7 +110,7 @@ export class Enforcer extends Enemy {
     if (this.lasT <= 0) { g.clear(); this.st = 'hover'; this.stT = 1.0; }
   }
   die() { // slow-mo, flashes, chained explosions, collapse, then the real destroy
-    if (this.st === 'dying') return; this.laser?.clear(); this.st = 'dying'; this.dead = true; this.b.setVelocity(0, 0); this.b.enable = false; this.emit('dying', this);
+    if (this.st === 'dying') return; this.enrage?.destroy(); this.enrage = undefined; this.shieldT = 0; this.laser?.clear(); this.st = 'dying'; this.dead = true; this.b.setVelocity(0, 0); this.b.enable = false; this.emit('dying', this);
     const sc = this.scene; let n = 0; this.clearTint();
     // slow-mo for the first ~1.2s (physics/tweens/anims), always restored
     const w = (sc.physics as any).world; const slow = (on: boolean) => { if (!sc.sys.isActive()) return; w.timeScale = on ? 2.5 : 1; sc.tweens.timeScale = on ? 0.4 : 1; sc.anims.globalTimeScale = on ? 0.4 : 1; };
