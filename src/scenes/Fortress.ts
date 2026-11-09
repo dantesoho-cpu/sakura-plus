@@ -66,7 +66,7 @@ const FLOWERS: [number, number][] = [
 ];
 const GEMS: [number, number, number][] = [
   [600, T2 - 30, 5], [1600, T3 - 30, 5], [2900, T3 - 30, 5], [4100, T2 - 30, 5],
-  [5300, T3 - 30, 5], [5900, T2 - 28, 4], [6800, T1 - 28, 4],
+  [5300, T3 - 30, 5], [5900, T2 - 28, 4], [6320, T2 - 28, 4],  // pre-arena ledge (not floating cubes in boss bay)
   [1040, T3 - 28, 4], [3640, T4 - 28, 5], [5240, T5 - 28, 5],
 ];
 /** Landmark set dressing — clean single props only (no sheet-card multi-crops / opaque BGs). */
@@ -77,10 +77,12 @@ const PROP_DRESS: [string, number, number, number][] = [
   ['banner_c', 1380, T2, 0.68], ['deco2', 1900, T1, 0.55], ['banner_d', 2100, T1, 0.68], ['deco5', 2260, T1, 0.55],
   // 3 Gun-Battery Ramparts
   ['hoop_ring', 2900, T3 - 6, 0.7], ['mech_console', 3120, T2, 0.5], ['banner_a', 2680, T1, 0.7], ['deco3', 3380, T1, 0.55],
+  ['banner_b', 2520, T1, 0.65], ['deco1', 3480, T1, 0.5], ['mech_console', 2460, T2, 0.45],
   // 4 Engine Core — portal as the zone machine (BG punched transparent)
   ['mech_portal', 4120, T2, 0.55], ['banner_b', 3880, T1, 0.68], ['deco1', 4480, T1, 0.55], ['deco4', 4680, T1, 0.5],
   // 5 Sky Bridges
   ['banner_c', 5100, T2, 0.65], ['deco3', 5600, T1, 0.55], ['banner_d', 5900, T1, 0.65], ['hoop', 5450, T3, 0.55],
+  ['banner_a', 4880, T1, 0.65], ['deco2', 4960, T1, 0.5], ['hoop_ring', 6080, T3 - 6, 0.55], ['deco5', 6140, T1, 0.5],
   // 6 Boss Summit — rim only
   ['banner_a', 6380, T1, 0.72], ['banner_b', 7080, T1, 0.72],
 ];
