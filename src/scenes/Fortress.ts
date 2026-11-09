@@ -69,20 +69,20 @@ const GEMS: [number, number, number][] = [
   [5300, T3 - 30, 5], [5900, T2 - 28, 4], [6800, T1 - 28, 4],
   [1040, T3 - 28, 4], [3640, T4 - 28, 5], [5240, T5 - 28, 5],
 ];
-/** Landmark set dressing — one focal composition per themed sub-zone (sheet props only). */
+/** Landmark set dressing — clean single props only (no sheet-card multi-crops / opaque BGs). */
 const PROP_DRESS: [string, number, number, number][] = [
-  // 1 Launch Dock — runway banners + parked airship on T2 gantry
-  ['banner_a', 220, T1, 0.72], ['banner_b', 400, T1, 0.72], ['airship_main', 780, T2, 0.48], ['deco4', 560, T1, 0.5],
-  // 2 Hangar Decks — tower + fleet nose as hangar focal
-  ['airship_tower', 1580, T1, 0.55], ['banner_c', 1380, T2, 0.65], ['deco1', 1900, T1, 0.55], ['deco10', 2200, T1, 0.5],
-  // 3 Gun-Battery Ramparts — hoop ring above battlements + console
-  ['hoop_ring', 2900, T3 - 10, 0.65], ['mech_console', 3100, T2, 0.48], ['banner_d', 2700, T1, 0.65], ['deco2', 3400, T1, 0.55],
-  // 4 Engine Core — portal + machinery
-  ['mech_portal', 4100, T2 - 8, 0.52], ['airship_fleet', 4480, T1, 0.42], ['deco5', 3900, T1, 0.52], ['deco9', 4650, T1, 0.5],
-  // 5 Sky Bridges — ring craft as distant bridge landmark
-  ['airship_ring', 5400, T3 - 16, 0.4], ['banner_a', 5100, T2, 0.62], ['deco3', 5750, T1, 0.55], ['deco13', 6000, T1, 0.48],
-  // 6 Boss Summit — rim only, arena center clear
-  ['banner_b', 6380, T1, 0.68], ['banner_c', 7080, T1, 0.68], ['hoop_left', 6550, T2 - 10, 0.5],
+  // 1 Launch Dock
+  ['banner_a', 220, T1, 0.75], ['banner_b', 420, T1, 0.75], ['deco4', 560, T1, 0.55], ['deco1', 820, T1, 0.55],
+  // 2 Hangar Decks — banners + small deco; big sets come from layout sheet pieces
+  ['banner_c', 1380, T2, 0.68], ['deco2', 1900, T1, 0.55], ['banner_d', 2100, T1, 0.68], ['deco5', 2260, T1, 0.55],
+  // 3 Gun-Battery Ramparts
+  ['hoop_ring', 2900, T3 - 6, 0.7], ['mech_console', 3120, T2, 0.5], ['banner_a', 2680, T1, 0.7], ['deco3', 3380, T1, 0.55],
+  // 4 Engine Core — portal as the zone machine (BG punched transparent)
+  ['mech_portal', 4120, T2, 0.55], ['banner_b', 3880, T1, 0.68], ['deco1', 4480, T1, 0.55], ['deco4', 4680, T1, 0.5],
+  // 5 Sky Bridges
+  ['banner_c', 5100, T2, 0.65], ['deco3', 5600, T1, 0.55], ['banner_d', 5900, T1, 0.65], ['hoop', 5450, T3, 0.55],
+  // 6 Boss Summit — rim only
+  ['banner_a', 6380, T1, 0.72], ['banner_b', 7080, T1, 0.72],
 ];
 /** Vertical stair steppers between tiers — sparse, one stack per zone transition */
 const ROUTE_STEPS: [string, number, number][] = [
@@ -117,7 +117,7 @@ export class Fortress extends Phaser.Scene {
   surf: { x: number; y: number; prof: number[]; w: number; flip: boolean }[] = [];
   onSlope = false; glows: { o: Phaser.GameObjects.Image; base: number; t: number; sp: number }[] = [];
   winds: { a: number; b: number; t: number; bt: number; fx: Phaser.GameObjects.Rectangle }[] = [];
-  vaults: { lever: Phaser.GameObjects.Image; gate: Phaser.GameObjects.Rectangle; gateZ: any; chest: Phaser.GameObjects.Image; on: boolean; open: boolean; ly: number; sy: number }[] = [];
+  vaults: { lever: Phaser.GameObjects.Image; gate: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle; gateZ: any; chest: Phaser.GameObjects.Image; on: boolean; open: boolean; ly: number; sy: number }[] = [];
   secrets: { wall: Phaser.GameObjects.Image[]; chest: Phaser.GameObjects.Image; sy: number; found: boolean; open: boolean; ex: number }[] = [];
   arenaFx: Phaser.GameObjects.Rectangle[] = [];
   txKeys: string[] = [];
@@ -246,7 +246,9 @@ export class Fortress extends Phaser.Scene {
         this.tweens.add({ targets: im, scaleX: { from: 1, to: 0.94 }, yoyo: true, repeat: -1, duration: 1100 + (p.x % 300), ease: 'Sine.inOut' });
       }
       if (role === 'set' || m.kind === 'set') {
-        this.tweens.add({ targets: im, y: im.y - 2, yoyo: true, repeat: -1, duration: 2200 + (p.x % 400), ease: 'Sine.inOut' });
+        im.setTint(0xe8e0f8); // lift crushed blacks so interiors don't read as void boxes
+        if (m.h > 100 || m.w > 100) im.setScale(0.85); // keep large cathedral sets from dominating the playfield
+        this.tweens.add({ targets: im, y: im.y - 1.5, yoyo: true, repeat: -1, duration: 2600 + (p.x % 400), ease: 'Sine.inOut' });
       }
       if (m.kind === 'pillar' || role.startsWith('pillar')) {
         const g = this.add.image(p.x, im.y - im.displayHeight * 0.55, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x9a7aff).setScale(0.4).setAlpha(0.28).setDepth(p.depth + 0.05);
@@ -397,11 +399,12 @@ export class Fortress extends Phaser.Scene {
     // Floating upper-tier shelves stay floating; only T1 ground_bands get solid bodies.
     const fillKeys = ['ft_fill_00', 'ft_fill_01', 'ft_fill_02'];
     const deepKeys = ['ft_fill_deep_00', 'ft_fill_deep_01', 'ft_fill_deep_02'];
-    const FILL_TOP = T1 + 4;                 // tuck tight under deck gold lip
-    const FILL_BOT = WH + 280;               // past camera lowest extent + extra margin
+    // Deck mid/cap lips are ~12px brass; start steel fill just under that so no white fringe gap
+    const FILL_TOP = T1 + 11;
+    const FILL_BOT = WH + 280;
     const FILL_H = FILL_BOT - FILL_TOP;
-    const LIP_H = 36;                        // thin gold-rim under-deck band
-    const DEEP_Y = FILL_TOP + LIP_H + 160;   // mid steel then darker deep
+    const LIP_H = 28;                        // brass→steel under-deck band from fill_lip
+    const DEEP_Y = FILL_TOP + LIP_H + 140;
     for (let bi = 0; bi < this.groundBands.length; bi++) {
       const [a, b] = this.groundBands[bi];
       const w = Math.max(8, b - a);
@@ -409,21 +412,30 @@ export class Fortress extends Phaser.Scene {
       this.addRect(a, T1, w, 56, false);
       const fk = fillKeys[bi % fillKeys.length];
       const dk = deepKeys[bi % deepKeys.length];
-      // full-height underpaint first so no purple peek between tile seams
+      // Continuous fortress hull: riveted brass deck lip (cropped sheet) + steel fill body. No white fringe.
+      this.add.rectangle(a + w / 2, FILL_TOP + FILL_H / 2, w + 4, FILL_H + 8, 0x14121c, 1).setDepth(1.85);
       if (this.textures.exists(dk)) {
-        const under = this.add.tileSprite(a, FILL_TOP, w, FILL_H, dk).setOrigin(0, 0).setDepth(1.88);
+        const under = this.add.tileSprite(a, T1, w, FILL_H + 8, dk).setOrigin(0, 0).setDepth(1.88);
         under.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-      } else {
-        this.add.rectangle(a + w / 2, FILL_TOP + FILL_H / 2, w, FILL_H, 0x1a1828, 1).setDepth(1.87);
-      }
-      if (this.textures.exists('ft_fill_lip')) {
-        const lip = this.add.tileSprite(a, FILL_TOP, w, LIP_H, 'ft_fill_lip').setOrigin(0, 0).setDepth(1.93);
-        lip.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
       if (this.textures.exists(fk)) {
-        const bodyH = Math.max(64, DEEP_Y - (FILL_TOP + LIP_H));
-        const body = this.add.tileSprite(a, FILL_TOP + LIP_H, w, bodyH, fk).setOrigin(0, 0).setDepth(1.91);
+        const bodyY = T1 + 12;
+        const bodyH = Math.max(80, FILL_BOT - bodyY);
+        const body = this.add.tileSprite(a, bodyY, w, bodyH, fk).setOrigin(0, 0).setDepth(1.91);
         body.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+      // Brass→steel bevel under the walk lip (fill_lip top rows, no white)
+      if (this.textures.exists('ft_fill_lip')) {
+        const bevel = this.add.tileSprite(a, T1, w, 28, 'ft_fill_lip').setOrigin(0, 0).setDepth(1.93);
+        bevel.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+      // Riveted brass walk surface from cropped deck_mid (13px, white fringe removed)
+      const midKeys = ['ft_deck_mid_00', 'ft_deck_mid_01', 'ft_deck_mid_02'].filter(k => this.textures.exists(k));
+      if (midKeys.length) {
+        const mk = midKeys[bi % midKeys.length];
+        const midH = Math.min(12, (this.textures.get(mk).getSourceImage() as HTMLImageElement).height || 11);
+        const mid = this.add.tileSprite(a, T1 - 1, w, midH, mk).setOrigin(0, 0).setDepth(1.96);
+        mid.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
       if (this.textures.exists(dk) && FILL_BOT > DEEP_Y) {
         const deep = this.add.tileSprite(a, DEEP_Y, w, FILL_BOT - DEEP_Y, dk).setOrigin(0, 0).setDepth(1.90);
@@ -443,7 +455,7 @@ export class Fortress extends Phaser.Scene {
     for (let i = 0; i < this.groundBands.length - 1; i++) {
       const a = this.groundBands[i][1], b = this.groundBands[i + 1][0];
       if (b - a < 8) continue;
-      const ch = this.add.rectangle(a, T1 + 6, b - a, 3, 0x6fe8ff, 0.25).setOrigin(0, 0).setDepth(1.95).setBlendMode(Phaser.BlendModes.ADD);
+      const ch = this.add.rectangle(a, T1 + 6, b - a, 2, 0x6fe8ff, 0.12).setOrigin(0, 0).setDepth(1.95).setBlendMode(Phaser.BlendModes.ADD);
       this.tweens.add({ targets: ch, alpha: { from: 0.15, to: 0.4 }, yoyo: true, repeat: -1, duration: 900 + i * 70, ease: 'Sine.inOut' });
     }
     // Pass 1: place terrain/decor/collect/fx (skip live AI roles until guns exist)
@@ -468,7 +480,7 @@ export class Fortress extends Phaser.Scene {
 
     // wind lifts
     for (const [a, b, top, bot] of WINDS) {
-      const col = this.add.rectangle(a, top, b - a, bot - top, 0x6fe8ff, 0.07).setOrigin(0, 0).setDepth(1.75).setBlendMode(Phaser.BlendModes.ADD);
+      const col = this.add.rectangle(a, top, b - a, bot - top, 0x6fe8ff, 0.04).setOrigin(0, 0).setDepth(1.75).setBlendMode(Phaser.BlendModes.ADD);
       this.glows.push({ o: col as any, base: 0.08, t: a, sp: 2.4 });
       for (let y = bot - 20; y > top; y -= 48) {
         const puf = this.add.image((a + b) / 2, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x9af0ff).setScale(0.35, 0.9).setAlpha(0.25).setDepth(1.76);
@@ -489,7 +501,11 @@ export class Fortress extends Phaser.Scene {
         ? this.add.image(vx + W / 2 - side * 16, vy + 1, 'ft_gem5').setOrigin(0.5, 1).setDepth(2.6).setScale(0.7)
         : this.add.image(vx + W / 2, vy + 1, 'glow').setOrigin(0.5, 1).setDepth(2.6).setTint(0x6fe8ff);
       const gx = side < 0 ? vx - 6 : vx + W + 6;
-      const gate = this.add.rectangle(gx, vy - H / 2, 10, H, 0x6a3cff, 0.85).setDepth(2.7);
+      // sheet door slab — never a flat debug color bar
+      const doorKey = this.textures.exists('ft_s1_027') ? 'ft_s1_027' : (this.textures.exists('ft_s1_023') ? 'ft_s1_023' : null);
+      const gate = doorKey
+        ? this.add.image(gx, vy, doorKey).setOrigin(0.5, 1).setDisplaySize(14, H).setDepth(2.7).setTint(0xc8b0ff)
+        : this.add.rectangle(gx, vy - H / 2, 10, H, 0x4a3a6a, 0.9).setDepth(2.7);
       const gateZ = this.add.zone(gx, vy - H / 2, 14, H); this.solids.add(gateZ);
       const lg = this.add.image(lx, ly - 28, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xffd27a).setScale(0.4).setAlpha(0.25).setDepth(2.9);
       this.glows.push({ o: lg, base: 0.22, t: lx, sp: 2 });
@@ -507,17 +523,17 @@ export class Fortress extends Phaser.Scene {
       const ws: Phaser.GameObjects.Image[] = [];
       const wallKey = this.txKeys.find(k => this.m(k).kind === 'plat') || this.txKeys[0];
       for (let i = 0; i < 2; i++) {
-        const w = this.add.image(gx + side * 4, sy + 1 - i * 34, wallKey ? 'ft_' + wallKey : 'glow').setOrigin(0.5, 1).setScale(0.55).setFlipX(side > 0).setTint(0xb8a0e8).setDepth(9.2);
+        const w = this.add.image(gx + side * 4, sy + 1 - i * 28, wallKey ? 'ft_' + wallKey : 'glow').setOrigin(0.5, 1).setScale(0.42).setFlipX(side > 0).setTint(0x9a88c8).setAlpha(0.72).setDepth(2.9);
         ws.push(w);
       }
       this.secrets.push({ wall: ws, chest, sy, found: false, open: false, ex: gx });
     }
 
-    // Far-bg sky craft (one) — depth behind playfield so zones stay readable
-    const floatShip = this.textures.exists('ft_airship_main') ? 'ft_airship_main' : (this.textures.exists('ft_ship0') ? 'ft_ship0' : null);
+    // Far-bg sky craft (one, heavily faded) — never a playfield silhouette
+    const floatShip = this.textures.exists('ft_airship_main') ? 'ft_airship_main' : null;
     if (floatShip) {
-      const s0 = this.add.image(3600, T5 - 60, floatShip).setOrigin(0.5, 1).setDepth(1.2).setScale(0.38).setAlpha(0.55);
-      this.tweens.add({ targets: s0, y: s0.y - 4, yoyo: true, repeat: -1, duration: 3200, ease: 'Sine.inOut' });
+      const s0 = this.add.image(3600, T5 - 80, floatShip).setOrigin(0.5, 1).setDepth(-5).setScale(0.32).setAlpha(0.28);
+      this.tweens.add({ targets: s0, y: s0.y - 3, yoyo: true, repeat: -1, duration: 3800, ease: 'Sine.inOut' });
     }
     // Summit approach ring — frames the arena gate, not mid-level clutter
     if (this.textures.exists('ft_ring')) {
@@ -549,8 +565,11 @@ export class Fortress extends Phaser.Scene {
 
     this.cpLamps = [];
     for (const [x, y] of this.cps) {
-      this.add.rectangle(x, y - 30, 4, 50, 0x2a2060).setDepth(1.5);
-      this.cpLamps.push(this.add.image(x, y - 58, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x666688).setScale(0.4).setDepth(1.6));
+      // sheet lamp only — no debug stub poles
+      if (this.textures.exists('ft_s1_011')) {
+        this.add.image(x, y, 'ft_s1_011').setOrigin(0.5, 1).setScale(0.55).setDepth(1.55).setTint(0xc8b8ff);
+      }
+      this.cpLamps.push(this.add.image(x, y - 48, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0x666688).setScale(0.45).setDepth(1.6));
     }
     this.fx = new Fx(this); this.gun = new Blaster(this, 'p', 'shot'); this.egun = new Blaster(this, 'e', 'ebolt', { cooldown: 0, speed: 150, life: 3 });
     for (const [x, y] of FLOWERS) {
@@ -608,7 +627,7 @@ export class Fortress extends Phaser.Scene {
     this.events.on('resume', clear); this.events.on('pause', clear); this.game.events.on('blur', clear); this.game.events.on('hidden', clear);
     showRespawnBtn(true);
     this.events.once('shutdown', () => { audio.stopLoops(); showRespawnBtn(false); this.game.events.off('blur', clear); this.game.events.off('hidden', clear); });
-    this.toast.show('AIR FORTRESS', '#ffd23f');
+    this.toast.show('AIR FORTRESS', '#ffd23f', 450);
     this.dbg.liveEn = this.liveEn; this.dbg.liveTur = this.liveTur; this.dbg.collects = this.collects.length; this.dbg.gates = this.gates.length;
     (window as any).__lvl = this; (window as any).__fortress = this;
     this.cameras.main.fadeIn(400);
