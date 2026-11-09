@@ -1,0 +1,20 @@
+imgs 665 float 11 overlap 39 {
+  enemies: 36,
+  solids: 9,
+  ones: 168,
+  groundBands: [
+    [ 0, 980 ],
+    [ 1100, 2380 ],
+    [ 2500, 3580 ],
+    [ 3700, 4780 ],
+    [ 4900, 6180 ],
+    [ 6280, 7200 ]
+  ],
+  propDress: 0
+}
+tier T1 done
+tier T2 done
+tier T3 done
+tier T4 done
+tier T5 done
+audit shots written to audit/v25/fort/after
