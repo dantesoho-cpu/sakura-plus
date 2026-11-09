@@ -1,0 +1,32 @@
+{
+  "before": {
+    "imgs": 1375,
+    "float_capped": 80,
+    "overlap_capped": 60,
+    "placements": 1081,
+    "note": "layout3 scatter \u2014 every 400px packed with decor/setpiece/fx"
+  },
+  "after": {
+    "imgs": 665,
+    "float": 11,
+    "overlap": 39,
+    "placements": 347,
+    "note": "6 curated zones, continuous ground bands, sparse landmarks"
+  },
+  "issues_before": [
+    "1081 layout placements + ROUTE_STEPS + PROP_DRESS = visual noise",
+    "Multiple overlapping ramps at same x/y (28 near-pairs)",
+    "Floating decor with no deck under feet across all tiers",
+    "Duplicate float airships + mid portal + ring cluttering mid-level",
+    "Ground bands had wide voids that read as unfinished purple/sky gaps under deck scatter",
+    "Turrets and props mixed without zone identity"
+  ],
+  "zones_after": {
+    "dock": "0\u2013980 \u2014 runway banners, parked airship on T2, launch tower set",
+    "hangar": "1100\u20132380 \u2014 pillar ribs, hangar machine set, vault, wind shaft from dock",
+    "battery": "2500\u20133580 \u2014 stepped T2/T3 battlements, turret gauntlet, hoop ring focal",
+    "engine": "3700\u20134780 \u2014 dense pillars, mech portal, engine block sets, core lift",
+    "bridges": "4900\u20136180 \u2014 long sparse T2\u2013T5 bridges, airship ring landmark, wind shafts",
+    "summit": "6280\u20137200 \u2014 clear arena floor, rim banners/pillars only, approach turrets"
+  }
+}
