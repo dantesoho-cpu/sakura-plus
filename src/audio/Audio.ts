@@ -30,7 +30,7 @@ class AudioMgr {
   track = -1; src: AudioBufferSourceNode | null = null; startedAt = 0; offset = 0; cache = new Map<number, Promise<AudioBuffer>>(); started = false;
   onTrack: ((t: string) => void) | null = null; ext = new Audio().canPlayType('audio/ogg; codecs="vorbis"') ? 'ogg' : 'mp3';
   constructor() {
-    this.mus.connect(this.master); const comp = this.ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.12; this.trim.gain.value = 0.70; // v24: let SFX punch through music this.fx.connect(this.trim).connect(comp).connect(this.master); this.master.connect(this.ctx.destination);
+    this.mus.connect(this.master); const comp = this.ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.12; this.trim.gain.value = 0.70; /* v24: let SFX punch through music */ this.fx.connect(this.trim).connect(comp).connect(this.master); this.master.connect(this.ctx.destination);
     try { Object.assign(this.set, JSON.parse(localStorage.getItem('sakura.audio') || '{}')); } catch { /* defaults */ }
     this.apply(); for (const k in DEF) this.buf[k] = this.synth(DEF[k]);
     const sr = this.ctx.sampleRate; for (const k in GEN) { const d = GEN[k](sr), b = this.ctx.createBuffer(1, d.length, sr); b.getChannelData(0).set(d); this.buf[k] = b; }
