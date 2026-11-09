@@ -8,6 +8,8 @@ export const FT_EN = ['drone', 'orb', 'heavy_d', 'wing', 'bip', 'tri', 'thrust',
 export function ftLoad(s: Phaser.Scene) {
   for (const k of FT_EN) if (!s.textures.exists('ft_en_' + k)) s.load.image('ft_en_' + k, `assets/ft/en/${k}.png`);
   if (!s.textures.exists('ft_boss_0')) s.load.image('ft_boss_0', 'assets/ft/boss/boss0.png');
+  if (!s.textures.exists('ft_boss_p2')) s.load.image('ft_boss_p2', 'assets/ft/boss/boss_p2.png');
+  if (!s.textures.exists('ft_boss_p3')) s.load.image('ft_boss_p3', 'assets/ft/boss/boss_p3.png');
   const PROP_KEYS = [
     'ring', 'hoop', 'ship0', 'portal0',
     'deco0', 'deco1', 'deco2', 'deco3', 'deco4', 'deco5', 'deco6', 'deco7', 'deco8', 'deco9', 'deco10', 'deco11', 'deco12', 'deco13', 'deco14',
@@ -142,7 +144,7 @@ export class FtBoss extends Enemy {
   static BOLT = ['ft_s9_014', 'ft_s9_028', 'ft_s9_029', 'ft_s9_032', 'ft_s9_033', 'ft_s9_039'];
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx, public gun: Blaster, public groundY: number) {
     super(s, x, y, 'ft_boss_0', BOSS_HP, fx); this.hx = x; this.hy = y; this.setOrigin(0.5, 0.5);
-    this.setScale(1.85); this.b.setSize(this.width * 0.7, this.height * 0.55);
+    this.setScale(1.35); this.b.setSize(this.width * 0.72, this.height * 0.62);
     this.setAlpha(0); this.setDepth(8.5);
     this.glowI = s.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xb04aff).setScale(6).setAlpha(0).setDepth(8.4);
   }
@@ -159,9 +161,16 @@ export class FtBoss extends Enemy {
     super.hit(dmg, dir);
   }
   knock() {}
-  punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(1.85 * sx, 1.85 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.85, scaleY: 1.85, duration: ms, ease: 'Quad.out' }); }
+  /** Skip Enemy.face turn-squash (it resets scale to 1 and shrinks the composed boss). */
+  face(d: number) {
+    if (!d || this.dead) return;
+    this.faceDir = d; this.setFlipX(d < 0); this.turning = false;
+  }
+  punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(1.35 * sx, 1.35 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.35, scaleY: 1.35, duration: ms, ease: 'Quad.out' }); }
   phaseShift(ph: number) {
     const s: any = this.scene, cam = s.cameras.main; this.dbg.shift++; this.st = 'hover'; this.stT = 1.5; this.shieldT = 1.15; this.b.setVelocity(0, 0);
+    const tex = ph >= 3 ? 'ft_boss_p3' : ph >= 2 ? 'ft_boss_p2' : 'ft_boss_0';
+    if (this.scene.textures.exists(tex)) { this.setTexture(tex); this.setScale(1.35); this.b.setSize(this.width * 0.72, this.height * 0.62); }
     cam.flash(240, ph === 3 ? 255 : 180, 100, 255, true); cam.shake(400, 0.011); audio.sfx('gate');
     s.toast?.show(ph === 2 ? 'WINGED FORTRESS — SHIELDS CRACK' : 'WINGED FORTRESS — CORE MELT', ph === 3 ? '#ffd23f' : '#ff4fd8');
     for (let i = 0; i < 5; i++) s.time.delayedCall(i * 80, () => this.s9(FtBoss.BURST, this.x + Phaser.Math.Between(-40, 40), this.y + Phaser.Math.Between(-20, 20), 0.5, 3 + i * 0.3, 560));
@@ -169,7 +178,7 @@ export class FtBoss extends Enemy {
   }
   wake() {
     if (this.st !== 'sleep') return; this.st = 'intro'; this.stT = 2.1;
-    this.setPosition(this.hx, this.hy - 200); this.setScale(1.85); this.glowI.setAlpha(0.55).setScale(9);
+    this.setPosition(this.hx, this.hy - 200); this.setScale(1.35).setTexture('ft_boss_0'); this.glowI.setAlpha(0.55).setScale(7);
     this.scene.tweens.add({ targets: this, alpha: 1, y: this.hy, duration: 1800, ease: 'Sine.out' });
     this.scene.tweens.add({ targets: this.glowI, alpha: 0.38, scale: 6.5, duration: 1800, ease: 'Sine.out' });
     this.scene.cameras.main.shake(420, 0.009);
@@ -178,10 +187,12 @@ export class FtBoss extends Enemy {
   }
   reset() {
     this.scene.tweens.killTweensOf(this); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false; this.lastPhase = 1; this.shieldT = 0;
-    this.setAlpha(0).setScale(1.85).setAngle(0); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.glowI.setAlpha(0);
+    this.setAlpha(0).setScale(1.35).setAngle(0).setTexture('ft_boss_0'); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.glowI.setAlpha(0);
   }
   tick(dt: number, px: number, py: number) {
     super.tick(dt, px, py); if (this.dead) return;
+    // Keep composed sheet boss readable — don't let hit-tweens leave it undersized
+    if (this.awake && this.st !== 'dying' && Math.abs(this.scaleX - 1.35) > 0.08 && this.hitT <= 0) this.setScale(1.35);
     this.glowI.setPosition(this.x, this.y).setAlpha(this.alpha * (0.22 + 0.1 * Math.sin(this.t * 3.5)));
     if (this.st === 'sleep' || this.st === 'dying') { this.b.setVelocity(0, 0); return; }
     this.stT -= dt;
