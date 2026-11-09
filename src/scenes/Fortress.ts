@@ -15,96 +15,83 @@ import { CanvasLite } from '../systems/CanvasLite';
 import { PanoramaBg, loadFortressPano } from '../render/PanoramaBg';
 import { FtDrone, FtOrb, FtWalker, FtAvian, FtBoss, FtTurret, ftLoad } from '../entities/Fortress';
 import type { Enemy } from '../entities/Enemy';
-// AIR FORTRESS (ch4) — terrain/arch/decor from transparent sheets (assets/ft/tx), single panorama bg.
+// AIR FORTRESS (ch4) — Mania-quality 6-zone layout from Dante sheets (assets/ft/tx + prop). Panorama bg kept.
 const WW = 7200, WH = 900;
 const T1 = 760, T2 = 620, T3 = 480, T4 = 340, T5 = 200;
 const AX0 = 6400, AX1 = 7180;
 
-/** Wind lifts: [x0, x1, topY, botY] */
+/** Wind lifts: [x0, x1, topY, botY] — parked in intentional ground pits between zones */
 const WINDS: [number, number, number, number][] = [
-  [1000, 1060, T5 - 20, T1 - 10],
-  [2600, 2660, T5 - 20, T2 - 10],
-  [3900, 3960, T4 - 20, T1 - 10],
-  [5100, 5160, T5 - 20, T2 - 10],
-  [1800, 1855, T5 - 20, T3 - 10],
-  [4400, 4455, T4 - 20, T2 - 10],
+  [990, 1090, T5 - 20, T1 - 10],   // dock → hangar shaft
+  [2390, 2490, T4 - 20, T1 - 10],  // hangar → battery
+  [3590, 3690, T5 - 20, T1 - 10],  // battery → engine
+  [4790, 4890, T4 - 20, T1 - 10],  // engine → bridges
+  [6190, 6270, T5 - 20, T1 - 10],  // bridges → summit approach
+  [1800, 1855, T5 - 20, T3 - 10],  // hangar interior lift
+  [4400, 4455, T4 - 20, T2 - 10],  // engine core lift
 ];
-/** Hangar vaults: [leverX, leverY, vaultX, vaultY, side] */
+/** Hangar vaults: [leverX, leverY, vaultX, vaultY, side] — one secret stash per mid-zone */
 const VAULTS: [number, number, number, number, number][] = [
-  [1760, T3, 1880, T3, 1],
-  [4120, T4, 4240, T4, -1],
-  [5280, T2, 5400, T2, 1],
+  [1680, T3, 1880, T3, 1],   // hangar
+  [4020, T3, 4240, T3, -1],  // engine
+  [5480, T2, 5680, T2, 1],   // sky bridge
 ];
-/** Secret alcoves: [x, walkY, side] */
+/** Secret alcoves: [x, walkY, side] — tucked into zone architecture, not scatter */
 const SECRETS: [number, number, number][] = [
-  [3050, T1, 1],
-  [5450, T2, -1],
-  [1680, T3, 1],
-  [4800, T4, -1],
-  [900, T5, 1],
-  [5800, T5, -1],
+  [860, T2, 1],     // dock loft
+  [2040, T3, -1],   // hangar catwalk
+  [2920, T1, 1],    // battery undercroft
+  [4560, T2, -1],   // engine bay
+  [5720, T4, 1],    // bridge nest
 ];
 const FOES: [string, number, number][] = [
-  ['drone', 420, T2 - 40], ['orb', 780, T1], ['bip', 980, T1], ['drone', 1200, T3 - 30],
-  ['human', 1500, T1], ['wing', 1600, T4 - 20], ['tri', 1800, T2], ['avian', 2000, T5 - 30],
-  ['orb', 2200, T1], ['thrust', 2400, T1], ['drone', 2600, T3 - 40], ['human', 2900, T2],
-  ['bip', 3100, T1], ['avian', 3300, T4 - 20], ['heavy', 3500, T1], ['drone', 3700, T5 - 40],
-  ['orb', 4000, T2], ['human', 4200, T1], ['wing', 4400, T3 - 30], ['tri', 4600, T1],
-  ['avian', 4800, T5 - 20], ['drone', 5000, T2 - 40], ['thrust', 5200, T1], ['human', 5500, T2],
-  ['bip', 5700, T1], ['drone', 5900, T4 - 30], ['orb', 6100, T1], ['avian', 6200, T3 - 20],
-  // approach pacing before arena lock
-  ['human', 6350, T1], ['drone', 6480, T2 - 40], ['tri', 6550, T1], ['wing', 6300, T3 - 20],
+  // Launch Dock — light welcome
+  ['orb', 520, T1], ['bip', 820, T1], ['drone', 640, T2 - 40],
+  // Hangar Decks — ground + catwalk pressure
+  ['human', 1400, T1], ['tri', 1750, T2], ['drone', 1550, T3 - 30], ['orb', 2100, T1], ['wing', 1950, T4 - 20],
+  // Gun-Battery Ramparts — denser, readable lanes
+  ['bip', 2650, T1], ['human', 2900, T2], ['heavy', 3200, T1], ['drone', 2800, T3 - 40], ['avian', 3400, T4 - 20],
+  // Engine Core — mid combat
+  ['thrust', 3900, T1], ['orb', 4200, T2], ['human', 4500, T1], ['drone', 4350, T3 - 30], ['wing', 4650, T4 - 20],
+  // Sky Bridges — air + bridge guards
+  ['drone', 5100, T2 - 40], ['avian', 5400, T4 - 20], ['human', 5600, T1], ['tri', 5850, T2], ['wing', 6000, T3 - 20],
+  // Summit approach — last gauntlet, leave arena clear
+  ['bip', 6220, T1], ['human', 6350, T1], ['drone', 6280, T2 - 40],
 ];
 const FLOWERS: [number, number][] = [
-  [340, T1 - 8], [900, T2 - 8], [1400, T1 - 8], [1900, T3 - 8], [2500, T1 - 8],
-  [3000, T4 - 8], [3600, T2 - 8], [4200, T1 - 8], [4900, T5 - 8], [5600, T1 - 8],
-  [720, T1 - 8], [2100, T2 - 8], [3300, T1 - 8], [4500, T3 - 8], [5300, T2 - 8],
-  [6100, T1 - 8], [6700, T2 - 8], [1600, T5 - 8], [4000, T4 - 8],
-  [480, T5 - 8], [1360, T5 - 8], [3180, T5 - 8], [5400, T5 - 8], [780, T3 - 8], [2920, T3 - 8], [2160, T4 - 8],
+  [340, T1 - 8], [780, T2 - 8], [1500, T1 - 8], [2000, T3 - 8],
+  [2800, T2 - 8], [3300, T1 - 8], [4100, T1 - 8], [4600, T3 - 8],
+  [5200, T2 - 8], [5800, T1 - 8], [6400, T1 - 8], [7000, T1 - 8],
+  [1600, T4 - 8], [3000, T4 - 8], [5400, T5 - 8],
 ];
 const GEMS: [number, number, number][] = [
-  [600, T2 - 30, 5], [1600, T3 - 30, 4], [2800, T4 - 30, 6], [4000, T5 - 30, 5], [5200, T3 - 30, 4],
-  [1100, T1 - 28, 5], [2400, T2 - 28, 4], [4700, T1 - 28, 6], [6000, T2 - 28, 5], [6800, T1 - 28, 4],
-  // route arcs
-  [450, T5 - 28, 5], [1400, T5 - 28, 5], [3200, T5 - 28, 6], [5300, T5 - 28, 5],
-  [800, T3 - 28, 5], [2800, T3 - 28, 5], [4400, T3 - 28, 5], [2100, T4 - 28, 5], [5000, T4 - 28, 5],
+  [600, T2 - 30, 5], [1600, T3 - 30, 5], [2900, T3 - 30, 5], [4100, T2 - 30, 5],
+  [5300, T3 - 30, 5], [5900, T2 - 28, 4], [6800, T1 - 28, 4],
+  [1040, T3 - 28, 4], [3640, T4 - 28, 5], [5240, T5 - 28, 5],
 ];
-/** Landmark set dressing from Dante's prop sheet — foot-planted on decks, no AI. */
+/** Landmark set dressing — one focal composition per themed sub-zone (sheet props only). */
 const PROP_DRESS: [string, number, number, number][] = [
-  // dock — banners + one airship (no sheet-label cards)
-  ['banner_a', 240, T1, 0.7], ['banner_b', 420, T1, 0.7], ['deco4', 560, T1, 0.5], ['airship_main', 900, T2, 0.5],
-  // gantry
-  ['deco1', 1360, T1, 0.55], ['banner_c', 1520, T2, 0.65], ['deco10', 1820, T1, 0.48], ['airship_tower', 1680, T1, 0.55],
-  // spires
-  ['deco2', 2400, T1, 0.55], ['hoop_ring', 2680, T4 - 30, 0.7], ['banner_d', 2860, T1, 0.65], ['mech_console', 3050, T2, 0.45],
-  // hangar
-  ['airship_fleet', 3520, T1, 0.48], ['deco5', 3880, T1, 0.52], ['mech_portal', 4120, T2 - 10, 0.5], ['deco9', 4400, T1, 0.5],
-  // bridge
-  ['deco3', 4960, T1, 0.55], ['banner_a', 5180, T2, 0.65], ['deco13', 5500, T1, 0.48], ['airship_ring', 5340, T3 - 20, 0.42],
-  // approach + arena rim (leave boss center clear)
-  ['deco14', 5900, T1, 0.5], ['airship_main', 6280, T1, 0.42], ['banner_b', 7050, T1, 0.65],
-  ['deco4', 6540, T2, 0.45], ['hoop_left', 6680, T3 - 20, 0.55],
-  // Mania route landmarks on new connectors
-  ['banner_c', 1040, T3, 0.6], ['deco10', 2140, T4, 0.48], ['banner_d', 3700, T5, 0.6],
-  ['deco5', 4560, T3, 0.5], ['banner_a', 5520, T5, 0.6], ['deco9', 3180, T3, 0.48],
+  // 1 Launch Dock — runway banners + parked airship on T2 gantry
+  ['banner_a', 220, T1, 0.72], ['banner_b', 400, T1, 0.72], ['airship_main', 780, T2, 0.48], ['deco4', 560, T1, 0.5],
+  // 2 Hangar Decks — tower + fleet nose as hangar focal
+  ['airship_tower', 1580, T1, 0.55], ['banner_c', 1380, T2, 0.65], ['deco1', 1900, T1, 0.55], ['deco10', 2200, T1, 0.5],
+  // 3 Gun-Battery Ramparts — hoop ring above battlements + console
+  ['hoop_ring', 2900, T3 - 10, 0.65], ['mech_console', 3100, T2, 0.48], ['banner_d', 2700, T1, 0.65], ['deco2', 3400, T1, 0.55],
+  // 4 Engine Core — portal + machinery
+  ['mech_portal', 4100, T2 - 8, 0.52], ['airship_fleet', 4480, T1, 0.42], ['deco5', 3900, T1, 0.52], ['deco9', 4650, T1, 0.5],
+  // 5 Sky Bridges — ring craft as distant bridge landmark
+  ['airship_ring', 5400, T3 - 16, 0.4], ['banner_a', 5100, T2, 0.62], ['deco3', 5750, T1, 0.55], ['deco13', 6000, T1, 0.48],
+  // 6 Boss Summit — rim only, arena center clear
+  ['banner_b', 6380, T1, 0.68], ['banner_c', 7080, T1, 0.68], ['hoop_left', 6550, T2 - 10, 0.5],
 ];
-/** Mania-style tiered route steppers: [key, x, walkY] — short sheet plats bridging shelf gaps */
+/** Vertical stair steppers between tiers — sparse, one stack per zone transition */
 const ROUTE_STEPS: [string, number, number][] = [
-  // mid T3 bridges
-  ['s1_002', 320, T3], ['s1_009', 760, T3], ['s1_001', 1120, T3], ['s1_035', 1680, T3],
-  ['s1_002', 2700, T3], ['s1_009', 3200, T3], ['s1_001', 3900, T3], ['s1_035', 4300, T3],
-  ['s1_002', 5500, T3], ['s1_009', 5900, T3],
-  // high T4 / canopy T5 routes
-  ['s1_003', 360, T4], ['s1_005', 720, T4], ['s1_029', 1600, T4], ['s1_003', 2060, T4],
-  ['s1_005', 2500, T4], ['s1_029', 3300, T4], ['s1_003', 3700, T4], ['s1_005', 4560, T4],
-  ['s1_029', 5000, T4], ['s1_003', 5600, T4],
-  ['s1_009', 440, T5], ['s1_002', 900, T5], ['s1_001', 1340, T5], ['s1_035', 1740, T5],
-  ['s1_009', 2500, T5], ['s1_002', 3100, T5], ['s1_001', 3920, T5], ['s1_035', 4840, T5],
-  ['s1_009', 5260, T5],
-  // T2 gap fillers + vertical stairs between tiers
-  ['s1_001', 1000, T2], ['s1_035', 2160, T2], ['s1_002', 4480, T2], ['s1_009', 4860, T2],
-  ['s1_003', 1040, T2 - 70], ['s1_005', 1040, T3 - 70], ['s1_003', 2620, T2 - 70], ['s1_005', 2620, T3 - 70],
-  ['s1_003', 3920, T2 - 70], ['s1_005', 3920, T3 - 70], ['s1_003', 5120, T2 - 70], ['s1_005', 5120, T3 - 70],
+  ['s1_003', 1040, T2 - 70], ['s1_005', 1040, T3 - 70],           // dock→hangar
+  ['s1_003', 2440, T2 - 70], ['s1_005', 2440, T3 - 70],           // hangar→battery
+  ['s1_003', 3640, T2 - 70], ['s1_005', 3640, T3 - 70], ['s1_029', 3640, T4 - 70],
+  ['s1_003', 4840, T2 - 70], ['s1_005', 4840, T3 - 70],           // engine→bridges
+  ['s1_003', 5240, T3 - 70], ['s1_005', 5240, T4 - 70], ['s1_029', 5240, T5 - 70],
+  ['s1_003', 6220, T2 - 70], ['s1_005', 6220, T3 - 70],           // bridges→summit
 ];
 
 type Frame = { w: number; h: number; top: number; foot: number; prof?: number[]; kind: string };
@@ -526,25 +513,22 @@ export class Fortress extends Phaser.Scene {
       this.secrets.push({ wall: ws, chest, sy, found: false, open: false, ex: gx });
     }
 
-    // floating landmarks — clean crops only (no sheet titles)
+    // Far-bg sky craft (one) — depth behind playfield so zones stay readable
     const floatShip = this.textures.exists('ft_airship_main') ? 'ft_airship_main' : (this.textures.exists('ft_ship0') ? 'ft_ship0' : null);
     if (floatShip) {
-      const s0 = this.add.image(2400, T5 - 40, floatShip).setOrigin(0.5, 1).setDepth(1.45).setScale(0.6).setAlpha(0.92);
-      this.tweens.add({ targets: s0, y: s0.y - 6, yoyo: true, repeat: -1, duration: 2200, ease: 'Sine.inOut' });
-      const s1 = this.add.image(4800, T4 - 20, floatShip).setOrigin(0.5, 1).setDepth(1.45).setScale(0.45).setFlipX(true).setAlpha(0.88);
-      this.tweens.add({ targets: s1, y: s1.y - 5, yoyo: true, repeat: -1, duration: 2600, ease: 'Sine.inOut' });
+      const s0 = this.add.image(3600, T5 - 60, floatShip).setOrigin(0.5, 1).setDepth(1.2).setScale(0.38).setAlpha(0.55);
+      this.tweens.add({ targets: s0, y: s0.y - 4, yoyo: true, repeat: -1, duration: 3200, ease: 'Sine.inOut' });
     }
+    // Summit approach ring — frames the arena gate, not mid-level clutter
     if (this.textures.exists('ft_ring')) {
-      const ring = this.add.image(AX0 - 200, T2 - 40, 'ft_ring').setDepth(3).setScale(0.75);
-      this.tweens.add({ targets: ring, angle: 360, duration: 12000, repeat: -1, ease: 'Linear' });
-      const rg = this.add.image(AX0 - 200, T2 - 40, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xb04aff).setScale(1.6).setAlpha(0.35).setDepth(2.9);
-      this.glows.push({ o: rg, base: 0.3, t: AX0, sp: 2.2 });
+      const ring = this.add.image(AX0 - 120, T2 - 30, 'ft_ring').setDepth(2.9).setScale(0.7).setAlpha(0.9);
+      this.tweens.add({ targets: ring, angle: 360, duration: 14000, repeat: -1, ease: 'Linear' });
+      const rg = this.add.image(AX0 - 120, T2 - 30, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xb04aff).setScale(1.5).setAlpha(0.32).setDepth(2.85);
+      this.glows.push({ o: rg, base: 0.28, t: AX0, sp: 2.0 });
     }
-    const portalKey = this.textures.exists('ft_mech_portal') ? 'ft_mech_portal' : (this.textures.exists('ft_portal0') ? 'ft_portal0' : null);
-    if (portalKey) {
-      const mid = this.add.image(3000, T3 - 50, portalKey).setDepth(2.8).setScale(0.6).setAlpha(0.92);
-      this.tweens.add({ targets: mid, angle: -360, duration: 16000, repeat: -1, ease: 'Linear' });
-      (this as any)._midPortal = { x: 3000, y: T3 - 50 };
+    // Engine-core portal is placed via PROP_DRESS; keep a soft glow marker for the mid warp
+    if (this.textures.exists('ft_portal0')) {
+      (this as any)._midPortal = { x: 4100, y: T2 - 40 };
     }
     // intentional prop landmarks (sheet-only, title-free crops)
     for (const [k, x, y, sc] of PROP_DRESS) {
