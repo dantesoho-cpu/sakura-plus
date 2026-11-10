@@ -180,6 +180,13 @@ export class Fortress extends Phaser.Scene {
   }
 
   m(k: string) { return this.man[k] || { w: 64, h: 32, top: 0, foot: 31, kind: 'decor' }; }
+  /** Painterly fortress sheets: LINEAR (not NEAREST). Soft edges from Lanczos atlas. */
+  applyFortressFilters() {
+    for (const key of this.textures.getTextureKeys()) {
+      if (!key.startsWith('ft_') && key !== 'ft_boss_0' && !key.startsWith('ft_boss')) continue;
+      try { this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR); } catch {}
+    }
+  }
 
   addRect(x: number, y: number, w: number, h: number, one: boolean) {
     const z = this.add.zone(x + w / 2, y + h / 2, w, h); (one ? this.ones : this.solids).add(z);
@@ -191,7 +198,7 @@ export class Fortress extends Phaser.Scene {
   placeLayout(p: Place) {
     const k = p.key, m = this.m(k), key = 'ft_' + k;
     if (!this.textures.exists(key)) return;
-    this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
     let im: Phaser.GameObjects.Image | null = null;
     const role = p.role || '';
     // live gameplay roles: spawn entities, skip decorative duplicate for enemies/turrets when AI spawned
@@ -392,6 +399,9 @@ export class Fortress extends Phaser.Scene {
   }
 
   buildWorld() {
+    this.applyFortressFilters();
+    // Painterly fortress: allow subpixel camera/sprites so LINEAR edges do not stair-step while scrolling
+    this.cameras.main.roundPixels = false;
     const layout = this.cache.json.get('ft_layout') as {
       ground_bands: [number, number][]; placements: Place[];
       stats?: { total_pieces: number; used_pieces: number };
@@ -418,18 +428,18 @@ export class Fortress extends Phaser.Scene {
       this.add.rectangle(a + w / 2, FILL_TOP + FILL_H / 2, w + 4, FILL_H + 8, 0x14121c, 1).setDepth(1.85);
       if (this.textures.exists(dk)) {
         const under = this.add.tileSprite(a, T1, w, FILL_H + 8, dk).setOrigin(0, 0).setDepth(1.88);
-        under.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        under.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       }
       if (this.textures.exists(fk)) {
         const bodyY = T1 + 12;
         const bodyH = Math.max(80, FILL_BOT - bodyY);
         const body = this.add.tileSprite(a, bodyY, w, bodyH, fk).setOrigin(0, 0).setDepth(1.91);
-        body.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        body.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       }
       // Brass→steel bevel under the walk lip (fill_lip top rows, no white)
       if (this.textures.exists('ft_fill_lip')) {
         const bevel = this.add.tileSprite(a, T1, w, 28, 'ft_fill_lip').setOrigin(0, 0).setDepth(1.93);
-        bevel.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        bevel.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       }
       // Riveted brass walk surface from cropped deck_mid (13px, white fringe removed)
       const midKeys = ['ft_deck_mid_00', 'ft_deck_mid_01', 'ft_deck_mid_02'].filter(k => this.textures.exists(k));
@@ -437,20 +447,20 @@ export class Fortress extends Phaser.Scene {
         const mk = midKeys[bi % midKeys.length];
         const midH = Math.min(12, (this.textures.get(mk).getSourceImage() as HTMLImageElement).height || 11);
         const mid = this.add.tileSprite(a, T1 - 1, w, midH, mk).setOrigin(0, 0).setDepth(1.96);
-        mid.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        mid.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       }
       if (this.textures.exists(dk) && FILL_BOT > DEEP_Y) {
         const deep = this.add.tileSprite(a, DEEP_Y, w, FILL_BOT - DEEP_Y, dk).setOrigin(0, 0).setDepth(1.90);
-        deep.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        deep.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       }
       // pit side walls / edges where ground ends
       if (this.textures.exists('ft_fill_edge_L')) {
         const el = this.add.tileSprite(a - 6, FILL_TOP, 28, FILL_H, 'ft_fill_edge_L').setOrigin(0, 0).setDepth(1.94);
-        el.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        el.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       }
       if (this.textures.exists('ft_fill_edge_R')) {
         const er = this.add.tileSprite(b - 22, FILL_TOP, 28, FILL_H, 'ft_fill_edge_R').setOrigin(0, 0).setDepth(1.94);
-        er.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        er.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       }
     }
     // neon air-channel glow across pits (sky still visible between bands)

@@ -144,7 +144,7 @@ export class FtBoss extends Enemy {
   static BOLT = ['ft_s9_014', 'ft_s9_028', 'ft_s9_029', 'ft_s9_032', 'ft_s9_033', 'ft_s9_039'];
   constructor(s: Phaser.Scene, x: number, y: number, fx: Fx, public gun: Blaster, public groundY: number) {
     super(s, x, y, 'ft_boss_0', BOSS_HP, fx); this.hx = x; this.hy = y; this.setOrigin(0.5, 0.5);
-    this.setScale(1.35); this.b.setSize(this.width * 0.72, this.height * 0.62);
+    this.setScale(1.0); this.b.setSize(this.width * 0.72, this.height * 0.62);
     this.setAlpha(0); this.setDepth(8.5);
     this.glowI = s.add.image(x, y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setTint(0xb04aff).setScale(6).setAlpha(0).setDepth(8.4);
   }
@@ -166,11 +166,11 @@ export class FtBoss extends Enemy {
     if (!d || this.dead) return;
     this.faceDir = d; this.setFlipX(d < 0); this.turning = false;
   }
-  punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(1.35 * sx, 1.35 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.35, scaleY: 1.35, duration: ms, ease: 'Quad.out' }); }
+  punch(sx: number, sy: number, ms = 140) { if (this.turning || this.dead) return; this.scene.tweens.killTweensOf(this); this.setScale(1.0 * sx, 1.0 * sy); this.scene.tweens.add({ targets: this, scaleX: 1.0, scaleY: 1.0, duration: ms, ease: 'Quad.out' }); }
   phaseShift(ph: number) {
     const s: any = this.scene, cam = s.cameras.main; this.dbg.shift++; this.st = 'hover'; this.stT = 1.5; this.shieldT = 1.15; this.b.setVelocity(0, 0);
     const tex = ph >= 3 ? 'ft_boss_p3' : ph >= 2 ? 'ft_boss_p2' : 'ft_boss_0';
-    if (this.scene.textures.exists(tex)) { this.setTexture(tex); this.setScale(1.35); this.b.setSize(this.width * 0.72, this.height * 0.62); }
+    if (this.scene.textures.exists(tex)) { this.setTexture(tex); this.setScale(1.0); this.b.setSize(this.width * 0.72, this.height * 0.62); }
     cam.flash(240, ph === 3 ? 255 : 180, 100, 255, true); cam.shake(400, 0.011); audio.sfx('gate');
     s.toast?.show(ph === 2 ? 'WINGED FORTRESS — SHIELDS CRACK' : 'WINGED FORTRESS — CORE MELT', ph === 3 ? '#ffd23f' : '#ff4fd8');
     for (let i = 0; i < 5; i++) s.time.delayedCall(i * 80, () => this.s9(FtBoss.BURST, this.x + Phaser.Math.Between(-40, 40), this.y + Phaser.Math.Between(-20, 20), 0.5, 3 + i * 0.3, 560));
@@ -178,7 +178,7 @@ export class FtBoss extends Enemy {
   }
   wake() {
     if (this.st !== 'sleep') return; this.st = 'intro'; this.stT = 2.1;
-    this.setPosition(this.hx, this.hy - 200); this.setScale(1.35).setTexture('ft_boss_0'); this.glowI.setAlpha(0.55).setScale(7);
+    this.setPosition(this.hx, this.hy - 200); this.setScale(1.0).setTexture('ft_boss_0'); this.glowI.setAlpha(0.55).setScale(7);
     this.scene.tweens.add({ targets: this, alpha: 1, y: this.hy, duration: 1800, ease: 'Sine.out' });
     this.scene.tweens.add({ targets: this.glowI, alpha: 0.38, scale: 6.5, duration: 1800, ease: 'Sine.out' });
     this.scene.cameras.main.shake(420, 0.009);
@@ -187,12 +187,12 @@ export class FtBoss extends Enemy {
   }
   reset() {
     this.scene.tweens.killTweensOf(this); this.hp = this.maxHp; this.st = 'sleep'; this.awake = false; this.lastPhase = 1; this.shieldT = 0;
-    this.setAlpha(0).setScale(1.35).setAngle(0).setTexture('ft_boss_0'); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.glowI.setAlpha(0);
+    this.setAlpha(0).setScale(1.0).setAngle(0).setTexture('ft_boss_0'); this.setPosition(this.hx, this.hy); this.b.setVelocity(0, 0); this.glowI.setAlpha(0);
   }
   tick(dt: number, px: number, py: number) {
     super.tick(dt, px, py); if (this.dead) return;
     // Keep composed sheet boss readable — don't let hit-tweens leave it undersized
-    if (this.awake && this.st !== 'dying' && Math.abs(this.scaleX - 1.35) > 0.08 && this.hitT <= 0) this.setScale(1.35);
+    if (this.awake && this.st !== 'dying' && Math.abs(this.scaleX - 1.0) > 0.08 && this.hitT <= 0) this.setScale(1.0);
     this.glowI.setPosition(this.x, this.y).setAlpha(this.alpha * (0.22 + 0.1 * Math.sin(this.t * 3.5)));
     if (this.st === 'sleep' || this.st === 'dying') { this.b.setVelocity(0, 0); return; }
     this.stT -= dt;
