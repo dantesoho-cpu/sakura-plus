@@ -1,6 +1,6 @@
 {
   "meta": {
-    "scale": 0.4,
+    "scale": 0.48,
     "alpha_threshold": 128,
     "sheets": 4,
     "total": 222,
@@ -236,14 +236,16 @@
       "s4_084",
       "s4_085",
       "s4_086"
-    ]
+    ],
+    "filter": "lanczos_premul",
+    "rebuild": "v26_hq"
   },
   "frames": {
     "s1_000": {
-      "w": 250,
-      "h": 48,
-      "top": 1,
-      "foot": 36,
+      "w": 300,
+      "h": 58,
+      "top": 0,
+      "foot": 46,
       "kind": "plat",
       "sheet": 1,
       "src": [
@@ -258,13 +260,15 @@
       ],
       "key": "s1_000",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_001": {
-      "w": 110,
-      "h": 42,
-      "top": 1,
-      "foot": 38,
+      "w": 132,
+      "h": 51,
+      "top": 0,
+      "foot": 48,
       "kind_hint": "slope",
       "kind": "plat",
       "sheet": 1,
@@ -280,13 +284,15 @@
       ],
       "key": "s1_001",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_002": {
-      "w": 95,
-      "h": 34,
+      "w": 114,
+      "h": 41,
       "top": 0,
-      "foot": 28,
+      "foot": 36,
       "kind": "plat",
       "sheet": 1,
       "src": [
@@ -301,13 +307,15 @@
       ],
       "key": "s1_002",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_003": {
-      "w": 68,
-      "h": 31,
+      "w": 81,
+      "h": 37,
       "top": 0,
-      "foot": 28,
+      "foot": 36,
       "kind": "plat",
       "sheet": 1,
       "src": [
@@ -322,13 +330,15 @@
       ],
       "key": "s1_003",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_004": {
-      "w": 40,
-      "h": 30,
+      "w": 48,
+      "h": 36,
       "top": 0,
-      "foot": 29,
+      "foot": 35,
       "kind": "decor",
       "sheet": 1,
       "src": [
@@ -343,13 +353,15 @@
       ],
       "key": "s1_004",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_005": {
-      "w": 66,
-      "h": 32,
+      "w": 80,
+      "h": 38,
       "top": 0,
-      "foot": 31,
+      "foot": 37,
       "kind": "plat",
       "sheet": 1,
       "src": [
@@ -364,13 +376,15 @@
       ],
       "key": "s1_005",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_006": {
-      "w": 40,
-      "h": 29,
-      "top": 2,
-      "foot": 28,
+      "w": 48,
+      "h": 35,
+      "top": 1,
+      "foot": 34,
       "kind": "decor",
       "sheet": 1,
       "src": [
@@ -385,13 +399,15 @@
       ],
       "key": "s1_006",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_007": {
-      "w": 318,
-      "h": 88,
-      "top": 5,
-      "foot": 86,
+      "w": 382,
+      "h": 106,
+      "top": 4,
+      "foot": 105,
       "kind_hint": "slope",
       "kind": "plat",
       "sheet": 1,
@@ -407,13 +423,15 @@
       ],
       "key": "s1_007",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_008": {
-      "w": 51,
-      "h": 28,
+      "w": 61,
+      "h": 34,
       "top": 0,
-      "foot": 27,
+      "foot": 33,
       "kind": "plat",
       "sheet": 1,
       "src": [
@@ -428,13 +446,15 @@
       ],
       "key": "s1_008",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_009": {
-      "w": 80,
-      "h": 34,
-      "top": 2,
-      "foot": 30,
+      "w": 96,
+      "h": 41,
+      "top": 0,
+      "foot": 40,
       "kind": "plat",
       "sheet": 1,
       "src": [
@@ -449,13 +469,15 @@
       ],
       "key": "s1_009",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_010": {
-      "w": 94,
-      "h": 54,
+      "w": 113,
+      "h": 64,
       "top": 0,
-      "foot": 50,
+      "foot": 63,
       "prof": [
         27,
         27,
@@ -520,13 +542,15 @@
       ],
       "key": "s1_010",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_011": {
-      "w": 32,
-      "h": 52,
+      "w": 39,
+      "h": 63,
       "top": 0,
-      "foot": 51,
+      "foot": 62,
       "kind_hint": "slope",
       "kind": "decor",
       "sheet": 1,
@@ -542,13 +566,15 @@
       ],
       "key": "s1_011",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_012": {
-      "w": 51,
-      "h": 253,
-      "top": 1,
-      "foot": 252,
+      "w": 63,
+      "h": 304,
+      "top": 0,
+      "foot": 303,
       "prof": [
         217,
         217,
@@ -618,13 +644,15 @@
       ],
       "key": "s1_012",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_013": {
-      "w": 112,
-      "h": 52,
+      "w": 134,
+      "h": 62,
       "top": 0,
-      "foot": 45,
+      "foot": 61,
       "kind_hint": "slope",
       "kind": "plat",
       "sheet": 1,
@@ -640,13 +668,15 @@
       ],
       "key": "s1_013",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_014": {
-      "w": 95,
-      "h": 144,
-      "top": 3,
-      "foot": 143,
+      "w": 117,
+      "h": 174,
+      "top": 2,
+      "foot": 173,
       "kind": "set",
       "sheet": 1,
       "src": [
@@ -661,13 +691,15 @@
       ],
       "key": "s1_014",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_015": {
-      "w": 38,
-      "h": 197,
-      "top": 7,
-      "foot": 196,
+      "w": 46,
+      "h": 236,
+      "top": 3,
+      "foot": 235,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 1,
@@ -683,13 +715,15 @@
       ],
       "key": "s1_015",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_016": {
-      "w": 24,
-      "h": 163,
-      "top": 3,
-      "foot": 162,
+      "w": 29,
+      "h": 195,
+      "top": 1,
+      "foot": 194,
       "kind": "pillar",
       "sheet": 1,
       "src": [
@@ -704,13 +738,15 @@
       ],
       "key": "s1_016",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_017": {
-      "w": 54,
-      "h": 135,
-      "top": 18,
-      "foot": 134,
+      "w": 64,
+      "h": 162,
+      "top": 20,
+      "foot": 161,
       "kind": "pillar",
       "sheet": 1,
       "src": [
@@ -725,13 +761,15 @@
       ],
       "key": "s1_017",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_018": {
-      "w": 25,
-      "h": 146,
-      "top": 1,
-      "foot": 145,
+      "w": 30,
+      "h": 176,
+      "top": 0,
+      "foot": 175,
       "kind": "pillar",
       "sheet": 1,
       "src": [
@@ -746,13 +784,15 @@
       ],
       "key": "s1_018",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_019": {
-      "w": 119,
-      "h": 126,
+      "w": 144,
+      "h": 154,
       "top": 3,
-      "foot": 125,
+      "foot": 153,
       "prof": [
         6,
         5,
@@ -810,13 +850,15 @@
       ],
       "key": "s1_019",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_020": {
-      "w": 59,
-      "h": 60,
-      "top": 8,
-      "foot": 59,
+      "w": 71,
+      "h": 72,
+      "top": 7,
+      "foot": 71,
       "kind": "decor",
       "sheet": 1,
       "src": [
@@ -831,13 +873,15 @@
       ],
       "key": "s1_020",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_021": {
-      "w": 108,
-      "h": 67,
-      "top": 12,
-      "foot": 66,
+      "w": 130,
+      "h": 81,
+      "top": 9,
+      "foot": 80,
       "prof": [
         14,
         14,
@@ -891,13 +935,15 @@
       ],
       "key": "s1_021",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_022": {
-      "w": 157,
-      "h": 178,
-      "top": 1,
-      "foot": 177,
+      "w": 189,
+      "h": 213,
+      "top": 0,
+      "foot": 212,
       "prof": [
         1,
         1,
@@ -955,13 +1001,15 @@
       ],
       "key": "s1_022",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_023": {
-      "w": 32,
-      "h": 68,
+      "w": 39,
+      "h": 82,
       "top": 0,
-      "foot": 67,
+      "foot": 81,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 1,
@@ -977,13 +1025,15 @@
       ],
       "key": "s1_023",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_024": {
-      "w": 29,
-      "h": 68,
+      "w": 35,
+      "h": 82,
       "top": 0,
-      "foot": 67,
+      "foot": 81,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 1,
@@ -999,13 +1049,15 @@
       ],
       "key": "s1_024",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_025": {
-      "w": 173,
-      "h": 78,
+      "w": 209,
+      "h": 96,
       "top": 4,
-      "foot": 77,
+      "foot": 95,
       "kind": "set",
       "sheet": 1,
       "src": [
@@ -1020,13 +1072,15 @@
       ],
       "key": "s1_025",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_026": {
-      "w": 61,
-      "h": 85,
-      "top": 5,
-      "foot": 84,
+      "w": 73,
+      "h": 102,
+      "top": 4,
+      "foot": 101,
       "kind": "pillar",
       "sheet": 1,
       "src": [
@@ -1041,13 +1095,15 @@
       ],
       "key": "s1_026",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_027": {
-      "w": 32,
-      "h": 102,
-      "top": 1,
-      "foot": 101,
+      "w": 38,
+      "h": 123,
+      "top": 0,
+      "foot": 122,
       "kind": "pillar",
       "sheet": 1,
       "src": [
@@ -1062,13 +1118,15 @@
       ],
       "key": "s1_027",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_028": {
-      "w": 24,
-      "h": 24,
+      "w": 29,
+      "h": 28,
       "top": 0,
-      "foot": 23,
+      "foot": 27,
       "kind": "decor",
       "sheet": 1,
       "src": [
@@ -1083,13 +1141,15 @@
       ],
       "key": "s1_028",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_029": {
-      "w": 63,
-      "h": 22,
+      "w": 75,
+      "h": 27,
       "top": 0,
-      "foot": 21,
+      "foot": 26,
       "kind": "plat",
       "sheet": 1,
       "src": [
@@ -1104,13 +1164,15 @@
       ],
       "key": "s1_029",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_030": {
-      "w": 120,
-      "h": 72,
-      "top": 37,
-      "foot": 71,
+      "w": 144,
+      "h": 87,
+      "top": 7,
+      "foot": 86,
       "prof": [
         36,
         35,
@@ -1168,13 +1230,15 @@
       ],
       "key": "s1_030",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_031": {
-      "w": 22,
-      "h": 16,
+      "w": 26,
+      "h": 19,
       "top": 0,
-      "foot": 15,
+      "foot": 18,
       "kind": "decor",
       "sheet": 1,
       "src": [
@@ -1189,13 +1253,15 @@
       ],
       "key": "s1_031",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_032": {
-      "w": 38,
-      "h": 15,
-      "top": 2,
-      "foot": 14,
+      "w": 46,
+      "h": 18,
+      "top": 1,
+      "foot": 17,
       "kind_hint": "slope",
       "kind": "plat",
       "sheet": 1,
@@ -1211,13 +1277,15 @@
       ],
       "key": "s1_032",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_033": {
-      "w": 204,
-      "h": 47,
-      "top": 1,
-      "foot": 46,
+      "w": 245,
+      "h": 57,
+      "top": 0,
+      "foot": 56,
       "kind": "plat",
       "sheet": 1,
       "src": [
@@ -1232,13 +1300,15 @@
       ],
       "key": "s1_033",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_034": {
-      "w": 22,
-      "h": 44,
-      "top": 1,
-      "foot": 43,
+      "w": 26,
+      "h": 52,
+      "top": 0,
+      "foot": 51,
       "kind": "decor",
       "sheet": 1,
       "src": [
@@ -1253,13 +1323,15 @@
       ],
       "key": "s1_034",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s1_035": {
-      "w": 84,
-      "h": 32,
+      "w": 101,
+      "h": 38,
       "top": 0,
-      "foot": 30,
+      "foot": 37,
       "kind": "plat",
       "sheet": 1,
       "src": [
@@ -1274,13 +1346,15 @@
       ],
       "key": "s1_035",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_000": {
-      "w": 40,
-      "h": 226,
-      "top": 1,
-      "foot": 225,
+      "w": 48,
+      "h": 271,
+      "top": 0,
+      "foot": 270,
       "kind": "pillar",
       "sheet": 2,
       "src": [
@@ -1295,13 +1369,15 @@
       ],
       "key": "s2_000",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_001": {
-      "w": 231,
-      "h": 125,
-      "top": 3,
-      "foot": 75,
+      "w": 277,
+      "h": 151,
+      "top": 1,
+      "foot": 150,
       "kind": "set",
       "sheet": 2,
       "src": [
@@ -1316,13 +1392,15 @@
       ],
       "key": "s2_001",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_002": {
-      "w": 58,
-      "h": 37,
-      "top": 2,
-      "foot": 34,
+      "w": 69,
+      "h": 44,
+      "top": 1,
+      "foot": 43,
       "kind_hint": "slope",
       "kind": "decor",
       "sheet": 2,
@@ -1338,13 +1416,15 @@
       ],
       "key": "s2_002",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_003": {
-      "w": 91,
-      "h": 59,
-      "top": 1,
-      "foot": 54,
+      "w": 109,
+      "h": 71,
+      "top": 0,
+      "foot": 70,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -1359,13 +1439,15 @@
       ],
       "key": "s2_003",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_004": {
-      "w": 138,
-      "h": 73,
-      "top": 2,
-      "foot": 72,
+      "w": 166,
+      "h": 87,
+      "top": 1,
+      "foot": 86,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -1380,13 +1462,15 @@
       ],
       "key": "s2_004",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_005": {
-      "w": 72,
-      "h": 52,
-      "top": 1,
-      "foot": 42,
+      "w": 86,
+      "h": 63,
+      "top": 0,
+      "foot": 55,
       "prof": [
         15,
         15,
@@ -1440,13 +1524,15 @@
       ],
       "key": "s2_005",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_006": {
-      "w": 221,
-      "h": 197,
+      "w": 266,
+      "h": 239,
       "top": 6,
-      "foot": 183,
+      "foot": 238,
       "prof": [
         6,
         6,
@@ -1501,13 +1587,15 @@
       ],
       "key": "s2_006",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_007": {
-      "w": 113,
-      "h": 72,
-      "top": 28,
-      "foot": 68,
+      "w": 136,
+      "h": 86,
+      "top": 25,
+      "foot": 85,
       "prof": [
         50,
         50,
@@ -1563,13 +1651,15 @@
       ],
       "key": "s2_007",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_008": {
-      "w": 91,
-      "h": 149,
-      "top": 101,
-      "foot": 148,
+      "w": 109,
+      "h": 181,
+      "top": 3,
+      "foot": 180,
       "prof": [
         44,
         43,
@@ -1633,13 +1723,15 @@
       ],
       "key": "s2_008",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_009": {
-      "w": 41,
-      "h": 86,
+      "w": 49,
+      "h": 103,
       "top": 0,
-      "foot": 85,
+      "foot": 102,
       "kind": "pillar",
       "sheet": 2,
       "src": [
@@ -1654,13 +1746,15 @@
       ],
       "key": "s2_009",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_010": {
-      "w": 124,
-      "h": 56,
-      "top": 1,
-      "foot": 54,
+      "w": 149,
+      "h": 68,
+      "top": 0,
+      "foot": 67,
       "prof": [
         0,
         0,
@@ -1720,13 +1814,15 @@
       ],
       "key": "s2_010",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_011": {
-      "w": 91,
-      "h": 48,
+      "w": 109,
+      "h": 58,
       "top": 2,
-      "foot": 42,
+      "foot": 54,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -1741,13 +1837,15 @@
       ],
       "key": "s2_011",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_012": {
-      "w": 32,
-      "h": 27,
+      "w": 38,
+      "h": 32,
       "top": 0,
-      "foot": 26,
+      "foot": 31,
       "kind": "decor",
       "sheet": 2,
       "src": [
@@ -1762,13 +1860,15 @@
       ],
       "key": "s2_012",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_013": {
-      "w": 46,
-      "h": 30,
+      "w": 55,
+      "h": 36,
       "top": 0,
-      "foot": 29,
+      "foot": 35,
       "kind": "decor",
       "sheet": 2,
       "src": [
@@ -1783,13 +1883,15 @@
       ],
       "key": "s2_013",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_014": {
-      "w": 105,
-      "h": 67,
-      "top": 14,
-      "foot": 57,
+      "w": 126,
+      "h": 81,
+      "top": 0,
+      "foot": 72,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -1804,13 +1906,15 @@
       ],
       "key": "s2_014",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_015": {
-      "w": 156,
-      "h": 88,
+      "w": 190,
+      "h": 105,
       "top": 0,
-      "foot": 87,
+      "foot": 104,
       "kind": "set",
       "sheet": 2,
       "src": [
@@ -1825,13 +1929,15 @@
       ],
       "key": "s2_015",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_016": {
-      "w": 43,
-      "h": 24,
+      "w": 51,
+      "h": 29,
       "top": 0,
-      "foot": 23,
+      "foot": 28,
       "kind": "decor",
       "sheet": 2,
       "src": [
@@ -1846,13 +1952,15 @@
       ],
       "key": "s2_016",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_017": {
-      "w": 36,
-      "h": 23,
+      "w": 44,
+      "h": 28,
       "top": 0,
-      "foot": 22,
+      "foot": 27,
       "kind": "decor",
       "sheet": 2,
       "src": [
@@ -1867,13 +1975,15 @@
       ],
       "key": "s2_017",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_018": {
-      "w": 34,
-      "h": 96,
+      "w": 40,
+      "h": 116,
       "top": 12,
-      "foot": 95,
+      "foot": 115,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 2,
@@ -1889,13 +1999,15 @@
       ],
       "key": "s2_018",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_019": {
-      "w": 113,
-      "h": 158,
-      "top": 39,
-      "foot": 157,
+      "w": 135,
+      "h": 190,
+      "top": 0,
+      "foot": 189,
       "prof": [
         63,
         62,
@@ -1951,13 +2063,15 @@
       ],
       "key": "s2_019",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_020": {
-      "w": 35,
-      "h": 28,
+      "w": 42,
+      "h": 34,
       "top": 0,
-      "foot": 27,
+      "foot": 33,
       "kind": "decor",
       "sheet": 2,
       "src": [
@@ -1972,13 +2086,15 @@
       ],
       "key": "s2_020",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_021": {
-      "w": 50,
-      "h": 28,
+      "w": 60,
+      "h": 34,
       "top": 0,
-      "foot": 27,
+      "foot": 33,
       "kind": "decor",
       "sheet": 2,
       "src": [
@@ -1993,13 +2109,15 @@
       ],
       "key": "s2_021",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_022": {
-      "w": 129,
-      "h": 61,
+      "w": 155,
+      "h": 73,
       "top": 2,
-      "foot": 57,
+      "foot": 72,
       "prof": [
         29,
         28,
@@ -2050,13 +2168,15 @@
       ],
       "key": "s2_022",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_023": {
-      "w": 66,
-      "h": 49,
-      "top": 18,
-      "foot": 44,
+      "w": 79,
+      "h": 59,
+      "top": 0,
+      "foot": 56,
       "prof": [
         17,
         15,
@@ -2107,13 +2227,15 @@
       ],
       "key": "s2_023",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_024": {
-      "w": 100,
-      "h": 119,
-      "top": 2,
-      "foot": 118,
+      "w": 120,
+      "h": 143,
+      "top": 0,
+      "foot": 142,
       "kind": "set",
       "sheet": 2,
       "src": [
@@ -2128,13 +2250,15 @@
       ],
       "key": "s2_024",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_025": {
-      "w": 28,
-      "h": 103,
-      "top": 1,
-      "foot": 102,
+      "w": 34,
+      "h": 124,
+      "top": 0,
+      "foot": 123,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 2,
@@ -2150,13 +2274,15 @@
       ],
       "key": "s2_025",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_026": {
-      "w": 97,
-      "h": 26,
-      "top": 1,
-      "foot": 22,
+      "w": 117,
+      "h": 31,
+      "top": 0,
+      "foot": 28,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -2171,13 +2297,15 @@
       ],
       "key": "s2_026",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_027": {
-      "w": 59,
-      "h": 29,
+      "w": 71,
+      "h": 35,
       "top": 0,
-      "foot": 24,
+      "foot": 31,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -2192,13 +2320,15 @@
       ],
       "key": "s2_027",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_028": {
-      "w": 113,
-      "h": 78,
-      "top": 1,
-      "foot": 77,
+      "w": 136,
+      "h": 93,
+      "top": 0,
+      "foot": 92,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -2213,13 +2343,15 @@
       ],
       "key": "s2_028",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_029": {
-      "w": 94,
-      "h": 69,
+      "w": 112,
+      "h": 83,
       "top": 0,
-      "foot": 68,
+      "foot": 82,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -2234,13 +2366,15 @@
       ],
       "key": "s2_029",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_030": {
-      "w": 80,
-      "h": 56,
+      "w": 96,
+      "h": 68,
       "top": 0,
-      "foot": 55,
+      "foot": 67,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -2255,13 +2389,15 @@
       ],
       "key": "s2_030",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_031": {
-      "w": 32,
-      "h": 53,
+      "w": 38,
+      "h": 63,
       "top": 0,
-      "foot": 52,
+      "foot": 62,
       "kind": "decor",
       "sheet": 2,
       "src": [
@@ -2276,13 +2412,15 @@
       ],
       "key": "s2_031",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_032": {
-      "w": 115,
-      "h": 58,
+      "w": 138,
+      "h": 69,
       "top": 0,
-      "foot": 57,
+      "foot": 68,
       "kind": "plat",
       "sheet": 2,
       "src": [
@@ -2297,13 +2435,15 @@
       ],
       "key": "s2_032",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s2_033": {
-      "w": 38,
-      "h": 58,
+      "w": 46,
+      "h": 69,
       "top": 0,
-      "foot": 57,
+      "foot": 68,
       "kind": "banner",
       "sheet": 2,
       "src": [
@@ -2318,13 +2458,15 @@
       ],
       "key": "s2_033",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_000": {
-      "w": 218,
-      "h": 135,
-      "top": 40,
-      "foot": 134,
+      "w": 262,
+      "h": 164,
+      "top": 39,
+      "foot": 163,
       "prof": [
         105,
         74,
@@ -2379,13 +2521,15 @@
       ],
       "key": "s3_000",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_001": {
-      "w": 38,
-      "h": 82,
-      "top": 49,
-      "foot": 81,
+      "w": 46,
+      "h": 104,
+      "top": 35,
+      "foot": 103,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 3,
@@ -2401,13 +2545,15 @@
       ],
       "key": "s3_001",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_002": {
-      "w": 52,
-      "h": 80,
-      "top": 9,
-      "foot": 79,
+      "w": 62,
+      "h": 96,
+      "top": 6,
+      "foot": 95,
       "kind_hint": "slope",
       "kind": "banner",
       "sheet": 3,
@@ -2423,13 +2569,15 @@
       ],
       "key": "s3_002",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_003": {
-      "w": 14,
-      "h": 84,
-      "top": 12,
-      "foot": 83,
+      "w": 16,
+      "h": 101,
+      "top": 10,
+      "foot": 100,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2444,13 +2592,15 @@
       ],
       "key": "s3_003",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_004": {
-      "w": 188,
-      "h": 102,
-      "top": 29,
-      "foot": 101,
+      "w": 226,
+      "h": 125,
+      "top": 34,
+      "foot": 124,
       "prof": [
         50,
         46,
@@ -2506,13 +2656,15 @@
       ],
       "key": "s3_004",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_005": {
-      "w": 35,
-      "h": 129,
-      "top": 32,
-      "foot": 128,
+      "w": 42,
+      "h": 155,
+      "top": 34,
+      "foot": 154,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 3,
@@ -2528,13 +2680,15 @@
       ],
       "key": "s3_005",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_006": {
-      "w": 26,
-      "h": 59,
-      "top": 20,
-      "foot": 58,
+      "w": 32,
+      "h": 73,
+      "top": 19,
+      "foot": 72,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2549,13 +2703,15 @@
       ],
       "key": "s3_006",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_007": {
-      "w": 35,
-      "h": 80,
+      "w": 42,
+      "h": 96,
       "top": 0,
-      "foot": 79,
+      "foot": 95,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2570,13 +2726,15 @@
       ],
       "key": "s3_007",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_008": {
-      "w": 27,
-      "h": 82,
-      "top": 1,
-      "foot": 81,
+      "w": 33,
+      "h": 98,
+      "top": 0,
+      "foot": 97,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2591,13 +2749,15 @@
       ],
       "key": "s3_008",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_009": {
-      "w": 24,
-      "h": 75,
-      "top": 9,
-      "foot": 74,
+      "w": 29,
+      "h": 90,
+      "top": 7,
+      "foot": 89,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 3,
@@ -2613,13 +2773,15 @@
       ],
       "key": "s3_009",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_010": {
-      "w": 28,
-      "h": 76,
-      "top": 9,
-      "foot": 75,
+      "w": 33,
+      "h": 91,
+      "top": 6,
+      "foot": 90,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2634,13 +2796,15 @@
       ],
       "key": "s3_010",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_011": {
-      "w": 13,
-      "h": 64,
-      "top": 12,
-      "foot": 63,
+      "w": 16,
+      "h": 77,
+      "top": 7,
+      "foot": 76,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2655,13 +2819,15 @@
       ],
       "key": "s3_011",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_012": {
-      "w": 36,
-      "h": 65,
-      "top": 2,
-      "foot": 64,
+      "w": 43,
+      "h": 78,
+      "top": 0,
+      "foot": 77,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2676,13 +2842,15 @@
       ],
       "key": "s3_012",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_013": {
-      "w": 20,
-      "h": 60,
+      "w": 24,
+      "h": 72,
       "top": 0,
-      "foot": 59,
+      "foot": 71,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2697,13 +2865,15 @@
       ],
       "key": "s3_013",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_014": {
-      "w": 18,
-      "h": 59,
-      "top": 8,
-      "foot": 58,
+      "w": 22,
+      "h": 71,
+      "top": 6,
+      "foot": 70,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2718,13 +2888,15 @@
       ],
       "key": "s3_014",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_015": {
-      "w": 16,
-      "h": 60,
-      "top": 8,
-      "foot": 59,
+      "w": 19,
+      "h": 72,
+      "top": 7,
+      "foot": 71,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2739,13 +2911,15 @@
       ],
       "key": "s3_015",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_016": {
-      "w": 20,
-      "h": 58,
-      "top": 5,
-      "foot": 57,
+      "w": 24,
+      "h": 69,
+      "top": 3,
+      "foot": 68,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2760,13 +2934,15 @@
       ],
       "key": "s3_016",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_017": {
-      "w": 19,
-      "h": 60,
-      "top": 6,
-      "foot": 59,
+      "w": 23,
+      "h": 72,
+      "top": 5,
+      "foot": 71,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2781,13 +2957,15 @@
       ],
       "key": "s3_017",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_018": {
-      "w": 168,
-      "h": 84,
-      "top": 2,
-      "foot": 83,
+      "w": 202,
+      "h": 101,
+      "top": 0,
+      "foot": 100,
       "prof": [
         10,
         9,
@@ -2839,13 +3017,15 @@
       ],
       "key": "s3_018",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_019": {
-      "w": 14,
-      "h": 76,
-      "top": 6,
-      "foot": 73,
+      "w": 17,
+      "h": 92,
+      "top": 2,
+      "foot": 91,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2860,13 +3040,15 @@
       ],
       "key": "s3_019",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_020": {
-      "w": 16,
-      "h": 75,
-      "top": 6,
-      "foot": 73,
+      "w": 19,
+      "h": 90,
+      "top": 7,
+      "foot": 89,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2881,13 +3063,15 @@
       ],
       "key": "s3_020",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_021": {
-      "w": 24,
-      "h": 73,
+      "w": 28,
+      "h": 88,
       "top": 5,
-      "foot": 62,
+      "foot": 87,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -2902,13 +3086,15 @@
       ],
       "key": "s3_021",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_022": {
-      "w": 234,
-      "h": 102,
-      "top": 27,
-      "foot": 101,
+      "w": 280,
+      "h": 122,
+      "top": 0,
+      "foot": 121,
       "prof": [
         91,
         66,
@@ -2960,13 +3146,15 @@
       ],
       "key": "s3_022",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_023": {
-      "w": 114,
-      "h": 33,
-      "top": 1,
-      "foot": 31,
+      "w": 137,
+      "h": 39,
+      "top": 0,
+      "foot": 38,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -2981,13 +3169,15 @@
       ],
       "key": "s3_023",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_024": {
-      "w": 43,
-      "h": 32,
-      "top": 1,
-      "foot": 31,
+      "w": 52,
+      "h": 38,
+      "top": 0,
+      "foot": 37,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3002,13 +3192,15 @@
       ],
       "key": "s3_024",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_025": {
-      "w": 124,
-      "h": 60,
-      "top": 3,
-      "foot": 59,
+      "w": 148,
+      "h": 72,
+      "top": 2,
+      "foot": 71,
       "prof": [
         57,
         56,
@@ -3068,13 +3260,15 @@
       ],
       "key": "s3_025",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_026": {
-      "w": 118,
-      "h": 40,
-      "top": 1,
-      "foot": 21,
+      "w": 142,
+      "h": 48,
+      "top": 0,
+      "foot": 47,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -3089,13 +3283,15 @@
       ],
       "key": "s3_026",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_027": {
-      "w": 34,
-      "h": 37,
-      "top": 1,
-      "foot": 34,
+      "w": 41,
+      "h": 45,
+      "top": 0,
+      "foot": 44,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3110,13 +3306,15 @@
       ],
       "key": "s3_027",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_028": {
-      "w": 31,
-      "h": 10,
+      "w": 37,
+      "h": 12,
       "top": 0,
-      "foot": 9,
+      "foot": 11,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -3131,13 +3329,15 @@
       ],
       "key": "s3_028",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_029": {
-      "w": 95,
-      "h": 53,
-      "top": 1,
-      "foot": 52,
+      "w": 114,
+      "h": 64,
+      "top": 0,
+      "foot": 63,
       "prof": [
         3,
         2,
@@ -3203,13 +3403,15 @@
       ],
       "key": "s3_029",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_030": {
-      "w": 29,
-      "h": 45,
-      "top": 2,
-      "foot": 44,
+      "w": 35,
+      "h": 54,
+      "top": 0,
+      "foot": 53,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3224,13 +3426,15 @@
       ],
       "key": "s3_030",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_031": {
-      "w": 35,
-      "h": 38,
+      "w": 42,
+      "h": 46,
       "top": 0,
-      "foot": 37,
+      "foot": 45,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3245,13 +3449,15 @@
       ],
       "key": "s3_031",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_032": {
-      "w": 78,
-      "h": 43,
-      "top": 1,
-      "foot": 40,
+      "w": 94,
+      "h": 52,
+      "top": 0,
+      "foot": 51,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -3266,13 +3472,15 @@
       ],
       "key": "s3_032",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_033": {
-      "w": 28,
-      "h": 20,
+      "w": 33,
+      "h": 24,
       "top": 0,
-      "foot": 19,
+      "foot": 23,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3287,13 +3495,15 @@
       ],
       "key": "s3_033",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_034": {
-      "w": 66,
-      "h": 37,
-      "top": 8,
-      "foot": 36,
+      "w": 80,
+      "h": 44,
+      "top": 0,
+      "foot": 43,
       "prof": [
         20,
         20,
@@ -3344,13 +3554,15 @@
       ],
       "key": "s3_034",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_035": {
-      "w": 61,
-      "h": 38,
-      "top": 8,
-      "foot": 37,
+      "w": 73,
+      "h": 46,
+      "top": 2,
+      "foot": 45,
       "prof": [
         21,
         21,
@@ -3429,13 +3641,15 @@
       ],
       "key": "s3_035",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_036": {
-      "w": 20,
-      "h": 71,
+      "w": 24,
+      "h": 85,
       "top": 5,
-      "foot": 70,
+      "foot": 84,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -3450,13 +3664,15 @@
       ],
       "key": "s3_036",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_037": {
-      "w": 188,
-      "h": 100,
+      "w": 226,
+      "h": 120,
       "top": 4,
-      "foot": 99,
+      "foot": 119,
       "kind": "set",
       "sheet": 3,
       "src": [
@@ -3471,13 +3687,15 @@
       ],
       "key": "s3_037",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_038": {
-      "w": 156,
-      "h": 29,
-      "top": 1,
-      "foot": 25,
+      "w": 187,
+      "h": 35,
+      "top": 0,
+      "foot": 31,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -3492,13 +3710,15 @@
       ],
       "key": "s3_038",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_039": {
-      "w": 35,
-      "h": 34,
+      "w": 42,
+      "h": 40,
       "top": 0,
-      "foot": 32,
+      "foot": 39,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3513,13 +3733,15 @@
       ],
       "key": "s3_039",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_040": {
-      "w": 21,
-      "h": 24,
+      "w": 25,
+      "h": 29,
       "top": 0,
-      "foot": 23,
+      "foot": 28,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3534,13 +3756,15 @@
       ],
       "key": "s3_040",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_041": {
-      "w": 35,
-      "h": 30,
-      "top": 2,
-      "foot": 29,
+      "w": 42,
+      "h": 36,
+      "top": 0,
+      "foot": 35,
       "prof": [
         13,
         13,
@@ -3593,13 +3817,15 @@
       ],
       "key": "s3_041",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_042": {
-      "w": 32,
-      "h": 83,
+      "w": 38,
+      "h": 99,
       "top": 0,
-      "foot": 82,
+      "foot": 98,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -3614,13 +3840,15 @@
       ],
       "key": "s3_042",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_043": {
-      "w": 20,
-      "h": 13,
+      "w": 24,
+      "h": 15,
       "top": 0,
-      "foot": 12,
+      "foot": 14,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3635,13 +3863,15 @@
       ],
       "key": "s3_043",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_044": {
-      "w": 40,
-      "h": 20,
-      "top": 1,
-      "foot": 19,
+      "w": 48,
+      "h": 24,
+      "top": 0,
+      "foot": 23,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -3656,13 +3886,15 @@
       ],
       "key": "s3_044",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_045": {
-      "w": 27,
-      "h": 72,
+      "w": 32,
+      "h": 86,
       "top": 0,
-      "foot": 71,
+      "foot": 85,
       "kind": "pillar",
       "sheet": 3,
       "src": [
@@ -3677,13 +3909,15 @@
       ],
       "key": "s3_045",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_046": {
-      "w": 129,
-      "h": 70,
-      "top": 1,
-      "foot": 69,
+      "w": 155,
+      "h": 84,
+      "top": 0,
+      "foot": 83,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -3698,13 +3932,15 @@
       ],
       "key": "s3_046",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_047": {
-      "w": 92,
-      "h": 44,
-      "top": 2,
-      "foot": 35,
+      "w": 110,
+      "h": 52,
+      "top": 1,
+      "foot": 51,
       "kind_hint": "slope",
       "kind": "plat",
       "sheet": 3,
@@ -3720,13 +3956,15 @@
       ],
       "key": "s3_047",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_048": {
-      "w": 64,
-      "h": 37,
+      "w": 76,
+      "h": 45,
       "top": 6,
-      "foot": 34,
+      "foot": 44,
       "kind_hint": "slope",
       "kind": "plat",
       "sheet": 3,
@@ -3742,13 +3980,15 @@
       ],
       "key": "s3_048",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_049": {
-      "w": 32,
-      "h": 36,
+      "w": 38,
+      "h": 43,
       "top": 0,
-      "foot": 35,
+      "foot": 42,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3763,13 +4003,15 @@
       ],
       "key": "s3_049",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_050": {
-      "w": 22,
-      "h": 24,
+      "w": 27,
+      "h": 28,
       "top": 0,
-      "foot": 23,
+      "foot": 27,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3784,13 +4026,15 @@
       ],
       "key": "s3_050",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_051": {
-      "w": 42,
-      "h": 15,
+      "w": 51,
+      "h": 18,
       "top": 0,
-      "foot": 14,
+      "foot": 17,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -3805,13 +4049,15 @@
       ],
       "key": "s3_051",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_052": {
-      "w": 28,
-      "h": 25,
+      "w": 34,
+      "h": 30,
       "top": 0,
-      "foot": 24,
+      "foot": 29,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3826,13 +4072,15 @@
       ],
       "key": "s3_052",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_053": {
-      "w": 6,
-      "h": 15,
+      "w": 8,
+      "h": 18,
       "top": 0,
-      "foot": 14,
+      "foot": 17,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3847,13 +4095,15 @@
       ],
       "key": "s3_053",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_054": {
-      "w": 7,
-      "h": 16,
+      "w": 9,
+      "h": 19,
       "top": 0,
-      "foot": 15,
+      "foot": 18,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3868,13 +4118,15 @@
       ],
       "key": "s3_054",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_055": {
-      "w": 16,
-      "h": 14,
+      "w": 19,
+      "h": 16,
       "top": 0,
-      "foot": 13,
+      "foot": 15,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3889,13 +4141,15 @@
       ],
       "key": "s3_055",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_056": {
-      "w": 14,
-      "h": 20,
+      "w": 16,
+      "h": 24,
       "top": 0,
-      "foot": 19,
+      "foot": 23,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3910,13 +4164,15 @@
       ],
       "key": "s3_056",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_057": {
-      "w": 15,
-      "h": 16,
+      "w": 18,
+      "h": 19,
       "top": 0,
-      "foot": 15,
+      "foot": 18,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3931,13 +4187,15 @@
       ],
       "key": "s3_057",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_058": {
-      "w": 32,
-      "h": 7,
-      "top": 1,
-      "foot": 6,
+      "w": 39,
+      "h": 8,
+      "top": 0,
+      "foot": 7,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -3952,13 +4210,15 @@
       ],
       "key": "s3_058",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_059": {
-      "w": 18,
-      "h": 14,
+      "w": 21,
+      "h": 17,
       "top": 0,
-      "foot": 13,
+      "foot": 16,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3973,13 +4233,15 @@
       ],
       "key": "s3_059",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_060": {
-      "w": 8,
-      "h": 13,
+      "w": 10,
+      "h": 16,
       "top": 0,
-      "foot": 12,
+      "foot": 15,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -3994,13 +4256,15 @@
       ],
       "key": "s3_060",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_061": {
-      "w": 20,
-      "h": 9,
+      "w": 24,
+      "h": 11,
       "top": 0,
-      "foot": 8,
+      "foot": 10,
       "kind": "plat",
       "sheet": 3,
       "src": [
@@ -4015,13 +4279,15 @@
       ],
       "key": "s3_061",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_062": {
-      "w": 16,
-      "h": 9,
+      "w": 19,
+      "h": 11,
       "top": 0,
-      "foot": 8,
+      "foot": 10,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -4036,13 +4302,15 @@
       ],
       "key": "s3_062",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_063": {
-      "w": 12,
-      "h": 10,
+      "w": 14,
+      "h": 12,
       "top": 0,
-      "foot": 9,
+      "foot": 11,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -4057,13 +4325,15 @@
       ],
       "key": "s3_063",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s3_064": {
-      "w": 13,
-      "h": 10,
+      "w": 16,
+      "h": 12,
       "top": 0,
-      "foot": 9,
+      "foot": 11,
       "kind": "decor",
       "sheet": 3,
       "src": [
@@ -4078,13 +4348,15 @@
       ],
       "key": "s3_064",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_000": {
-      "w": 80,
-      "h": 128,
-      "top": 11,
-      "foot": 127,
+      "w": 96,
+      "h": 154,
+      "top": 9,
+      "foot": 153,
       "prof": [
         48,
         46,
@@ -4142,13 +4414,15 @@
       ],
       "key": "s4_000",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_001": {
-      "w": 54,
-      "h": 135,
-      "top": 32,
-      "foot": 134,
+      "w": 64,
+      "h": 162,
+      "top": 27,
+      "foot": 161,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 4,
@@ -4164,13 +4438,15 @@
       ],
       "key": "s4_001",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_002": {
-      "w": 30,
-      "h": 139,
-      "top": 44,
-      "foot": 138,
+      "w": 36,
+      "h": 168,
+      "top": 6,
+      "foot": 167,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 4,
@@ -4186,13 +4462,15 @@
       ],
       "key": "s4_002",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_003": {
-      "w": 33,
-      "h": 92,
+      "w": 40,
+      "h": 111,
       "top": 5,
-      "foot": 88,
+      "foot": 110,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -4207,13 +4485,15 @@
       ],
       "key": "s4_003",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_004": {
-      "w": 40,
-      "h": 132,
-      "top": 9,
-      "foot": 125,
+      "w": 48,
+      "h": 158,
+      "top": 8,
+      "foot": 155,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -4228,13 +4508,15 @@
       ],
       "key": "s4_004",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_005": {
-      "w": 33,
-      "h": 94,
-      "top": 10,
-      "foot": 91,
+      "w": 39,
+      "h": 113,
+      "top": 11,
+      "foot": 111,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -4249,13 +4531,15 @@
       ],
       "key": "s4_005",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_006": {
-      "w": 229,
-      "h": 42,
-      "top": 2,
-      "foot": 32,
+      "w": 275,
+      "h": 50,
+      "top": 0,
+      "foot": 49,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -4270,13 +4554,15 @@
       ],
       "key": "s4_006",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_007": {
-      "w": 40,
-      "h": 124,
-      "top": 42,
-      "foot": 123,
+      "w": 48,
+      "h": 149,
+      "top": 38,
+      "foot": 148,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 4,
@@ -4292,13 +4578,15 @@
       ],
       "key": "s4_007",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_008": {
-      "w": 22,
-      "h": 125,
-      "top": 18,
-      "foot": 124,
+      "w": 27,
+      "h": 150,
+      "top": 5,
+      "foot": 149,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -4313,13 +4601,15 @@
       ],
       "key": "s4_008",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_009": {
-      "w": 146,
-      "h": 42,
-      "top": 4,
-      "foot": 31,
+      "w": 176,
+      "h": 51,
+      "top": 3,
+      "foot": 50,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -4334,13 +4624,15 @@
       ],
       "key": "s4_009",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_010": {
-      "w": 43,
-      "h": 65,
-      "top": 15,
-      "foot": 64,
+      "w": 51,
+      "h": 78,
+      "top": 6,
+      "foot": 77,
       "kind_hint": "slope",
       "kind": "banner",
       "sheet": 4,
@@ -4356,13 +4648,15 @@
       ],
       "key": "s4_010",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_011": {
-      "w": 34,
-      "h": 28,
-      "top": 1,
-      "foot": 27,
+      "w": 41,
+      "h": 34,
+      "top": 0,
+      "foot": 33,
       "prof": [
         2,
         2,
@@ -4414,13 +4708,15 @@
       ],
       "key": "s4_011",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_012": {
-      "w": 140,
-      "h": 87,
-      "top": 21,
-      "foot": 86,
+      "w": 168,
+      "h": 105,
+      "top": 19,
+      "foot": 104,
       "prof": [
         40,
         38,
@@ -4473,13 +4769,15 @@
       ],
       "key": "s4_012",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_013": {
-      "w": 20,
-      "h": 71,
-      "top": 7,
-      "foot": 70,
+      "w": 24,
+      "h": 85,
+      "top": 1,
+      "foot": 84,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -4494,13 +4792,15 @@
       ],
       "key": "s4_013",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_014": {
-      "w": 16,
-      "h": 60,
-      "top": 3,
-      "foot": 59,
+      "w": 20,
+      "h": 72,
+      "top": 1,
+      "foot": 71,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -4515,13 +4815,15 @@
       ],
       "key": "s4_014",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_015": {
-      "w": 33,
-      "h": 54,
+      "w": 40,
+      "h": 65,
       "top": 0,
-      "foot": 53,
+      "foot": 64,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4536,13 +4838,15 @@
       ],
       "key": "s4_015",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_016": {
-      "w": 24,
-      "h": 83,
-      "top": 10,
-      "foot": 82,
+      "w": 29,
+      "h": 100,
+      "top": 2,
+      "foot": 99,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 4,
@@ -4558,13 +4862,15 @@
       ],
       "key": "s4_016",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_017": {
-      "w": 8,
-      "h": 49,
-      "top": 1,
-      "foot": 48,
+      "w": 10,
+      "h": 59,
+      "top": 0,
+      "foot": 58,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4579,13 +4885,15 @@
       ],
       "key": "s4_017",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_018": {
-      "w": 23,
-      "h": 44,
+      "w": 27,
+      "h": 53,
       "top": 0,
-      "foot": 43,
+      "foot": 52,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4600,13 +4908,15 @@
       ],
       "key": "s4_018",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_019": {
-      "w": 38,
-      "h": 46,
-      "top": 1,
-      "foot": 45,
+      "w": 46,
+      "h": 56,
+      "top": 0,
+      "foot": 55,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4621,13 +4931,15 @@
       ],
       "key": "s4_019",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_020": {
-      "w": 131,
-      "h": 135,
-      "top": 6,
-      "foot": 134,
+      "w": 157,
+      "h": 162,
+      "top": 3,
+      "foot": 161,
       "prof": [
         98,
         55,
@@ -4678,13 +4990,15 @@
       ],
       "key": "s4_020",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_021": {
-      "w": 64,
-      "h": 130,
+      "w": 76,
+      "h": 156,
       "top": 7,
-      "foot": 129,
+      "foot": 155,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 4,
@@ -4700,13 +5014,15 @@
       ],
       "key": "s4_021",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_022": {
-      "w": 40,
-      "h": 132,
-      "top": 4,
-      "foot": 131,
+      "w": 48,
+      "h": 158,
+      "top": 2,
+      "foot": 157,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 4,
@@ -4722,13 +5038,15 @@
       ],
       "key": "s4_022",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_023": {
-      "w": 12,
-      "h": 46,
-      "top": 3,
-      "foot": 45,
+      "w": 15,
+      "h": 56,
+      "top": 0,
+      "foot": 55,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4743,13 +5061,15 @@
       ],
       "key": "s4_023",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_024": {
-      "w": 19,
-      "h": 32,
-      "top": 1,
-      "foot": 31,
+      "w": 23,
+      "h": 38,
+      "top": 0,
+      "foot": 37,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4764,13 +5084,15 @@
       ],
       "key": "s4_024",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_025": {
-      "w": 20,
-      "h": 42,
-      "top": 1,
-      "foot": 41,
+      "w": 24,
+      "h": 51,
+      "top": 0,
+      "foot": 50,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4785,13 +5107,15 @@
       ],
       "key": "s4_025",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_026": {
-      "w": 26,
-      "h": 43,
+      "w": 32,
+      "h": 51,
       "top": 0,
-      "foot": 42,
+      "foot": 50,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4806,13 +5130,15 @@
       ],
       "key": "s4_026",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_027": {
-      "w": 42,
-      "h": 44,
+      "w": 50,
+      "h": 53,
       "top": 0,
-      "foot": 43,
+      "foot": 52,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4827,13 +5153,15 @@
       ],
       "key": "s4_027",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_028": {
-      "w": 24,
-      "h": 42,
-      "top": 1,
-      "foot": 41,
+      "w": 29,
+      "h": 50,
+      "top": 0,
+      "foot": 49,
       "kind_hint": "slope",
       "kind": "decor",
       "sheet": 4,
@@ -4849,13 +5177,15 @@
       ],
       "key": "s4_028",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_029": {
-      "w": 26,
-      "h": 41,
-      "top": 1,
-      "foot": 40,
+      "w": 32,
+      "h": 49,
+      "top": 0,
+      "foot": 48,
       "kind_hint": "slope",
       "kind": "decor",
       "sheet": 4,
@@ -4871,13 +5201,15 @@
       ],
       "key": "s4_029",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_030": {
-      "w": 18,
-      "h": 38,
+      "w": 22,
+      "h": 46,
       "top": 0,
-      "foot": 37,
+      "foot": 45,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4892,13 +5224,15 @@
       ],
       "key": "s4_030",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_031": {
-      "w": 26,
-      "h": 36,
+      "w": 31,
+      "h": 43,
       "top": 0,
-      "foot": 35,
+      "foot": 42,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4913,13 +5247,15 @@
       ],
       "key": "s4_031",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_032": {
-      "w": 31,
-      "h": 22,
+      "w": 37,
+      "h": 27,
       "top": 0,
-      "foot": 21,
+      "foot": 26,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4934,13 +5270,15 @@
       ],
       "key": "s4_032",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_033": {
-      "w": 17,
-      "h": 20,
+      "w": 20,
+      "h": 24,
       "top": 0,
-      "foot": 19,
+      "foot": 23,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4955,13 +5293,15 @@
       ],
       "key": "s4_033",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_034": {
-      "w": 18,
-      "h": 27,
+      "w": 22,
+      "h": 33,
       "top": 0,
-      "foot": 26,
+      "foot": 32,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4976,13 +5316,15 @@
       ],
       "key": "s4_034",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_035": {
-      "w": 20,
-      "h": 29,
+      "w": 24,
+      "h": 35,
       "top": 0,
-      "foot": 28,
+      "foot": 34,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -4997,13 +5339,15 @@
       ],
       "key": "s4_035",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_036": {
-      "w": 26,
-      "h": 21,
+      "w": 32,
+      "h": 25,
       "top": 0,
-      "foot": 20,
+      "foot": 24,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5018,13 +5362,15 @@
       ],
       "key": "s4_036",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_037": {
-      "w": 169,
-      "h": 51,
-      "top": 1,
-      "foot": 26,
+      "w": 203,
+      "h": 61,
+      "top": 0,
+      "foot": 60,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -5039,13 +5385,15 @@
       ],
       "key": "s4_037",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_038": {
-      "w": 55,
-      "h": 48,
+      "w": 66,
+      "h": 58,
       "top": 0,
-      "foot": 47,
+      "foot": 57,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5060,13 +5408,15 @@
       ],
       "key": "s4_038",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_039": {
-      "w": 46,
-      "h": 34,
+      "w": 55,
+      "h": 41,
       "top": 0,
-      "foot": 33,
+      "foot": 40,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5081,13 +5431,15 @@
       ],
       "key": "s4_039",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_040": {
-      "w": 10,
-      "h": 32,
+      "w": 12,
+      "h": 39,
       "top": 0,
-      "foot": 31,
+      "foot": 38,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5102,13 +5454,15 @@
       ],
       "key": "s4_040",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_041": {
-      "w": 34,
-      "h": 31,
-      "top": 1,
-      "foot": 30,
+      "w": 40,
+      "h": 37,
+      "top": 0,
+      "foot": 36,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5123,13 +5477,15 @@
       ],
       "key": "s4_041",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_042": {
-      "w": 10,
-      "h": 35,
+      "w": 12,
+      "h": 42,
       "top": 0,
-      "foot": 34,
+      "foot": 41,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5144,13 +5500,15 @@
       ],
       "key": "s4_042",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_043": {
-      "w": 29,
-      "h": 24,
+      "w": 35,
+      "h": 29,
       "top": 0,
-      "foot": 23,
+      "foot": 28,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5165,13 +5523,15 @@
       ],
       "key": "s4_043",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_044": {
-      "w": 22,
-      "h": 17,
+      "w": 26,
+      "h": 20,
       "top": 0,
-      "foot": 16,
+      "foot": 19,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5186,13 +5546,15 @@
       ],
       "key": "s4_044",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_045": {
-      "w": 129,
-      "h": 70,
-      "top": 2,
-      "foot": 69,
+      "w": 155,
+      "h": 84,
+      "top": 0,
+      "foot": 83,
       "prof": [
         61,
         60,
@@ -5243,13 +5605,15 @@
       ],
       "key": "s4_045",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_046": {
-      "w": 18,
-      "h": 13,
+      "w": 21,
+      "h": 16,
       "top": 0,
-      "foot": 12,
+      "foot": 15,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5264,13 +5628,15 @@
       ],
       "key": "s4_046",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_047": {
-      "w": 11,
-      "h": 13,
+      "w": 13,
+      "h": 16,
       "top": 0,
-      "foot": 12,
+      "foot": 15,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5285,13 +5651,15 @@
       ],
       "key": "s4_047",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_048": {
-      "w": 17,
-      "h": 50,
-      "top": 20,
-      "foot": 49,
+      "w": 21,
+      "h": 60,
+      "top": 15,
+      "foot": 59,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5306,13 +5674,15 @@
       ],
       "key": "s4_048",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_049": {
-      "w": 28,
-      "h": 24,
+      "w": 34,
+      "h": 28,
       "top": 0,
-      "foot": 23,
+      "foot": 27,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5327,13 +5697,15 @@
       ],
       "key": "s4_049",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_050": {
-      "w": 18,
-      "h": 25,
+      "w": 22,
+      "h": 30,
       "top": 0,
-      "foot": 24,
+      "foot": 29,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5348,13 +5720,15 @@
       ],
       "key": "s4_050",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_051": {
-      "w": 42,
-      "h": 25,
+      "w": 50,
+      "h": 30,
       "top": 0,
-      "foot": 24,
+      "foot": 29,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5369,13 +5743,15 @@
       ],
       "key": "s4_051",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_052": {
-      "w": 39,
-      "h": 20,
-      "top": 2,
-      "foot": 19,
+      "w": 47,
+      "h": 24,
+      "top": 0,
+      "foot": 23,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -5390,13 +5766,15 @@
       ],
       "key": "s4_052",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_053": {
-      "w": 62,
-      "h": 21,
-      "top": 1,
-      "foot": 20,
+      "w": 74,
+      "h": 25,
+      "top": 0,
+      "foot": 24,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -5411,13 +5789,15 @@
       ],
       "key": "s4_053",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_054": {
-      "w": 55,
-      "h": 31,
-      "top": 1,
-      "foot": 30,
+      "w": 66,
+      "h": 37,
+      "top": 0,
+      "foot": 36,
       "kind_hint": "slope",
       "kind": "decor",
       "sheet": 4,
@@ -5433,13 +5813,15 @@
       ],
       "key": "s4_054",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_055": {
-      "w": 15,
-      "h": 54,
-      "top": 1,
-      "foot": 53,
+      "w": 18,
+      "h": 65,
+      "top": 0,
+      "foot": 64,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5454,13 +5836,15 @@
       ],
       "key": "s4_055",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_056": {
-      "w": 20,
-      "h": 61,
-      "top": 1,
-      "foot": 60,
+      "w": 24,
+      "h": 73,
+      "top": 0,
+      "foot": 72,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -5475,13 +5859,15 @@
       ],
       "key": "s4_056",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_057": {
-      "w": 14,
-      "h": 60,
+      "w": 17,
+      "h": 72,
       "top": 0,
-      "foot": 59,
+      "foot": 71,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -5496,13 +5882,15 @@
       ],
       "key": "s4_057",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_058": {
-      "w": 30,
-      "h": 92,
+      "w": 36,
+      "h": 110,
       "top": 0,
-      "foot": 91,
+      "foot": 109,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -5517,13 +5905,15 @@
       ],
       "key": "s4_058",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_059": {
-      "w": 39,
-      "h": 72,
-      "top": 1,
-      "foot": 69,
+      "w": 47,
+      "h": 86,
+      "top": 0,
+      "foot": 85,
       "kind": "pillar",
       "sheet": 4,
       "src": [
@@ -5538,13 +5928,15 @@
       ],
       "key": "s4_059",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_060": {
-      "w": 43,
-      "h": 84,
-      "top": 1,
-      "foot": 83,
+      "w": 52,
+      "h": 101,
+      "top": 0,
+      "foot": 100,
       "kind_hint": "slope",
       "kind": "pillar",
       "sheet": 4,
@@ -5560,13 +5952,15 @@
       ],
       "key": "s4_060",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_061": {
-      "w": 74,
-      "h": 75,
+      "w": 89,
+      "h": 90,
       "top": 0,
-      "foot": 74,
+      "foot": 89,
       "prof": [
         10,
         10,
@@ -5621,13 +6015,15 @@
       ],
       "key": "s4_061",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_062": {
-      "w": 26,
-      "h": 32,
+      "w": 31,
+      "h": 38,
       "top": 0,
-      "foot": 31,
+      "foot": 37,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5642,13 +6038,15 @@
       ],
       "key": "s4_062",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_063": {
-      "w": 30,
-      "h": 30,
+      "w": 36,
+      "h": 36,
       "top": 0,
-      "foot": 29,
+      "foot": 35,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5663,13 +6061,15 @@
       ],
       "key": "s4_063",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_064": {
-      "w": 112,
-      "h": 37,
-      "top": 2,
-      "foot": 36,
+      "w": 135,
+      "h": 44,
+      "top": 1,
+      "foot": 43,
       "kind_hint": "slope",
       "kind": "plat",
       "sheet": 4,
@@ -5685,13 +6085,15 @@
       ],
       "key": "s4_064",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_065": {
-      "w": 53,
-      "h": 26,
-      "top": 1,
-      "foot": 25,
+      "w": 64,
+      "h": 32,
+      "top": 0,
+      "foot": 31,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -5706,13 +6108,15 @@
       ],
       "key": "s4_065",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_066": {
-      "w": 24,
-      "h": 36,
+      "w": 28,
+      "h": 44,
       "top": 0,
-      "foot": 35,
+      "foot": 43,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5727,13 +6131,15 @@
       ],
       "key": "s4_066",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_067": {
-      "w": 58,
-      "h": 30,
-      "top": 1,
-      "foot": 29,
+      "w": 70,
+      "h": 36,
+      "top": 0,
+      "foot": 35,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -5748,13 +6154,15 @@
       ],
       "key": "s4_067",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_068": {
-      "w": 21,
-      "h": 38,
+      "w": 25,
+      "h": 45,
       "top": 0,
-      "foot": 37,
+      "foot": 44,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5769,13 +6177,15 @@
       ],
       "key": "s4_068",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_069": {
-      "w": 66,
-      "h": 54,
-      "top": 2,
-      "foot": 53,
+      "w": 79,
+      "h": 65,
+      "top": 1,
+      "foot": 64,
       "prof": [
         30,
         21,
@@ -5826,13 +6236,15 @@
       ],
       "key": "s4_069",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_070": {
-      "w": 87,
-      "h": 60,
+      "w": 105,
+      "h": 72,
       "top": 0,
-      "foot": 59,
+      "foot": 71,
       "prof": [
         15,
         13,
@@ -5894,13 +6306,15 @@
       ],
       "key": "s4_070",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_071": {
-      "w": 22,
-      "h": 26,
+      "w": 26,
+      "h": 31,
       "top": 0,
-      "foot": 25,
+      "foot": 30,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5915,13 +6329,15 @@
       ],
       "key": "s4_071",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_072": {
-      "w": 18,
-      "h": 27,
+      "w": 22,
+      "h": 33,
       "top": 0,
-      "foot": 26,
+      "foot": 32,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5936,13 +6352,15 @@
       ],
       "key": "s4_072",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_073": {
-      "w": 40,
-      "h": 17,
+      "w": 48,
+      "h": 20,
       "top": 0,
-      "foot": 16,
+      "foot": 19,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -5957,13 +6375,15 @@
       ],
       "key": "s4_073",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_074": {
-      "w": 20,
-      "h": 25,
+      "w": 24,
+      "h": 30,
       "top": 0,
-      "foot": 24,
+      "foot": 29,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5978,13 +6398,15 @@
       ],
       "key": "s4_074",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_075": {
-      "w": 14,
-      "h": 25,
+      "w": 17,
+      "h": 30,
       "top": 0,
-      "foot": 24,
+      "foot": 29,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -5999,13 +6421,15 @@
       ],
       "key": "s4_075",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_076": {
-      "w": 9,
-      "h": 39,
-      "top": 13,
-      "foot": 38,
+      "w": 11,
+      "h": 47,
+      "top": 3,
+      "foot": 46,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -6020,13 +6444,15 @@
       ],
       "key": "s4_076",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_077": {
-      "w": 27,
-      "h": 34,
+      "w": 33,
+      "h": 40,
       "top": 0,
-      "foot": 33,
+      "foot": 39,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -6041,13 +6467,15 @@
       ],
       "key": "s4_077",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_078": {
-      "w": 61,
-      "h": 17,
-      "top": 1,
-      "foot": 16,
+      "w": 73,
+      "h": 21,
+      "top": 0,
+      "foot": 20,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -6062,13 +6490,15 @@
       ],
       "key": "s4_078",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_079": {
-      "w": 25,
-      "h": 27,
+      "w": 30,
+      "h": 33,
       "top": 0,
-      "foot": 26,
+      "foot": 32,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -6083,13 +6513,15 @@
       ],
       "key": "s4_079",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_080": {
-      "w": 91,
-      "h": 28,
-      "top": 1,
-      "foot": 27,
+      "w": 109,
+      "h": 34,
+      "top": 0,
+      "foot": 33,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -6104,13 +6536,15 @@
       ],
       "key": "s4_080",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_081": {
-      "w": 20,
-      "h": 19,
+      "w": 24,
+      "h": 23,
       "top": 0,
-      "foot": 18,
+      "foot": 22,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -6125,13 +6559,15 @@
       ],
       "key": "s4_081",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_082": {
-      "w": 54,
-      "h": 17,
-      "top": 1,
-      "foot": 16,
+      "w": 65,
+      "h": 21,
+      "top": 0,
+      "foot": 20,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -6146,13 +6582,15 @@
       ],
       "key": "s4_082",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_083": {
-      "w": 9,
-      "h": 16,
-      "top": 1,
-      "foot": 15,
+      "w": 11,
+      "h": 19,
+      "top": 0,
+      "foot": 18,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -6167,13 +6605,15 @@
       ],
       "key": "s4_083",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_084": {
-      "w": 9,
-      "h": 28,
-      "top": 1,
-      "foot": 27,
+      "w": 11,
+      "h": 34,
+      "top": 0,
+      "foot": 33,
       "kind": "decor",
       "sheet": 4,
       "src": [
@@ -6188,13 +6628,15 @@
       ],
       "key": "s4_084",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_085": {
-      "w": 128,
-      "h": 18,
-      "top": 2,
-      "foot": 17,
+      "w": 154,
+      "h": 22,
+      "top": 1,
+      "foot": 21,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -6209,13 +6651,15 @@
       ],
       "key": "s4_085",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     },
     "s4_086": {
-      "w": 43,
-      "h": 14,
-      "top": 1,
-      "foot": 13,
+      "w": 52,
+      "h": 17,
+      "top": 0,
+      "foot": 16,
       "kind": "plat",
       "sheet": 4,
       "src": [
@@ -6230,7 +6674,9 @@
       ],
       "key": "s4_086",
       "used": false,
-      "placements": []
+      "placements": [],
+      "scale_hq": 0.48,
+      "filter": "lanczos_premul"
     }
   }
 }
