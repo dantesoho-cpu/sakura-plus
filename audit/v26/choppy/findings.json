@@ -1,0 +1,21 @@
+{
+  "root_cause": "Fortress atlas pipeline downscaled Dante's high-res painterly sheet crops with nearest-neighbor at SCALE=0.40 (tools/ft_tx_cut.py / ft_tx_round2.py), after a hard alpha threshold that destroyed soft edges. Runtime then forced NEAREST (pixelArt + Fortress setFilter) and the boss used setScale(1.35), a non-integer scale on NEAREST textures. Detail dies at atlas build; runtime chewing makes it worse. Edge recolor/despeckle increased stair-steps.",
+  "not_primarily_motion": {
+    "hi": 2,
+    "fpsEst_swiftshader": 34.3,
+    "note": "Camera uses HiRes 1/HI quantization; player has subpixel x. Visual choppiness is texture sampling, not mainly frame pacing. Swiftshader FPS is low; expect ~60 on real GPU."
+  },
+  "fix": {
+    "atlas": "Lanczos + premultiplied alpha, SCALE=0.48, soft alpha edges",
+    "runtime_filter": "LINEAR for all ft_ textures in Fortress",
+    "boss": "baked at on-screen size, setScale(1.0)",
+    "sakura": "unchanged"
+  },
+  "proofs": [
+    "audit/v26/choppy/proof_root_cause.png",
+    "audit/v26/choppy/proof_platform.png",
+    "audit/v26/choppy/proof_enemy.png",
+    "audit/v26/choppy/proof_boss.png",
+    "audit/v26/choppy/after_proof_s1_033.png"
+  ]
+}
